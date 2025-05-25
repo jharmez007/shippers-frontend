@@ -1,6 +1,7 @@
 // App.jsx
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Toaster } from 'sonner';
 
 import { ScrollToTop } from './hooks';
 import {
@@ -140,6 +141,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <Toaster richColors position='top-center' />
       <AppRoutes />
     </BrowserRouter>
   );

@@ -26,13 +26,13 @@ export default function BankConnectionList() {
       } else if (tab === "Connected Shippers") {
         const response = await fetchConnectedShippers();
         if (response?.status === 200) {
-          console.log("connected shipper", response?.data?.data.pending_shippers)
-          setConnections(response?.data?.data?.pending_shippers || []);
+          console.log("connected shipper", response?.data?.data.connected_shippers)
+          setConnections(response?.data?.data?.connected_shippers || []);
         }
       } else if (tab === "Connected Shipping Lines") {
         const response = await fetchConnectedShippingLines();
         if (response?.status === 200) {
-          setConnections(response?.data?.data?.pending_shipping_lines || []);
+          setConnections(response?.data?.data?.connected_shipping_lines || []);
         }
       }
 
@@ -53,6 +53,12 @@ export default function BankConnectionList() {
   );
 
   const handleConnect = async (connId) => {
+    setConnections((prev) =>
+      prev.map((conn) =>
+        conn.id === connId ? { ...conn, status: 'accepted' } : conn
+      )
+    );
+
     try {
 
       const payload = {
@@ -65,7 +71,7 @@ export default function BankConnectionList() {
         // Update the connection status to "connected"
         setConnections((prev) =>
           prev.map((conn) =>
-            conn.id === connId ? { ...conn, status: 'connected' } : conn
+            conn.id === connId ? { ...conn, status: 'accepted' } : conn
           )
         );
       } else {
@@ -78,8 +84,8 @@ export default function BankConnectionList() {
   }
 
   return (
-    <div>
-      <div className="flex gap-4 mb-6">
+    <div className="flex flex-col md:h-[700px]">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         {TABS.map((tab) => (
           <button
             key={tab}
@@ -96,37 +102,45 @@ export default function BankConnectionList() {
       </div>
 
       <div className="space-y-4">
-        {paginatedConnections.map((conn, idx) => (
-          <div
-            key={idx}
-            className="flex items-center p-4 gap-4 shadow-md border rounded-lg bg-white"
-          >
-            <LucideShipWheel size={48} className="text-black" />
-            <div className="flex-grow">
-              <h2 className="text-lg font-semibold">{conn.name}</h2>
-              <p className="flex items-center text-sm text-gray-700">
-                <MapPin size={16} className="mr-1" /> {conn.location}
-              </p>
-              <p className="text-sm">Contact: <span className="font-semibold">{conn.email}</span></p>
-              {conn.type && <p className="text-xs text-gray-500">Type: {conn.type}</p>}
-            </div>
-            <button
-              onClick={() => handleConnect(conn.id)}
-              disabled={conn.status === 'connected'} // Disable if connected 
-              className={`px-6 py-2 rounded-md ${
-                conn.status === 'connected'
-                  ? 'bg-green-600 hover:bg-green-700 text-white cursor-not-allowed'
-                  : 'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
-            >
-              {conn.status === 'connected'
-                ? 'Connected'
-                : 'Connect'}
-            </button>
+        {paginatedConnections.length === 0 ? (
+          <div className="text-center text-gray-500 text-lg py-8">
+            {selectedTab === "Pending Connections" && "No pending requests."}
+            {selectedTab === "Connected Shippers" && "No connected shippers."}
+            {selectedTab === "Connected Shipping Lines" && "No connected shipping lines."}
           </div>
-        ))}
+        ) : (
+          paginatedConnections.map((conn, idx) => (
+            <div
+              key={idx}
+              className="flex flex-col md:flex-row md:items-center p-4 gap-4 shadow-md border rounded-lg bg-white"
+            >
+              <LucideShipWheel size={48} className="text-black" />
+              <div className="flex-grow">
+                <h2 className="text-lg font-semibold">{conn.name}</h2>
+                <p className="flex items-center text-sm text-gray-700">
+                  <MapPin size={16} className="mr-1" /> {conn.location}
+                </p>
+                <p className="text-sm">Contact: <span className="font-semibold">{conn.email}</span></p>
+                {conn.type && <p className="text-xs text-gray-500">Type: {conn.type}</p>}
+              </div>
+              <button
+                onClick={() => handleConnect(conn.id)}
+                disabled={conn.status === 'accepted'}
+                className={`px-6 py-2 rounded-md ${
+                  conn.status === 'accepted'
+                    ? 'bg-green-600 hover:bg-green-700 text-white cursor-not-allowed'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                }`}
+              >
+                {conn.status === 'accepted'
+                  ? 'Accepted'
+                  : 'Accept'}
+              </button>
+            </div>
+          ))
+        )}
       </div>
-
+      <div className="md:flex-1" />
       <div className="flex justify-center mt-6 gap-4">
         <button
           className="px-4 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-100 disabled:opacity-50"

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 
 import StepItem from './StepItem/StepItem';
@@ -6,7 +5,8 @@ import { images } from '../constants';
 
 const SignUpLayout = () => {
   const location = useLocation();
-  const isEmailVerification = location.pathname === '/whoareyou/email-verification' || '/whoareyou/check-validation';
+  const isEmailVerification = location.pathname === '/whoareyou/email-verification' || location.pathname === '/whoareyou/check-validation';
+  
 
   // Find current step based on path
   const getCurrentStep = () => {

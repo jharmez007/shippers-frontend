@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 import { forgotPassword } from '../../services/forgotPasswordServices';
 import { images } from "../../constants";
@@ -8,19 +9,14 @@ import Loader from "../../components/Loader"; // Import the Loader component
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [toast, setToast] = useState({ message: '', type: '', visible: false });
   const [loading, setLoading] = useState(false); // State to manage the loader
   
-  const showToast = (message, type) => {
-    setToast({ message, type, visible: true });
-    setTimeout(() => setToast({ ...toast, visible: false }), 3000); // Hide toast after 3 seconds
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
-      showToast('Please enter your email address.', 'error');
+      toast.error('Please enter your email address.');
       return;
     }
 
@@ -30,15 +26,15 @@ const ForgotPassword = () => {
 
       if (response.status === 200) {
         setLoading(false);
-        showToast('Password reset link sent to your email.', 'success');
+        toast.success('Password reset link sent to your email.');
       } else {
         setLoading(false);
-        showToast(response?.message || 'Something went wrong.', 'error');
+        toast.error(response?.message || 'Something went wrong.');
       }
     } catch (error) {
       console.error(error);
       setLoading(false);
-      showToast('Error connecting to server.', 'error');
+      toast.error('Error connecting to server.');
     }
   };
 
@@ -75,17 +71,6 @@ const ForgotPassword = () => {
           </SmartAuthLink>
         </div>
       </div>
-
-      {/* Toast Notification */}
-      {toast.visible && (
-        <div
-          className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg text-white ${
-            toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </div>
   );
 };

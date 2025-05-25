@@ -146,11 +146,11 @@ const Login = () => {
       {/* Left Section */}
       <div className="flex flex-col w-full lg:w-3/4 relative">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 lg:px-10 lg:py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center px-6 py-4 lg:px-10 lg:py-6">
           <Link to="/home">
             <img src={images.logo} alt="Logo" className="w-40 lg:w-60 mb-2" />
           </Link>
-          <div className="hidden lg:flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <p className="text-gray-600 text-sm">No Account yet?</p>
             <Link
               to="/whoareyou"

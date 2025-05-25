@@ -2,13 +2,15 @@
 import  { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from 'sonner';
+
 
 import { signup } from "../../services/signupServices";
-import Loader from "../../components/Loader"; // Import the Loader component
+import Loader from "../../components/Loader"; 
 
 const Signup = () => {
   const location = useLocation();
-  const userType = location.state?.userType; // Access userType from state
+  const userType = location.state?.userType; 
 
   const [form, setForm] = useState({
     firstName: "",
@@ -25,15 +27,10 @@ const Signup = () => {
 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [toast, setToast] = useState({ message: "", type: "", visible: false });
-  const [loading, setLoading] = useState(false); // State to manage the loader
+  const [loading, setLoading] = useState(false); 
   
   const navigate = useNavigate();
 
-  const showToast = (message, type) => {
-    setToast({ message, type, visible: true });
-    setTimeout(() => setToast({ ...toast, visible: false }), 5000); // Hide toast after 5 seconds
-  };
 
   const getPasswordStrength = (pwd) => {
     if (pwd.length > 8 && /[A-Z]/.test(pwd) && /[\d\W]/.test(pwd)) return "strong";
@@ -50,26 +47,26 @@ const Signup = () => {
 
   const validateInputs = () => {
     if (!form.firstName && ["shipper", "terminal", "shipping_line", "nsc", "vessel_charter"].includes(userType)) {
-      showToast("Please enter your first name.", "error");
+      toast.error("Please enter your first name.");
       return false;
     }
     if (!form.lastName && ["shipper", "terminal", "shipping_line", "nsc", "vessel_charter"].includes(userType)) {
-      showToast("Please enter your last name.", "error");
+      toast.error("Please enter your last name.");
       return false;
     }
     if (!form.email) {
-      showToast("Please enter your email address.", "error");
+      toast.error("Please enter your email address.");
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
-      showToast("Please enter a valid email address.", "error");
+      toast.error("Please enter a valid email address.");
       return false;
     }
     const phoneRegex = /^\d{10,14}$/;
 
     if (!form.phoneNumber || !phoneRegex.test(form.phoneNumber)) {
-      showToast("Please enter a valid phone number (10-14 digits)", "error");
+      toast.error("Please enter a valid phone number (10-14 digits)");
       return false;
     }
 
@@ -77,39 +74,39 @@ const Signup = () => {
       ["shipper", "terminal", "regulator", "shipping_line", "nsc", "bank", "vessel_charter"].includes(userType) &&
       !password
     ) {
-      showToast("Please enter your password.", "error");
+      toast.error("Please enter your password.");
       return false;
     }
     if (
       ["shipper", "terminal", "regulator", "shipping_line", "nsc", "bank", "vessel_charter"].includes(userType) &&
       password.length < 6
     ) {
-      showToast("Password must be at least 6 characters long.", "error");
+      toast.error("Password must be at least 6 characters long.");
       return false;
     }
 
     if (!form.bankName && userType === "bank") {
-      showToast("Please enter your bank name.", "error");
+      toast.error("Please enter your bank name.");
       return false;
     }
 
     if (!form.agencyName && userType === "regulator") {
-      showToast("Please enter your agency name.", "error");
+      toast.error("Please enter your agency name.");
       return false;
     }
 
     if (!form.department && userType === "nsc") {
-      showToast("Please select your department.", "error");
+      toast.error("Please select your department.");
       return false;
     }
 
     if (form.department === "regulatory" && !form.division) {
-      showToast("Please select your division.", "error");
+      toast.error("Please select your division.");
       return false;
     }
 
     if (!form.address && ["shipper", "terminal", "regulator", "shipping_line", "vessel_charter", "bank"].includes(userType)) {
-      showToast("Please enter your address.", "error");
+      toast.error("Please enter your address.");
       return false;
     }
 
@@ -142,20 +139,20 @@ const Signup = () => {
         agency_name: form.agencyName,
       };
 
-      setLoading(true); // Show the loader
+      setLoading(true); 
       const response = await signup(payload);
 
       if (response.status === 201) {
-          setLoading(false); // Hide the loader
+          setLoading(false); 
           navigate("/whoareyou/email-verification", { state: { userType, email: form.email } });
       } else {
-        setLoading(false); // Hide the loader
-        showToast(response?.message || "Signup failed. Please try again.", "error");
+        setLoading(false); 
+        toast.error(response?.message || "Signup failed. Please try again.");
       }
     } catch (error) {
       console.error(error);
       setLoading(false); // Hide the loader
-      showToast("Server error. Try again later.", "error");
+      toast.error("Server error. Try again later.");
     }
   };
 
@@ -287,20 +284,22 @@ const Signup = () => {
                   name="department"
                   value={form.department}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+                  className="w-full p-3 pr-8 border border-gray-400 bg-[#f4f6fd] outline-none"
                 >
                   <option value="" disabled>
                     Select Your Department
                   </option>
-                  <option value="ict">ICT</option>
-                  <option value="cad">CAD</option>
-                  <option value="sprd">SPRD</option>
-                  <option value="es">ES</option>
-                  <option value="regulatory">Regulatory</option>
+                  <option value="ICT">ICT</option>
+                  <option value="CAD">CAD</option>
+                  <option value="SPRD">SPRD</option>
+                  <option value="ES/CEO">ES/CEO</option>
+                  <option value="ITSD">ITSD</option>
+                  <option value="Complaint Unit">Complaint Unit</option>
+                  <option value="Regulatory">Regulatory</option>
                 </select>
 
                 {/* Division Dropdown for Regulatory Department */}
-                {form.department === "regulatory" && (
+                {form.department === "Regulatory" && (
                   <select
                     name="division"
                     value={form.division || ""}
@@ -310,10 +309,10 @@ const Signup = () => {
                     <option value="" disabled>
                       Select Your Division
                     </option>
-                    <option value="m_and_t">M and T</option>
-                    <option value="m_and_e">M and E</option>
-                    <option value="ssd">SSD</option>
-                    <option value="drs">DRS</option>
+                    <option value="M and T">M and T</option>
+                    <option value="M and E">M and E</option>
+                    <option value="SSD">SSD</option>
+                    <option value="DRS">DRS</option>
                   </select>
                 )}
               </>
@@ -361,16 +360,6 @@ const Signup = () => {
           SIGN UP
         </button>
       </form>
-
-      {toast.visible && (
-        <div
-          className={`fixed top-4 left-[37%] transform -translate-x-1/2 px-4 py-2 rounded-lg text-white ${
-            toast.type === "success" ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </div>
   );
 };

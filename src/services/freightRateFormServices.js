@@ -6,6 +6,9 @@ export const shipperFreighRateForm = async (body) => {
       method: "post",
       url: "/shipper/freight-rate-form",
       data: body,
+       headers: {
+        "Content-Type": "application/json",
+      }
     });
     return { data: response?.data, status: response?.status };
   } catch (error) {

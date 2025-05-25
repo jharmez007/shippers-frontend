@@ -24,12 +24,12 @@ jobs:
           echo "=== SSH key contents ==="
           cat private_key.pem
           echo "========================"
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@13.58.255.54 'echo "SSH connection test passed"'
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@3.147.59.154 'echo "SSH connection test passed"'
 
       - name: Deploy via SSH with key file
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 13.58.255.54
+          host: 3.147.59.154
           username: ubuntu
           key_path: private_key.pem
           script: |
@@ -37,9 +37,11 @@ jobs:
             git pull origin testing
 
             # Stop and remove old container
+            docker stop erpp_frontend || true
+            docker rm erpp_frontend || true
             docker stop shippers_frontend || true
             docker rm shippers_frontend || true
 
             # Rebuild and run the new image
             docker build -t shippers-frontend:latest .
-            docker run -d --name shippers_frontend -p 3000:80 shippers-frontend:latest
+            docker run -d --name shippers_frontend -p 3000:3000 shippers-frontend:latest

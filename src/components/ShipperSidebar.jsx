@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { refreshToken } from '../utils/refresh';
-
 
 
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -21,11 +19,6 @@ const ShipperSidebar = () => {
 
       navigate('/login');
     }
-
-    const handleToken = async () => {
-     const token = await refreshToken();
-     console.log("token value:", token)
-    };
       
     return (
       <>
@@ -119,11 +112,6 @@ const ShipperSidebar = () => {
               >
                 <FaSignOutAlt />
                 <span>Log out</span>
-              </button>
-              <button
-              onClick={handleToken}
-              >
-                testing
               </button>
             </div>
           </div>

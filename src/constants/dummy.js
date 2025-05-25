@@ -25,6 +25,34 @@ ChartJS.register(
   Legend
 );
 
+export const userOptions = [
+  { label: "Bank", value: "bank" },
+  { label: "NSC Staff", value: "nsc" },
+  { label: "Shipper", value: "shipper" },
+  { label: "Seaport Terminal Operator", value: "terminal" },
+  { label: "Regulator", value: "regulator" },
+  { label: "Shipping Lines/Agents", value: "shipping_line" },
+  { label: "Vessel Charterers/Owners", value: "vessel_charter" },
+  { label: "Off dock Terminal Operator", value: "off_dock_terminal_operator" },
+  { label: "Cargo Consolidator", value: "cargo_consolidator" },
+  { label: "Logistic Service Provider", value: "logistic_service_provider" },
+  { label: "Freight Forwarder/Clearing Agent", value: "freight_forwarder/clearing_agent" },
+  { label: "Inland Container Depot Operator", value: "inland_container_depot_operator" },
+  { label: "Stevedoring Company", value: "stevedoring_company" },
+  { label: "Inland Dry Port", value: "inland_dry_port" },
+  { label: "Airfreight", value: "airfreight" },
+];
+
+export const departmentOptions = [
+  { label: "ICT", value: "ICT" },
+  { label: "CAD", value: "CAD" },
+  { label: "SPRD", value: "SPRD" },
+  { label: "ES/CEO", value: "ES" },
+  { label: "ITSD", value: "ITSD" },
+  { label: "Complaint Unit", value: "Complaint" },
+  { label: "Regulatory", value: "Regulatory" },
+];
+
 export const statCards = [
   { title: 'FREIGHTS REQUESTED', value: 55, change: '+3.01%', icon: <FaTruck /> },
   { title: 'FREIGHT SHEETS CONFIRMED', value: 38, change: '+5.20%', icon: <FaFileAlt /> },

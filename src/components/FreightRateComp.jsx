@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ProgressBar from './ProgressBar'; // Your existing component
-import { ArrowLeft } from 'lucide-react'; // Optional icon library or replace with SVG
+import ProgressBar from './ProgressBar';
+import { toast } from 'sonner';
+
+import { ArrowLeft } from 'lucide-react'; 
 import { shipperFreighRateApplications } from '../services/freightRateAppServices';
 import { shipperFreighRateForm } from '../services/freightRateFormServices';
 import { shipperConnectedBanks } from '../services/connectedBankServices'; 
@@ -17,6 +19,7 @@ export default function FreightRateForm() {
     invoice_number: '',
     bill_of_lading_number: '',
     bank: '',
+    bank_id: '',
     beneficiary: '',
     voyage_from: '',
     voyage_to: '',
@@ -25,18 +28,17 @@ export default function FreightRateForm() {
     price_per_unit: '',
     total_price: '',
   });
-  const [connectedBanks, setConnectedBanks] = useState([]); // State to store connected banks
-  const [applicationId, setApplicationId] = useState(null); // State to store application_id
+  const [connectedBanks, setConnectedBanks] = useState([]); 
+  const [applicationId, setApplicationId] = useState(null); 
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
-  const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
+  const [direction, setDirection] = useState(1); 
   const [loading, setLoading] = useState(false);
 
   const calculateTotalPrice = (numberOfUnits, pricePerUnit) => {
     const units = parseFloat(numberOfUnits) || 0;
     const price = parseFloat(pricePerUnit) || 0;
-    return (units * price).toString(); // Return as a string to maintain text input compatibility
+    return (units * price).toString(); 
   };
 
   const validate = () => {
@@ -50,6 +52,8 @@ export default function FreightRateForm() {
     if (!formData.cargo.trim()) newErrors.cargo = 'Cargo is required';
     if (!formData.number_of_units.trim()) newErrors.number_of_units = 'Number of Units is required';
     if (!formData.price_per_unit.trim()) newErrors.price_per_unit = 'Freight Price per Unit is required';
+    if (!formData.bank.trim()) newErrors.bank = 'Bank is required';
+    if (!formData.bank_id) newErrors.bank_id = 'Bank ID is required';
   
     return newErrors;
   };
@@ -60,70 +64,85 @@ export default function FreightRateForm() {
     const fetchConnectedBanks = async () => {
       try {
         const response = await shipperConnectedBanks();
-        console.log('Connected Banks Response:', response?.data.data);
 
         if (response.status === 200 && response?.data?.data?.length > 0) {
           // Extract bank_name from the response and store it in connectedBanks
-          const bankNames = response.data.data.map((bank) => bank.bank_name);
-          setConnectedBanks(bankNames); // Store only the bank names
+         const banks =
+          response?.data?.data?.map((bank) => ({
+            bank_name: bank.bank_name,
+            bank_id: bank.id,
+          })) || [];
+          setConnectedBanks(banks); 
         } else {
-          setError('No connected banks found. Please connect to a bank.');
+          toast.error('No connected banks found. Please connect to a bank.');
         }
       } catch (err) {
         console.error('Error fetching connected banks:', err);
-        setError('An error occurred while fetching connected banks.');
+        toast.error('An error occurred while fetching connected banks.');
       }
     };
 
     fetchConnectedBanks();
   }, []);
 
+  useEffect(() => {
+    if (
+      connectedBanks.length === 1 &&
+      (!formData.bank || !formData.bank_id)
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        bank: connectedBanks[0].bank_name,
+        bank_id: connectedBanks[0].bank_id,
+      }));
+    }
+  }, [connectedBanks, formData.bank, formData.bank_id]);
+
   const handleNextStep = async (e) => {
     e.preventDefault();
 
     if (step === 0 && !formData.title) {
       setError('Please enter a valid title.');
-      setLoading(false); // Stop the loader
       return;
     }
 
     if (step === 1 && !formData.cci_number) {
       setError('Please enter a valid CCI Number.');
-      setLoading(false); // Stop the loader
       return;
     }
 
     if (step === 1) {
-      try {
-        // Submit title and CCI number
-        const prefilledResponse = await shipperFreighRateApplications({
-          title: formData.title,
-          cci_number: formData.cci_number,
-        });
+    try {
+      const response = await shipperFreighRateApplications({
+        title: formData.title,
+        cci_number: formData.cci_number,
+      });
 
-        setLoading(true); // Show the loader
-
-        if (prefilledResponse.status === 200) {
-          setLoading(false);
-          setError('');
-          setFormData((prev) => ({
-            ...prev,
-            ...prefilledResponse?.data?.data?.cbn_data, // Merge prefilled data into the form
-          }));
-          setApplicationId(prefilledResponse?.data?.data?.application_id); // Store application_id
-          setDirection(1);
-          setStep((prev) => prev + 1);
-        } else {
-          setLoading(false);
-          setError(prefilledResponse?.message || 'Failed to fetch prefilled data.');
-        }
-      } catch (err) {
-        setLoading(false); // Stop the loader
-        console.error('Error submitting title and CCI number:', err);
-        setError('An error occurred while submitting title and CCI number.');
+      if (response.status === 200) {
+        setError('');
+        setFormData((prev) => ({
+          ...prev,
+          ...response?.data?.data?.cbn_data,
+        }));
+        setApplicationId(response?.data?.data?.application_id);
+        setDirection(1);
+        setStep((prev) => prev + 1);
+        toast.success(response?.data?.message || 'Proceed to complete the form.');
+      } else {
+        toast.error(response?.data?.message || 'You have already applied for this CCI number.');
       }
-      return;
+    } catch (err) {
+      // If backend returns 400 for duplicate, show error
+      if (err?.response?.status === 400 || err?.response?.status === 403) {
+        setError(err.response.data.message || 'You have already applied for this CCI number.');
+        toast.error(err.response.data.message || 'You have already applied for this CCI number.');
+      } else {
+        setError('An error occurred while submitting title and CCI number.');
+        toast.error('An error occurred while submitting title and CCI number.');
+      }
     }
+    return;
+  }
 
     setError('');
     if (step < steps.length - 1) {
@@ -141,10 +160,22 @@ export default function FreightRateForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    // If bank is changed, also update bank_id
+    if (name === "bank") {
+      const selected = connectedBanks.find((b) => b.bank_name === value);
+      setFormData((prev) => ({
+        ...prev,
+        bank: value,
+        bank_id: selected ? selected.bank_id : "",
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
+     e.preventDefault();
+
     setLoading(true);
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -154,17 +185,16 @@ export default function FreightRateForm() {
     }
     setErrors({});
     setError('');
-    setSuccessMessage('Form submitted successfully!');
 
     try {
       const payload = {
         ...formData,
-        application_id: applicationId, // Include application_id in the payload
+        application_id: applicationId,
       };
 
-      const response = await shipperFreighRateForm(payload); // Call the API service
+      setLoading(true);
+      const response = await shipperFreighRateForm(payload); 
       if (response.status === 200) {
-        setSuccessMessage('Freight rate submitted successfully!');
         setFormData({
           title: '',
           cci_number: '',
@@ -173,6 +203,7 @@ export default function FreightRateForm() {
           invoice_number: '',
           bill_of_lading_number: '',
           bank: '',
+          bank_id: '',
           beneficiary: '',
           voyage_from: '',
           voyage_to: '',
@@ -181,17 +212,18 @@ export default function FreightRateForm() {
           price_per_unit: '',
           total_price: '',
         });
-        setApplicationId(null); // Reset application_id
-        setStep(0); // Reset the form
-        setLoading(false); // Stop the loader
+        setApplicationId(null); 
+        setStep(0); 
+        setLoading(false); 
+        toast.success('Freight rate submitted successfully!');
       } else {
         setLoading(false);
-        setError(response?.message || 'Failed to submit freight rate.');
+        toast.error(response?.message || 'Failed to submit freight rate.');
       }
     } catch (error) {
       setLoading(false);
       console.error('Error submitting freight rate:', error);
-      setError('An error occurred. Please try again later.');
+      toast.error('An error occurred. Please try again later.');
     }
   };
 
@@ -331,18 +363,21 @@ export default function FreightRateForm() {
               {connectedBanks.length === 0 ? (
                 <input
                   name="bank"
+                  value={formData.bank}
                   onChange={handleChange}
                   className="w-full border border-black p-2 text-red-600"
                   placeholder='connect to a bank'
                   type="text"
+                  readOnly
                 />
               ) : connectedBanks.length === 1 ? (
                 <input
                   name="bank"
-                  value={connectedBanks[0]}
+                  value={formData.bank}
                   onChange={handleChange}
                   className="w-full border border-black p-2"
                   type="text"
+                  readOnly
                 />
               ) : (
                 <select
@@ -475,8 +510,6 @@ export default function FreightRateForm() {
             </button>
           </div>
         </form>
-    
-          {successMessage && <p className="text-green-600 mt-4">{successMessage}</p>}
         </div>
       )
     },
@@ -500,7 +533,6 @@ export default function FreightRateForm() {
           <span>Back</span>
         </button>
       )}
-      {successMessage && <p className="text-green-600">{successMessage}</p>}
       <div className="relative w-full h-full max-w-4xl overflow-y-auto overflow-x-hidden">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div

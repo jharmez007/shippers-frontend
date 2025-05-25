@@ -1,27 +1,26 @@
-import 
-{ useState, useEffect } from 'react';
-import { shipperBanks } from '../services/getBankServices'; // Import the Bank service
-import { shipperConnectBanks } from '../services/connectToBankForShipperServices'; // Import the connect to Bank service
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+
+import { shipperBanks } from '../services/getBankServices'; 
+import { shipperConnectBanks } from '../services/connectToBankForShipperServices'; 
 
 const BankCardList = () => {
-  const [bankData, setBankData] = useState([]); // State to store Bank data
+  const [bankData, setBankData] = useState([]); 
   
   useEffect(() => {
     const fetchBank = async () => {
       try {
-        const response = await shipperBanks(); // Call the Bank service
-
-        console.log("API Response:", response);
+        const response = await shipperBanks(); 
 
         if (response?.status === 200) {
           const banks = response?.data?.data || [];
-          setBankData(banks); // Store the bank data
+          setBankData(banks); 
         } else {
-          console.log(response?.data?.message || "Failed to fetch Bank data.");
+          toast.error(response?.data?.message || "Failed to fetch Bank data.");
         }
       } catch (err) {
         console.error(err);
-        console.log("An error occurred while fetching Bank data.");
+        toast.error("An error occurred while fetching Bank data.");
       }
     };
 
@@ -44,6 +43,7 @@ const BankCardList = () => {
             bank.id === bankId ? { ...bank, connection_status: 'pending' } : bank
           )
         );
+        toast.success("Connection request sent. Pending approval.");
       } else if (
         response?.message === "You have already requested or connected to this bank."
       ) {
@@ -53,9 +53,9 @@ const BankCardList = () => {
             bank.id === bankId ? { ...bank, connection_status: 'connected' } : bank
           )
         );
-        console.log("Bank is already connected or requested.");
+        toast.error("Bank is already connected or requested.");
       } else {
-        console.log(response.message || "Failed to connect to the bank. Please try again.", "error");
+        toast.error(response.message || "Failed to connect to the bank. Please try again.");
         setBankData((prev) =>
           prev.map((bank) =>
             bank.id === bankId ? { ...bank, connection_status: 'not connected' } : bank
@@ -64,7 +64,7 @@ const BankCardList = () => {
       }
     } catch (error) {
       console.error(error);
-      console.log("Server error. Try again later.", "error");
+      toast.error("Server error. Try again later.");
       setBankData((prev) =>
         prev.map((bank) =>
           bank.id === bankId ? { ...bank, connection_status: 'not connected' } : bank
