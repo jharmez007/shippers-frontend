@@ -9,13 +9,13 @@ import {
   Login, Signup, ResetPassword, NotFound, WhoAreYou, EmailVerification,
   Bank, FreightRateForm, FreightRateRequest, FreightAnalysis, Profile, Settings,
   CheckValidation, BankDashboard, MainBankDashboard, BankFreightRateRequest, 
-  CharterPartyRequest, DemurrageRequest, VesselCharterers, SubmissionRequests, ConnectionRequests,
+  CharterPartyRequest, DemurrageRequest, SubmissionRequests, ConnectionRequests,
   ForgotPassword, RegulatorDashboard, MainRegulatorDashboard, RegulatorFreightRateRequest,
   RegulatorCharterPartyRequest, RegulatorDemurrageRequest
 } from './pages';
 import {
   Navbar, Footer, SignUpLayout, ProtectedRoute, Loader
-} from './components'; // Import Loader here
+} from './components';
 
 import './App.scss';
 import ShipperDashboard from './pages/ShipperDashboard/ShipperDashboard';
@@ -30,7 +30,7 @@ const MainLayout = ({ children }) => (
   </>
 );
 
-// ✅ Utility to get first segment of a path
+
 const getTopSegment = (path) => path.split('/')[1] || '';
 
 const AppRoutes = () => {
@@ -38,7 +38,7 @@ const AppRoutes = () => {
   const prevPathRef = useRef(location.pathname);
   const [loading, setLoading] = useState(false);
   const [fade, setFade] = useState(true);
-  const [delayedLocation, setDelayedLocation] = useState(location); // Track the delayed location
+  const [delayedLocation, setDelayedLocation] = useState(location); 
 
   useEffect(() => {
     const prevSegment = getTopSegment(prevPathRef.current);
@@ -47,19 +47,19 @@ const AppRoutes = () => {
     const segmentChanged = prevSegment !== currentSegment;
 
     if (segmentChanged) {
-      setFade(false); // Trigger fade-out
+      setFade(false); 
       setLoading(true);
 
       const timeout = setTimeout(() => {
-        setDelayedLocation(location); // Update the delayed location (preserve state)
+        setDelayedLocation(location);
         setLoading(false);
-        setFade(true); // Trigger fade-in
+        setFade(true); 
         prevPathRef.current = location.pathname;
-      }, 2500); // Delay of 2500ms
+      }, 2500); 
 
       return () => clearTimeout(timeout);
     } else {
-      setDelayedLocation(location); // Update the delayed location immediately
+      setDelayedLocation(location); 
       prevPathRef.current = location.pathname;
     }
   }, [location]);
@@ -106,7 +106,6 @@ const AppRoutes = () => {
               <Route path="freight-rate-request" element={<ProtectedRoute><BankFreightRateRequest /></ProtectedRoute>} />
               <Route path="charter-party-request" element={<ProtectedRoute><CharterPartyRequest /></ProtectedRoute>} />
               <Route path="demurrage-request" element={<ProtectedRoute><DemurrageRequest /></ProtectedRoute>} />
-              <Route path="vessel-charterers" element={<ProtectedRoute><VesselCharterers /></ProtectedRoute>} />
               <Route path="submission-request" element={<ProtectedRoute><SubmissionRequests /></ProtectedRoute>} />
               <Route path="connection-requests" element={<ProtectedRoute><ConnectionRequests /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

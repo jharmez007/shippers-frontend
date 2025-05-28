@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { HiMenuAlt4, HiX } from "react-icons/hi";
@@ -15,11 +15,10 @@ const menuLink = "text-black hover:text-[#58A986] ease-in duration-300 font-bold
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
   const [openMenus, setOpenMenus] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
-  const [initials, setInitials] = useState(""); // Store user initials
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [initials, setInitials] = useState(""); 
   const timeoutRefs = {};
-  const navigate = useNavigate(); // Initialize navigate function
-
+  const navigate = useNavigate(); 
   useEffect(() => {
     const first_name = localStorage.getItem("first_name");
     const last_name = localStorage.getItem("last_name");
@@ -29,9 +28,9 @@ const Navbar = () => {
     if (token) {
       setIsLoggedIn(true);
       if (user_type === "bank") {
-        setInitials(first_name[0].toUpperCase()); // Set only the first letter of the first name
+        setInitials(`${first_name[0]}`.toUpperCase()); 
       } else {
-        setInitials(`${first_name[0]}${last_name[0]}`.toUpperCase()); // Set initials for other user types
+        setInitials(`${first_name[0]}${last_name[0]}`.toUpperCase()); 
       }
     } else {
       setIsLoggedIn(false);

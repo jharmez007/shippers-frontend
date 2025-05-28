@@ -1,9 +1,9 @@
 
-import { SubmissionCards, DashboardHeader } from '../../components';
+import { ApplicationList, DashboardHeader } from '../../components';
 
 const BankFreightRateRequest = () => {
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-6 space-y-6 md:h-screen md:overflow-y-auto">
       {/* Header */}
       <DashboardHeader />
       {/* Cards */}
@@ -18,7 +18,7 @@ const BankFreightRateRequest = () => {
           Bank Account
         </p>
       </div>
-      <SubmissionCards  />
+      <ApplicationList  />
     </main>
   )
 }

@@ -473,13 +473,13 @@ export default function FreightRateForm() {
             <label className="block mb-1">Freight Price / Unit</label>
             <input
               name="price_per_unit"
-              value={`$${formData.price_per_unit.replace(/[^0-9]/g, '')}`} // Add leading dollar sign
+              value={`$${formData.price_per_unit.replace(/[^0-9]/g, '')}`} 
               onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9]/g, ''); // Allow only numbers
+                const value = e.target.value.replace(/[^0-9]/g, ''); 
                 setFormData((prev) => ({
                   ...prev,
                   price_per_unit: value,
-                  total_price: calculateTotalPrice(formData.number_of_units, value), // Update total price
+                  total_price: calculateTotalPrice(formData.number_of_units, value), 
                 }));
               }}
               className="w-full border border-black p-2"

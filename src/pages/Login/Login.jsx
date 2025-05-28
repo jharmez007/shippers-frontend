@@ -2,18 +2,18 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 
 import { login } from "../../services/loginServices";
 import { images } from "../../constants";
-import Loader from "../../components/Loader"; // Import the Loader component
+import Loader from "../../components/Loader"; 
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [toast, setToast] = useState({ message: "", type: "", visible: false });
-  const [loading, setLoading] = useState(false); // State to manage the loader
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -36,11 +36,6 @@ const Login = () => {
     },
   ];
 
-  const showToast = (message, type) => {
-    setToast({ message, type, visible: true });
-    setTimeout(() => setToast((prev) => ({ ...prev, visible: false })), 3000);
-  };
-
   // Auto-slide effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,16 +55,16 @@ const Login = () => {
 
   const validateInputs = () => {
     if (!email) {
-      showToast("Please enter your email address.", "error");
+      toast.error("Please enter your email address." );
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      showToast("Please enter a valid email address.", "error");
+      toast.error("Please enter a valid email address." );
       return false;
     }
     if (!password) {
-      showToast("Please enter your password.", "error");
+      toast.error("Please enter your password.");
       return false;
     }
     return true;
@@ -99,7 +94,6 @@ const Login = () => {
       const first_name = response?.data?.data?.first_name;
       const last_name = response?.data?.data?.last_name;
 
-      console.log("message:", response?.message)
 
       if (response.status === 200 && token) {
         // Save session info
@@ -127,14 +121,14 @@ const Login = () => {
           }
       } else {
         setLoading(false); // Hide the loader
-        showToast(response?.message || "Login failed. Please try again.", "error");
+        toast.error(response?.message || "Login failed. Please try again.");
       }
     } catch (error) {
       setLoading(false); // Hide the loader
       if (error.response?.status === 401) {
-        showToast("Invalid email or password.", "error");
+        toast.error("Invalid email or password.");
       } else {
-        showToast("Error connecting to the server. Please try again later.", "error");
+        toast.error("Error connecting to the server. Please try again later.");
         console.error("Login error:", error);
       }
     }

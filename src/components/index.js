@@ -12,8 +12,12 @@ export { default as FreightRateComp } from './FreightRateComp';
 export { default as ProgressBar } from './ProgressBar';
 export { default as BankCardList } from './BankCardList';
 export { default as Loader } from './Loader';
-export { default as SubmissionCards } from './SubmissionCards';
 export { default as ConnectionList } from './ConnectionList';
 export { default as RegulatorSidebar } from './RegulatorSidebar';
 export { default as FreightFeeTable } from './FreightFeeTable';
+export { default as ApplicationList } from './ApplicationList';
+export { default as ApplicationDetailModal } from './ApplicationDetailModal';
+export { default as ReviewForm } from './ReviewForm';
+export { default as ShipperApplicationList } from './ShipperApplicationList';
+export { default as ShipperApplicationDetailModal } from './ShipperApplicationDetailModal';
 

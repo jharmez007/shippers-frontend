@@ -1,8 +1,8 @@
-import { DashboardHeader } from '../../components';
+import { DashboardHeader, ShipperApplicationList } from '../../components';
 
 const FreightRateRequest = () => {
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-6 space-y-6 md:h-screen md:overflow-y-auto">
       {/* Header */}
       <DashboardHeader />
       {/* Cards */}
@@ -17,7 +17,7 @@ const FreightRateRequest = () => {
           Freight Rate Request Form
         </p>
       </div>
-      
+      <ShipperApplicationList  />
     </main>
   )
 }

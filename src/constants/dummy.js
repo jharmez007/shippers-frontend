@@ -1,4 +1,4 @@
-import { FaFileAlt, FaUser, FaTruck, FaChartBar, FaTachometerAlt, FaUniversity, FaGlobe, FaSlidersH } from "react-icons/fa";
+import { FaFileAlt, FaUser, FaTruck, FaChartBar, FaTachometerAlt, FaUniversity, FaGlobe, FaSlidersH, FaConnectdevelop } from "react-icons/fa";
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -24,6 +24,31 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+export const baseFields = {
+  first_name: "",
+  last_name: "",
+  phone_number: "",
+};
+
+export const userTypeFields = {
+  bank: { bank_name: "" },
+  shipper: { address: "" },
+  shipping_line: {
+    company_name: "",
+    license_number: "",
+    registration_number: "",
+    address: "",
+  },
+  terminal: {
+    terminal_name: "",
+    license_number: "",
+    registration_number: "",
+    address: "",
+  },
+  regulator: { agency_name: "" },
+  nsc_staff: { division: "" },
+};
 
 export const userOptions = [
   { label: "Bank", value: "bank" },
@@ -114,9 +139,8 @@ export const bankMainLinks = [
   { name: 'Freight Rate Request', icon: FaUniversity, path: '/bank-dashboard/freight-rate-request' },
   { name: 'Charter Party Request', icon: FaFileAlt, path: '/bank-dashboard/charter-party-request' },
   { name: 'Demurrage Request', icon: FaGlobe, path: '/bank-dashboard/demurrage-request' },
-  { name: 'Vessel Charterers', icon: FaChartBar, path: '/bank-dashboard/vessel-charterers' },
   { name: 'Submission Request', icon: FaChartBar, path: '/bank-dashboard/submission-request' },
-  { name: 'Connections', icon: FaChartBar, path: '/bank-dashboard/connection-requests' },
+  { name: 'Connections', icon: FaConnectdevelop, path: '/bank-dashboard/connection-requests' },
 ];
 
 export const bankAccountLinks = [

@@ -23,7 +23,6 @@ export { default as MainBankDashboard } from './BankDashboard/MainBankDashboard'
 export { default as BankFreightRateRequest } from './BankDashboard/BankFreightRateRequest';
 export { default as CharterPartyRequest } from './BankDashboard/CharterPartyRequest';
 export { default as DemurrageRequest } from './BankDashboard/DemurrageRequest';
-export { default as VesselCharterers } from './BankDashboard/VesselCharterers';
 export { default as SubmissionRequests } from './BankDashboard/SubmissionRequests';
 export { default as ConnectionRequests } from './BankDashboard/ConnectionRequests';
 export { default as RegulatorDashboard } from './RegulatorDashboard/RegulatorDashboard';

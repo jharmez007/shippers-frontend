@@ -202,7 +202,7 @@ const Signup = () => {
               type="text"
               placeholder="Phone Number"
               name="phoneNumber"
-              value={form.phoneNumber}
+              value={form.phoneNumber.replace(/[^0-9]/g, '')}
               onChange={handleChange}
               className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
             />
@@ -274,7 +274,7 @@ const Signup = () => {
               type="text"
               placeholder="Phone Number"
               name="phoneNumber"
-              value={form.phoneNumber}
+              value={form.phoneNumber.replace(/[^0-9]/g, '')}
               onChange={handleChange}
               className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
             />

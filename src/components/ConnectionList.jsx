@@ -3,11 +3,12 @@ import { LucideShipWheel, MapPin } from "lucide-react";
 import {
   fetchPendingConnections,
   fetchConnectedShippers,
-  fetchConnectedShippingLines
+  fetchConnectedShippingLines,
+  fetchConnectedVesselChaterer
 } from  "../services/connectionRequestServices";
 import { bankAcceptShipperRequest } from "../services/bankAcceptShipperServices"
 
-const TABS = ["Pending Connections", "Connected Shippers", "Connected Shipping Lines"];
+const TABS = ["Pending Connections", "Connected Shippers", "Connected Shipping Lines", "Connected Vessel Charterer/Owner"];
 
 export default function BankConnectionList() {
   const [selectedTab, setSelectedTab] = useState("Pending Connections");
@@ -21,7 +22,8 @@ export default function BankConnectionList() {
         const data = await fetchPendingConnections();
         const shippers = (data?.data?.data?.pending_shippers || []).map(item => ({ ...item, type: 'Shipper' }));
         const shippingLines = (data?.data?.data?.pending_shipping_lines || []).map(item => ({ ...item, type: 'Shipping Line' }));
-        const combined = [...shippers, ...shippingLines];
+        const vesselCharterer = (data?.data?.data?.pending_vessel_charterer || []).map(item => ({ ...item, type: 'Vessel Charterer' }));
+        const combined = [...shippers, ...shippingLines, ...vesselCharterer];
         setConnections(combined);
       } else if (tab === "Connected Shippers") {
         const response = await fetchConnectedShippers();
@@ -33,6 +35,11 @@ export default function BankConnectionList() {
         const response = await fetchConnectedShippingLines();
         if (response?.status === 200) {
           setConnections(response?.data?.data?.connected_shipping_lines || []);
+        }
+      }  else if (tab === "Connected Vessel Chaterer") {
+        const response = await fetchConnectedVesselChaterer();
+        if (response?.status === 200) {
+          setConnections(response?.data?.data?.connected_vessel_charterer || []);
         }
       }
 
@@ -107,6 +114,7 @@ export default function BankConnectionList() {
             {selectedTab === "Pending Connections" && "No pending requests."}
             {selectedTab === "Connected Shippers" && "No connected shippers."}
             {selectedTab === "Connected Shipping Lines" && "No connected shipping lines."}
+            {selectedTab === "Connected Vessel Charterer" && "No connected vessel charterer."}
           </div>
         ) : (
           paginatedConnections.map((conn, idx) => (
