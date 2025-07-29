@@ -1,5 +1,5 @@
 // src/pages/Signup.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { checkStatus } from "../services/checkStatusServices";

@@ -13,7 +13,15 @@ const SignUpLayout = () => {
     switch (location.pathname) {
       case '/whoareyou':
         return 1;
-      case '/whoareyou/department':
+      case '/whoareyou/your-services':
+        return 1;
+      case '/whoareyou/your-agency':
+        return 1;
+      case '/whoareyou/your-complex':
+        return 1;
+      case '/whoareyou/your-bvn':
+        return 1;
+      case '/whoareyou/your-tin':
         return 1;
       case '/whoareyou/signup':
         return 2;

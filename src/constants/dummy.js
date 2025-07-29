@@ -1,4 +1,4 @@
-import { FaFileAlt, FaUser, FaChartBar, FaTachometerAlt, FaUniversity, FaGlobe, FaSlidersH, FaConnectdevelop } from "react-icons/fa";
+import { FaFileAlt, FaUser, FaChartBar, FaTachometerAlt, FaUniversity, FaGlobe, FaSlidersH, FaConnectdevelop, FaChartLine, FaExchangeAlt, FaInbox } from "react-icons/fa";
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -50,14 +50,22 @@ export const userTypeFields = {
   nsc_staff: { division: "" },
 };
 
-export const userOptions = [
-  { label: "Bank", value: "bank" },
-  { label: "NSC Staff", value: "nsc" },
+export const GovernmentUserOptions = [
+  { label: "The Nigerian Port Authority", value: "npa" },
+  { label: "National Inland Waterways Authority of Nigeria", value: "niwa" },
+  { label: "Nigerian Maritime Administration and Safety Agency", value: "nimasa" },
+  { label: "Nigerian Railway Corporation", value: "nrc" },
+];
+
+export const individualUserOptions = [
   { label: "Shipper", value: "shipper" },
+  { label: "Vessel Charterers/Owners", value: "vessel_charter" },
+];
+
+export const coporateUserOptions = [
   { label: "Seaport Terminal Operator", value: "terminal" },
   { label: "Regulator", value: "regulator" },
   { label: "Shipping Lines/Agents", value: "shipping_line" },
-  { label: "Vessel Charterers/Owners", value: "vessel_charter" },
   { label: "Off dock Terminal Operator", value: "off_dock_terminal_operator" },
   { label: "Cargo Consolidator", value: "cargo_consolidator" },
   { label: "Logistic Service Provider", value: "logistic_service_provider" },
@@ -66,7 +74,25 @@ export const userOptions = [
   { label: "Stevedoring Company", value: "stevedoring_company" },
   { label: "Inland Dry Port", value: "inland_dry_port" },
   { label: "Airfreight", value: "airfreight" },
-];
+]
+
+export const complexUserOptions = [
+  { label: "Apapa Port Complex", value: "terminal" },
+  { label: "Delta Port Complex", value: "regulator" },
+  { label: "Delta Port Complex", value: "shipping_line" },
+  { label: "Tin-can Port Complex", value: "off_dock_terminal_operator" },
+  { label: "Calabar Port Complex", value: "cargo_consolidator" },
+  { label: "Fot-Onne Port Complex", value: "logistic_service_provider" },
+]
+
+export const terminalUserOptions = [
+  { label: "Apapa Bulk Terminal Ltd (ABTL)", value: "abtl" },
+  { label: "ENL Consortium Ltd", value: "enl" },
+  { label: "APM Terminals Ltd", value: "off_dock_terminal_operator" },
+  { label: "Greenview Development Nigeria Ltd (GNDL)", value: "cargo_consolidator" },
+  { label: "AP Mollar Terminals", value: "logistic_service_provider" },
+]
+
 
 export const departmentOptions = [
   { label: "ICT", value: "ICT" },
@@ -115,10 +141,10 @@ export const barData = {
 /* Shipper Dashboard paths */
 export const shipperMainLinks = [
   { name: 'Dashboard', icon: FaTachometerAlt, path: '/shipper-dashboard/dashboard' },
-  { name: 'Bank', icon: FaUniversity, path: '/shipper-dashboard/bank' },
+  // { name: 'Bank', icon: FaUniversity, path: '/shipper-dashboard/bank' },
   { name: 'Freight Rate Form', icon: FaFileAlt, path: '/shipper-dashboard/freight-rate-form' },
   { name: 'Freight Rate Request', icon: FaGlobe, path: '/shipper-dashboard/freight-rate-request' },
-  { name: 'Freight Analysis', icon: FaChartBar, path: '/shipper-dashboard/freight-analysis' },
+  // { name: 'Freight Analysis', icon: FaChartBar, path: '/shipper-dashboard/freight-analysis' },
 ];
   
 export const ShipperAccountLinks = [
@@ -167,24 +193,48 @@ export const nscAccountLinks = [
   { name: 'Settings', icon: FaSlidersH, path: '/nsc-dashboard/settings' },
 ];
 
+/* Streams Dashboard paths */
+export const streamsMainLinks = [
+  { name: 'All Submissions', icon: FaInbox, path: '/streams-dashboard/dashboard' },
+  { name: 'Submit KPI', icon: FaChartLine, path: '/streams-dashboard/new-kpi-submission' },
+  { name: 'Submit Throughput', icon: FaExchangeAlt, path: '/streams-dashboard/new-throughput-submission' },
+];
+
+export const streamsAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/streams-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/streams-dashboard/settings' },
+];
+
 export const links = [
     { name: "Home", link: "home" },
     {
       name: "Stakeholders",
-      link: "stakeholders",
       dropdown: [
-        { name: "The Nigerian Port Authority", link: "stakeholders/npa" },
+        {
+          name: "Government Agencies", 
+          link: "stakeholders/govt agencies",
+          dropdown : [
+            { name: "The Nigerian Port Authority", link: "stakeholders/npa" },
+            { name: "National Inland Waterways Authority of Nigeria", link: "stakeholders/niwa" },
+            { name: "Nigerian Maritime Administration and Safety Agency", link: "stakeholders/nimasa" },
+            { name: "Nigerian Railway Corporation", link: "stakeholders/railway" },
+            { name: "CBN", link: "stakeholders/cbn" },
+            { name: "Others", link: "stakeholders/others" },
+          ]
+        },
         { name: "Seaport Terminal Operators", link: "stakeholders/seaport" },
-        { name: "Shipping Companies & Terminals", link: "stakeholders/shipping" },
+        { name: "Shipping Lines/Agencies", link: "stakeholders/shipping" },
         { name: "Off Docks Terminal Operators", link: "stakeholders/off-docks" },
-        { name: "Cargo Consolidators", link: "stakeholders/consolidators" },
-        { name: "Logistics Service Providers", link: "stakeholders/logistics" },
+        { name: "Cargo Consolidators/The Consolidators", link: "stakeholders/consolidators" },
+        { name: "Vessel Charterers/Owners", link: "stakeholders/vessel-owners" },
+        { name: "Logistics Service Providers/Haulers", link: "stakeholders/logistics" },
         { name: "Freight Forwarders/Clearing Agents", link: "stakeholders/forwarders" },
         { name: "Inland Container Depot Operators", link: "stakeholders/icd" },
         { name: "Stevedoring Companies", link: "stakeholders/stevedoring" },
         { name: "Inland Dry Port", link: "stakeholders/dry-port" },
-        { name: "Nigerian Railway Corporation", link: "stakeholders/railway" },
+        { name: "Shippers", link: "stakeholders/shippers" },
         { name: "Airfreight", link: "stakeholders/airfreight" },
+        { name: "Others", link: "stakeholders/others" },
       ],
     },
     {
@@ -193,19 +243,26 @@ export const links = [
     },
     {
       name: "Tools",
-      link: "tools",
       dropdown: [
         {
-          name: "TRMS",
-          link: "tools/trms",
+          name: "CRD Portal",
+          link: "tools/crd",
           dropdown: [
             {
-              name: "CRD Portal",
-              link: "tools/trms/crd",
+              name: "Freight Rate Confirmation",
+              link: "tools/crd/freight-rate-confirmation",
             },
             {
-              name: "Bill of Laden",
-              link: "tools/trms/bill-of-laden",
+              name: "Charter Party Confirmation",
+              link: "tools/crd/charter-party-confirmation",
+            },
+            {
+              name: "Demurrage Confirmation",
+              link: "tools/crd/demurrage-confirmation",
+            },
+            {
+              name: "Authorized Dealer Banks",
+              link: "tools/crd/authorized-dealer-banks",
             },
           ],
         },
@@ -213,8 +270,9 @@ export const links = [
           name: "DTRMS",
           link: "tools/dtrms",
           dropdown: [
-            { name: "Tariff Calculator", link: "tools/dtrms/calculator" },
+            { name: "Tariff Review", link: "tools/dtrms/review" },
             { name: "Industry Tariff Booklet", link: "tools/dtrms/booklet" },
+            { name: "Indicative Freight Rate", link: "tools/dtrms/indicative-freight-rate" },
           ],
         },
         {
@@ -227,7 +285,7 @@ export const links = [
         { name: "B'Odogwu", link: "tools/bodogwu" },
         { name: "Eto Call-Up System", link: "tools/eto" },
         { name: "PIMS", link: "tools/pims" },
-        { name: "C4I", link: "tools/nimasa" },
+        { name: "NIMASA C4I", link: "tools/nimasa" },
         { name: "PSSP", link: "tools/pssp" },
       ],
     },

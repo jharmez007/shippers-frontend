@@ -109,9 +109,9 @@ const Login = () => {
           if (userType === "shipper") {
             setLoading(false);
             navigate("/shipper-dashboard/dashboard");
-          } else if (userType === "bank") {
+          } else if (userType === "terminal") {
             setLoading(false);
-            navigate("/bank-dashboard/dashboard");
+            navigate("/streams-dashboard/dashboard");
           } else if (userType === "regulator") {
             setLoading(false);
             navigate("/regulator-dashboard/dashboard");
@@ -174,7 +174,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full px-3 py-3 mb-4 border border-gray-300 rounded focus:outline-none"
+                className="w-full px-3 py-3 mb-4 border border-gray-300 rounded-xl focus:outline-none"
               />
 
               <div className="relative mb-4">
@@ -183,7 +183,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none pr-10"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none pr-10"
                 />
                 <button
                   type="button"
@@ -214,11 +214,16 @@ const Login = () => {
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded text-sm font-semibold tracking-widest"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md text-sm font-semibold tracking-widest"
               >
                 LOG IN
               </button>
             </form>
+            <p className="mt-8 text-xs text-gray-500 text-center ">
+              By Creating an Account, it means you agree to our{' '}
+              <a href="/login" className="underline text-gray-600">Privacy Policy</a> and{' '}
+              <a href="/login" className="underline text-gray-600">Terms of Service</a>
+            </p>
           </div>
         </div>
 
@@ -276,17 +281,6 @@ const Login = () => {
           </p>
         </div>
       </div>
-
-      {/* Toast Notification */}
-      {toast.visible && (
-        <div
-          className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg text-white ${
-            toast.type === "success" ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </div>
   );
 };

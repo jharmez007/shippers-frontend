@@ -1,19 +1,15 @@
 import { useState } from "react";
 
-
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes, FaBell, FaSignOutAlt} from "react-icons/fa";
-
 
 import { shipperMainLinks, ShipperAccountLinks } from "../../constants/dummy";
 import { images } from "../../constants";
 
-
 const ShipperSidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
-      const navigate = useNavigate(); // Initialize the navigate function
+      const navigate = useNavigate(); 
     
-
     const handleLogOut = () => {
       localStorage.clear()
 

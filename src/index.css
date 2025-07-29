@@ -28,6 +28,21 @@
   @apply border rounded px-3 py-2 w-full bg-[#F5F4F4] focus:outline-none focus:ring-2 focus:ring-[#185F95];
 }
 
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; 
+  height: 100px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #575454 ;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #E3E4E6;
+  border-radius: 10px;
+}
 
 
 @tailwind base;

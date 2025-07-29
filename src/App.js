@@ -6,13 +6,16 @@ import { Toaster } from 'sonner';
 import { ScrollToTop } from './hooks';
 import {
   Home, Stakeholders, TankerFreight, Tools, CargoStatistics, Publications,
-  Login, Signup, ResetPassword, NotFound, WhoAreYou, EmailVerification,
+  Login, Signup, ResetPassword, NotFound, WhoAreYou, YourServices, YourAgency, YourComplex, YourBVN, YourTIN, EmailVerification,
   Bank, FreightRateForm, FreightRateRequest, FreightAnalysis, Profile, Settings,
   CheckValidation, BankDashboard, MainBankDashboard, BankFreightRateRequest, 
   CharterPartyRequest, DemurrageRequest, SubmissionRequests, ConnectionRequests,
   ForgotPassword, RegulatorDashboard, MainRegulatorDashboard, RegulatorFreightRateRequest,
   RegulatorCharterPartyRequest, RegulatorDemurrageRequest, NscDashboard, MainNscDashboard, 
-  NscFreightRateRequest, NscCharterPartyRequest, NscDemurrageRequest
+  NscFreightRateRequest, NscCharterPartyRequest, NscDemurrageRequest, StreamsDashboard, MainStreamsDashboard, 
+  NewKpiSubmission, NewThroughputSubmission, MaritimePoliceDashboard,
+  DashboardLayout, NscCampDashboardLayout, NscCampDashboard, StreamsCampDashboard, StreamsCampDashboardLayout,
+  NscCampFlaggedAnalysisChart, CampProfile
 } from './pages';
 import {
   Navbar, Footer, SignUpLayout, ProtectedRoute, Loader
@@ -25,7 +28,7 @@ import MainDashboard from './pages/ShipperDashboard/MainDashboard';
 const MainLayout = ({ children }) => (
   <>
     <Navbar />
-    <div className="h-[140px] bg-slate-600 lg:h-20" />
+    <div className="h-20 bg-slate-600" />
     {children}
     <Footer />
   </>
@@ -83,6 +86,11 @@ const AppRoutes = () => {
             {/* Auth Routes */}
             <Route path="/whoareyou" element={<SignUpLayout />}>
               <Route index element={<WhoAreYou />} />
+              <Route path="your-services" element={<YourServices />} />
+              <Route path="your-agency" element={<YourAgency />} />
+              <Route path="your-complex" element={<YourComplex />} />
+              <Route path="your-bvn" element={<YourBVN />} />
+              <Route path="your-tin" element={<YourTIN />} />
               <Route path="signup" element={<Signup />} />
               <Route path="email-verification" element={<EmailVerification />} />
               <Route path="check-validation" element={<CheckValidation />} />
@@ -128,6 +136,36 @@ const AppRoutes = () => {
               <Route path="charter-party-request" element={<ProtectedRoute><NscCharterPartyRequest /></ProtectedRoute>} />
               <Route path="demurrage-request" element={<ProtectedRoute><NscDemurrageRequest /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+            {/* Nsc Camp Dashboard Routes */}
+            <Route path="/nsc-camp-dashboard" element={<ProtectedRoute><NscCampDashboardLayout /></ProtectedRoute>} >
+              <Route path="dashboard" element={<ProtectedRoute><NscCampDashboard /></ProtectedRoute>} />
+              <Route path="analysis" element={<ProtectedRoute><NscCampFlaggedAnalysisChart /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><CampProfile /></ProtectedRoute>} />
+            </Route>
+
+            {/* Streams Dashboard Routes */}
+            <Route path="/streams-dashboard" element={<ProtectedRoute><StreamsDashboard /></ProtectedRoute>}>
+              <Route path="dashboard" element={<ProtectedRoute><MainStreamsDashboard /></ProtectedRoute>} />
+              <Route path="new-kpi-submission" element={<ProtectedRoute><NewKpiSubmission /></ProtectedRoute>} />
+              <Route path="new-throughput-submission" element={<ProtectedRoute><NewThroughputSubmission /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+             {/* Streams Camp Dashboard Routes */}
+            <Route path="/streams-camp-dashboard" element={<ProtectedRoute><StreamsCampDashboardLayout /></ProtectedRoute>} >
+              <Route path="dashboard" element={<ProtectedRoute><StreamsCampDashboard /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><CampProfile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+            {/* MaritimePolice Dashboard Routes */}
+            <Route path="/maritime-police-dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} >
+              <Route path="dashboard" element={<ProtectedRoute><MaritimePoliceDashboard /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><CampProfile /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>
 

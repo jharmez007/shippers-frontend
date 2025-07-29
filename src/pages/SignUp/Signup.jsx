@@ -1,6 +1,6 @@
 // src/pages/Signup.jsx
 import  { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from 'sonner';
 
@@ -9,24 +9,33 @@ import { signup } from "../../services/signupServices";
 import Loader from "../../components/Loader"; 
 
 const Signup = () => {
-  const location = useLocation();
-  const userType = location.state?.userType; 
+  const userType = localStorage.getItem("userType");
+  const userService = localStorage.getItem("userService");
+  const address = localStorage.getItem("address");
+  const email = localStorage.getItem("email");
+  const first_name = localStorage.getItem("first_name");
+  const last_name = localStorage.getItem("last_name");
+  const phone_number = localStorage.getItem("phone_number");
+  const agency = localStorage.getItem("company_name");
+  const lookup_token = localStorage.getItem("lookup_token");
+
 
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
+    firstName: first_name,
+    lastName: last_name,
+    email: email,
+    phoneNumber: phone_number,
     password: "",
-    bankName: "",
-    agencyName: "",
-    address: "",
+    agencyName: agency,
+    address: address,
     department: "",
     division: "",
   });
 
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); 
   const [loading, setLoading] = useState(false); 
   
   const navigate = useNavigate();
@@ -46,11 +55,11 @@ const Signup = () => {
   }[strength];
 
   const validateInputs = () => {
-    if (!form.firstName && ["shipper", "terminal", "shipping_line", "nsc", "vessel_charter"].includes(userType)) {
+    if (!form.firstName && ["individual", "nsc"].includes(userType)) {
       toast.error("Please enter your first name.");
       return false;
     }
-    if (!form.lastName && ["shipper", "terminal", "shipping_line", "nsc", "vessel_charter"].includes(userType)) {
+    if (!form.lastName && ["individual", "nsc"].includes(userType)) {
       toast.error("Please enter your last name.");
       return false;
     }
@@ -70,27 +79,29 @@ const Signup = () => {
       return false;
     }
 
-    if (
-      ["shipper", "terminal", "regulator", "shipping_line", "nsc", "bank", "vessel_charter"].includes(userType) &&
-      !password
-    ) {
+    if (!password) {
       toast.error("Please enter your password.");
       return false;
     }
-    if (
-      ["shipper", "terminal", "regulator", "shipping_line", "nsc", "bank", "vessel_charter"].includes(userType) &&
-      password.length < 6
-    ) {
+    if (password.length < 6) {
       toast.error("Password must be at least 6 characters long.");
       return false;
     }
-
-    if (!form.bankName && userType === "bank") {
-      toast.error("Please enter your bank name.");
+    if (!confirmPassword) {
+      toast.error("Please confirm your password.");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
       return false;
     }
 
-    if (!form.agencyName && userType === "regulator") {
+    if (!form.agencyName && userType === "corporate") {
+      toast.error("Please enter your agency name.");
+      return false;
+    }
+
+    if (!form.agencyName && userType === "government") {
       toast.error("Please enter your agency name.");
       return false;
     }
@@ -105,7 +116,7 @@ const Signup = () => {
       return false;
     }
 
-    if (!form.address && ["shipper", "terminal", "regulator", "shipping_line", "vessel_charter", "bank"].includes(userType)) {
+    if (!form.address && ["individual", "nsc", "corporate"].includes(userType)) {
       toast.error("Please enter your address.");
       return false;
     }
@@ -126,17 +137,9 @@ const Signup = () => {
 
     try {
       const payload = {
-        user_type: userType,
-        email: form.email,
-        first_name: form.firstName,
-        last_name: form.lastName,
-        phone_number: form.phoneNumber,
+        user_type: userService,
+        lookup_token: lookup_token,
         password: password,
-        address: form.address,
-        bank_name: form.bankName,
-        department: form.department,
-        division: form.division,
-        agency_name: form.agencyName,
       };
 
       setLoading(true); 
@@ -144,7 +147,7 @@ const Signup = () => {
 
       if (response.status === 201) {
           setLoading(false); 
-          navigate("/whoareyou/email-verification", { state: { userType, email: form.email } });
+          navigate("/whoareyou/email-verification", { state: { userService, email: form.email } });
       } else {
         setLoading(false); 
         toast.error(response?.message || "Signup failed. Please try again.");
@@ -161,33 +164,33 @@ const Signup = () => {
       {loading && <Loader />} {/* Show the loader when loading */}
       <h1 className="text-3xl font-bold">Sign Up with NSC</h1>
       <p className="text-center text-gray-500 mb-8 uppercase tracking-widest">
-        {userType}
+        Kindly Fill in the form below to create your account
       </p>
 
       <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4">
         {/* Render form fields based on userType */}
-        {[ "regulator", "bank"].includes(userType) && (
+        {[ "government", "corporate"].includes(userType) && (
           <>
              {/* Render form fields based on userType */}
-              {userType === "bank" && (
-                <input
-                  type="text"
-                  placeholder="Bank Name"
-                  name="bankName"
-                  value={form.bankName}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
-                />
-              )}
-
-              {userType === "regulator" && (
+              {userType === "corporate" && (
                 <input
                   type="text"
                   placeholder="Agency Name"
                   name="agencyName"
                   value={form.agencyName}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+                />
+              )}
+
+              {userType === "government" && (
+                <input
+                  type="text"
+                  placeholder="Agency Name"
+                  name="agencyName"
+                  value={form.agencyName}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
                 />
               )}
             <input
@@ -196,7 +199,7 @@ const Signup = () => {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
             <input
               type="text"
@@ -204,16 +207,18 @@ const Signup = () => {
               name="phoneNumber"
               value={form.phoneNumber.replace(/[^0-9]/g, '')}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
-            <input
-              type="text"
-              placeholder="Address"
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
-            />
+            {userType === "corporate" && (
+              <input
+                type="text"
+                placeholder="Address"
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+              />
+            )}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -224,13 +229,30 @@ const Signup = () => {
                   setPassword(e.target.value);
                   handleChange(e);
                 }}
-                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none pr-10"
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none pr-10 rounded-xl"
               />
               <div
                 className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </div>
+            </div>
+            {/* Confirm Password Input */}
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none pr-10 rounded-xl"
+              />
+              <div
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
             </div>
             <div className="w-full flex items-center justify-between mt-1">
@@ -242,7 +264,7 @@ const Signup = () => {
           </>
         )}
 
-        {["shipper", "terminal", "shipping_line", "nsc", "vessel_charter"].includes(userType) && (
+        {["individual", "nsc"].includes(userType) && (
           <>
             <div className="grid grid-cols-2 gap-4">
               <input
@@ -251,7 +273,7 @@ const Signup = () => {
                 name="firstName"
                 value={form.firstName}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
               />
               <input
                 type="text"
@@ -259,7 +281,7 @@ const Signup = () => {
                 name="lastName"
                 value={form.lastName}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
               />
             </div>
             <input
@@ -268,15 +290,15 @@ const Signup = () => {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
             <input
               type="text"
               placeholder="Phone Number"
               name="phoneNumber"
-              value={form.phoneNumber.replace(/[^0-9]/g, '')}
+              value={(form.phoneNumber || '').replace(/[^0-9]/g, '')}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
             {userType === "nsc" && (
               <>
@@ -284,7 +306,7 @@ const Signup = () => {
                   name="department"
                   value={form.department}
                   onChange={handleChange}
-                  className="w-full p-3 pr-8 border border-gray-400 bg-[#f4f6fd] outline-none"
+                  className="w-full p-3 pr-8 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
                 >
                   <option value="" disabled>
                     Select Your Department
@@ -304,7 +326,7 @@ const Signup = () => {
                     name="division"
                     value={form.division || ""}
                     onChange={handleChange}
-                    className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none mt-4"
+                    className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none mt-4 rounded-xl"
                   >
                     <option value="" disabled>
                       Select Your Division
@@ -323,7 +345,7 @@ const Signup = () => {
               name="address"
               value={form.address}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none"
+              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
             <div className="relative">
               <input
@@ -335,13 +357,30 @@ const Signup = () => {
                   setPassword(e.target.value);
                   handleChange(e);
                 }}
-                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none pr-10"
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none pr-10 rounded-xl"
               />
               <div
                 className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </div>
+            </div>
+            {/* Confirm Password Input */}
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none pr-10 rounded-xl"
+              />
+              <div
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
             </div>
             <div className="w-full flex items-center justify-between mt-1">
@@ -355,11 +394,16 @@ const Signup = () => {
 
         <button
           type="submit"
-          className="w-full max-w-[400px] md:max-w-[600px] bg-[#3d5afe] text-white py-4 mt-4 text-lg font-semibold tracking-widest hover:bg-blue-700 transition-all duration-200"
+          className="uppercase w-full max-w-[400px] md:max-w-[600px] bg-[#3d5afe] text-white py-4 mt-4 text-lg font-semibold tracking-widest rounded-md hover:bg-blue-700 transition-all duration-200"
         >
           SIGN UP
         </button>
       </form>
+      <p className="mt-8 text-xs text-gray-500 text-center">
+        By Creating an Account, it means you agree to our{' '}
+        <a href="/whoareyou/signup" className="underline text-gray-600">Privacy Policy</a> and{' '}
+        <a href="/whoareyou/signup" className="underline text-gray-600">Terms of Service</a>
+      </p>
     </div>
   );
 };

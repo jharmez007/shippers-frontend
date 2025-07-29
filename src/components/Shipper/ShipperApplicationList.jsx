@@ -1,132 +1,184 @@
-import { useEffect, useState } from 'react';
-import { getFreightApplications } from '../../services/shipperFreightServices';
-import { ShipperApplicationDetailModal } from '..';
+import { useState } from "react";
+// import { toast } from 'sonner';
 
-const ITEMS_PER_PAGE = 10;
+import { ApplicationCard } from "..";
+// import { getFreightApplications } from '../../services/shipperFreightServices';
+
+// Use mock data directly
+const mockApplications = [
+  { id: 1, status: 'Pending', amount: '$234,898.00', date: '5th January 2024' },
+  { id: 2, status: 'Approved', amount: '$234,898.00', date: '5th February 2025' },
+  { id: 3, status: 'Rejected', amount: '$234,898.00', date: '5th March 2025' },
+  { id: 4, status: 'Recommended', amount: '$234,898.00', date: '5th April 2025' },
+  { id: 5, status: 'Recommended', amount: '$234,898.00', date: '5th May 2025' },
+  { id: 6, status: 'Reviewed', amount: '$234,898.00', date: '5th June 2025' },
+  { id: 7, status: 'Reviewed', amount: '$234,898.00', date: '5th July 2022' },
+  { id: 8, status: 'Rejected', amount: '$234,898.00', date: '5th August 2027' },
+  { id: 9, status: 'Reviewed', amount: '$234,898.00', date: '5th September 2025' },
+  { id: 10, status: 'Reviewed', amount: '$234,898.00', date: '5th October 2028' },
+  { id: 11, status: 'Rejected', amount: '$234,898.00', date: '5th November 2022' },
+  { id: 12, status: 'Reviewed', amount: '$234,898.00', date: '5th December 2021' },
+  { id: 13, status: 'Approved', amount: '$234,898.00', date: '5th January 2026' },
+  { id: 14, status: 'Reviewed', amount: '$234,898.00', date: '5th June 2026' },
+  { id: 15, status: 'Pending', amount: '$234,898.00', date: '5th May 2026' },
+  { id: 16, status: 'Approved', amount: '$234,898.00', date: '5th August 2026' },
+];
+
 
 const ShipperApplicationList = () => {
-  const [applications, setApplications] = useState([]);
-  const [selectedApp, setSelectedApp] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [applications, setApplications] = useState([]);
 
- useEffect(() => {
-  getFreightApplications().then(res => {
-    // Sort applications by created_at descending (latest first)
-    const sorted = [...res.data.data].sort(
-      (a, b) => new Date(b.created_at) - new Date(a.created_at)
-    );
-    setApplications(sorted);
-    setCurrentPage(1); 
-  });
-}, []);
+//  useEffect(() => {
+//   getFreightApplications()
+//     .then(res => {
+//       // Sort applications by created_at descending (latest first)
+//       const sorted = [...res.data.data].sort(
+//         (a, b) => new Date(b.created_at) - new Date(a.created_at)
+//       );
+//       setApplications(sorted);
+//     })
+//     .catch(err => {
+//       toast.error(
+//         err?.response?.data?.message ||
+//         "Failed to fetch dashboard stats. Please try again."
+//       );
+//     });
+// }, []);
 
-  const totalPages = Math.ceil(applications.length / ITEMS_PER_PAGE);
-  const paginatedApps = applications.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const safeApplications = Array.isArray(mockApplications) ? mockApplications : [];
+
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [quarter, setQuarter] = useState("");
+  const [status, setStatus] = useState("All");
+  const [openCardId, setOpenCardId] = useState(null);
+
+  const handleToggle = (id) => {
+    setOpenCardId(openCardId === id ? null : id);
+  };
+
+  const parseDateString = (dateStr) => {
+    // Example input: "5th January 2024"
+    const cleanDateStr = dateStr.replace(/(\d+)(st|nd|rd|th)/, '$1'); // remove 'th', 'st', etc.
+    return new Date(cleanDateStr);
+  };
+
+
+const filteredApplications = safeApplications.filter((app) => {
+  const appDate = parseDateString(app.date);
+  if (isNaN(appDate)) return false;
+
+  const appYear = appDate.getFullYear().toString();
+  const appMonth = (appDate.getMonth() + 1).toString().padStart(2, "0");
+  const appQuarter = Math.floor(appDate.getMonth() / 3) + 1;
+
+  const matchYear = !year || appYear === year;
+  const matchMonth = !month || appMonth === month;
+  const matchQuarter = !quarter || `Q${appQuarter}` === quarter;
+  const matchStatus = status === "All" || !status || app.status === status;
+
+  // Conflict check: if quarter is selected, ignore month and vice versa
+  const shouldMatch = matchYear && matchStatus && (
+    (!month && !quarter) || (month && matchMonth) || (quarter && matchQuarter)
+  );
+
+  return shouldMatch;
+});
+
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: (currentYear + 7) - 2020 + 1 }, (_, i) => (2020 + i).toString());
+  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, "0"));
+  const quarters = ["Q1", "Q2", "Q3", "Q4"];
+  const statuses = ["Pending", "Approved", "Rejected", "Recommended", "Reviewed"];
+
+  let headerStatus = "Reviewed";
+  if (status) {
+    headerStatus = status;
+  } else if (filteredApplications.length > 0) {
+    headerStatus = filteredApplications[0].status;
+  }
 
   return (
-  <div className="p-6">
-    <h2 className="text-3xl font-bold mb-6 text-gray-800">📦 Freight Rate Applications</h2>
+    <div className="px-4 py-6 bg-white rounded-lg shadow">
+      <h2 className="text-xl font-semibold mb-4">{headerStatus} Requests</h2>
 
-    {applications.length === 0 ? (
-      <div className="flex justify-center items-center h-40 text-gray-500 text-lg font-semibold">
-        No Freight Rate Request Available
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 mb-6">
+      <select value={year} onChange={(e) => setYear(e.target.value)} className="px-3 py-2 border rounded">
+        <option value="">Year</option>
+        {years.map((y) => (
+          <option key={y} value={y}>{y}</option>
+        ))}
+      </select>
+
+      <select
+        value={month}
+        onChange={(e) => {
+          setMonth(e.target.value);
+          setQuarter(""); // Reset quarter when month is selected
+        }}
+        className="px-3 py-2 border rounded"
+      >
+        <option value="">Month</option>
+        {months.map((m, idx) => (
+          <option key={m} value={m}>
+            {new Date(0, idx).toLocaleString('default', { month: 'long' })}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={quarter}
+        onChange={(e) => {
+          setQuarter(e.target.value);
+          setMonth(""); // Reset month when quarter is selected
+          setYear("");  // ✅ Reset year too
+        }}
+        className="px-3 py-2 border rounded"
+      >
+        <option value="">Quarter</option>
+        {quarters.map((q) => (
+          <option key={q} value={q}>{q}</option>
+        ))}
+      </select>
+
+      <select value={status} onChange={(e) => setStatus(e.target.value)} className="px-3 py-2 border rounded">
+        <option value="All">Status</option>
+        {statuses.map((s) => (
+          <option key={s} value={s}>{s}</option>
+        ))}
+      </select>
+    </div>
+
+
+      {/* Header */}
+      <div className="flex font-bold px-6 pb-2 text-gray-600 border-b">
+        <div className="w-10">No.</div>
+        <div className="flex w-full">
+          <div className="w-full sm:w-1/4 ml-4">Request Title</div>
+          <div className="w-full sm:w-1/4 ml-4">Shipper</div>
+          <div className="w-full sm:w-1/4 ml-7">Date</div>
+          <div className="w-full sm:w-1/4 pl-6">Status</div>
+        </div>
+        <div className="min-w-[160px] text-right">Amount Requested</div>
+        <div className="min-w-[160px] text-right">Action</div>
       </div>
+
+      {/* Application List */}
+      {filteredApplications.length > 0 ? (
+        filteredApplications.map((application, index) => (
+          <ApplicationCard
+            key={application.id}
+            application={application}
+            isOpen={openCardId === application.id}
+            onToggle={() => handleToggle(application.id)}
+            index={index + 1}
+          />
+        ))
       ) : (
-        <>
-          <div className="overflow-auto shadow-lg rounded-lg border bg-white">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-100">
-                <tr>
-                  {['Title', 'CCI Number', 'Status', 'Created At', 'Action'].map((h, i) => (
-                    <th key={i} className="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {paginatedApps.map(app => (
-                  <tr key={app.id} className="hover:bg-gray-50 transition duration-300 ease-in-out">
-                    <td className="px-6 py-4">{app.title}</td>
-                    <td className="px-6 py-4">{app.cci_number}</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={
-                          `capitalize px-3 py-1 rounded-full text-xs font-semibold
-                          ${
-                            app.application_status === "draft"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : app.application_status === "pending"
-                              ? "bg-blue-100 text-blue-800"
-                              : app.application_status === "rejected"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`
-                        }
-                      >
-                        {app.application_status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">{new Date(app.created_at).toLocaleDateString()}</td>
-                    <td className="px-6 py-4">
-                      <button
-                        className={`px-4 py-2 rounded-lg shadow-sm text-white font-medium transition
-                          ${
-                            app.application_status === 'draft'
-                              ? 'bg-yellow-500 hover:bg-yellow-600'
-                              : 'bg-blue-500 hover:bg-blue-600'
-                          }`}
-                        onClick={() => setSelectedApp(app.id)}
-                      >
-                        {app.application_status === 'draft' ? 'Edit' : 'View'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-         {/* Enhanced Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-between items-center mt-6">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className={`flex items-center gap-1 px-4 py-2 rounded-md text-sm font-medium transition 
-                  ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Previous
-              </button>
-
-              <span className="text-sm text-gray-700 font-medium">
-                Page <span className="text-blue-600">{currentPage}</span> of <span className="text-blue-600">{totalPages}</span>
-              </span>
-
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className={`flex items-center gap-1 px-4 py-2 rounded-md text-sm font-medium transition 
-                  ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-              >
-                Next
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          )}
-
-          {selectedApp && (
-            <ShipperApplicationDetailModal
-              applicationId={selectedApp}
-              onClose={() => setSelectedApp(null)}
-            />
-          )}
-        </>
+        <div className="text-center py-10 text-gray-400">No applications found.</div>
       )}
     </div>
   );
