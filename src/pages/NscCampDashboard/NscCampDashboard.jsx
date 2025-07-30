@@ -160,6 +160,7 @@ const NscCampDashboard = () => {
         onClose={closeModal}
         action={modalInfo.action}
         container={modalInfo.container}
+        onStatusChange={handleStatusChange}
       />
     </main>
   );

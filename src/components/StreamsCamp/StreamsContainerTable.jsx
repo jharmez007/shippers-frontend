@@ -10,8 +10,6 @@ const StreamsContainerTable = ({
   onStatusChange,
 }) => {
   const [search, setSearch] = useState("");
-  const [terminalFilter, setTerminalFilter] = useState("All");
-  const [flaggedDate, setFlaggedDate] = useState("");
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
 
@@ -20,14 +18,8 @@ const StreamsContainerTable = ({
       .filter((c) => (statusFilter ? c.status === statusFilter : true))
       .filter((c) =>
         search ? c.containerNumber.toLowerCase().includes(search.toLowerCase()) : true
-      )
-      .filter((c) =>
-        terminalFilter === "All" ? true : c.terminal === terminalFilter
-      )
-      .filter((c) =>
-        flaggedDate ? c.dateFlagged === flaggedDate : true
       );
-  }, [containers, search, terminalFilter, flaggedDate, statusFilter]);
+  }, [containers, search, statusFilter]);
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -64,27 +56,6 @@ const StreamsContainerTable = ({
           onChange={(e) => setSearch(e.target.value)}
           className="border px-3 py-2 rounded w-60"
         />
-
-        <select
-          value={terminalFilter}
-          onChange={(e) => setTerminalFilter(e.target.value)}
-          className="border px-3 py-2 rounded"
-        >
-          <option value="All">All Terminals</option>
-          <option value="Tin Can Island">Tin Can Island</option>
-          <option value="Apapa">Apapa</option>
-          <option value="Onne">Onne</option>
-        </select>
-
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-500">Date Flagged:</label>
-          <input
-            type="date"
-            value={flaggedDate}
-            onChange={(e) => setFlaggedDate(e.target.value)}
-            className="border px-2 py-1 rounded"
-          />
-        </div>
       </div>
 
       {/* Table */}

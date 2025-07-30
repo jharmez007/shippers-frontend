@@ -1,5 +1,5 @@
 // src/pages/Signup.jsx
-import  { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from 'sonner';
@@ -30,6 +30,7 @@ const Signup = () => {
     address: address,
     department: "",
     division: "",
+    staffId: "", 
   });
 
   const [password, setPassword] = useState("");
@@ -61,6 +62,10 @@ const Signup = () => {
     }
     if (!form.lastName && ["individual", "nsc"].includes(userType)) {
       toast.error("Please enter your last name.");
+      return false;
+    }
+    if (!form.staffId && ["nsc"].includes(userType)) {
+      toast.error("Please enter your staff ID.");
       return false;
     }
     if (!form.email) {
@@ -101,7 +106,7 @@ const Signup = () => {
       return false;
     }
 
-    if (!form.agencyName && userType === "government") {
+    if (!form.agencyName && userType === "regulator") {
       toast.error("Please enter your agency name.");
       return false;
     }
@@ -136,11 +141,31 @@ const Signup = () => {
     }
 
     try {
-      const payload = {
+      let payload = {
         user_type: userService,
         lookup_token: lookup_token,
         password: password,
       };
+
+      if (userType === "regulator") {
+        payload = {
+          ...payload,
+          agency_name: form.agencyName,
+          email: form.email,
+          phone_number: form.phoneNumber,
+        };
+      } else if (userType === "nsc") {
+        payload = {
+          ...payload,
+          first_name: form.firstName,
+          last_name: form.lastName,
+          department: form.department,
+          division: form.division,
+          staff_id: form.staffId, 
+          email: form.email,
+          phone_number: form.phoneNumber,
+        };
+      }
 
       setLoading(true); 
       const response = await signup(payload);
@@ -159,6 +184,26 @@ const Signup = () => {
     }
   };
 
+  // Clear form on regulator or nsc sign up
+  useEffect(() => {
+    if (userType === "regulator" || userType === "nsc") {
+      setForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        password: "",
+        agencyName: "",
+        address: "",
+        department: "",
+        division: "",
+        staffId: "", // <-- Added
+      });
+      setPassword("");
+      setConfirmPassword("");
+    }
+  }, [userType]);
+
   return (
     <div className="flex flex-col items-center justify-center flex-grow space-y-6">
       {loading && <Loader />} {/* Show the loader when loading */}
@@ -169,7 +214,7 @@ const Signup = () => {
 
       <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4">
         {/* Render form fields based on userType */}
-        {[ "government", "corporate"].includes(userType) && (
+        {[ "regulator", "corporate"].includes(userType) && (
           <>
              {/* Render form fields based on userType */}
               {userType === "corporate" && (
@@ -183,7 +228,7 @@ const Signup = () => {
                 />
               )}
 
-              {userType === "government" && (
+              {userType === "regulator" && (
                 <input
                   type="text"
                   placeholder="Agency Name"
@@ -205,7 +250,7 @@ const Signup = () => {
               type="text"
               placeholder="Phone Number"
               name="phoneNumber"
-              value={form.phoneNumber.replace(/[^0-9]/g, '')}
+              value={(form.phoneNumber || '').replace(/[^0-9]/g, '')}
               onChange={handleChange}
               className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
@@ -284,6 +329,17 @@ const Signup = () => {
                 className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
               />
             </div>
+            {/* Staff ID input for NSC */}
+            {userType === "nsc" && (
+              <input
+                type="text"
+                placeholder="Staff ID"
+                name="staffId"
+                value={form.staffId}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+              />
+            )}
             <input
               type="email"
               placeholder="Email"

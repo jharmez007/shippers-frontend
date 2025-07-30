@@ -3,51 +3,108 @@ import { Link } from 'react-router-dom';
 
 import { images } from '../../constants';
 import { LandingSlider } from '../../components';
-import { Table2, Truck } from 'lucide-react'; // Icons
+import { Table2, Truck, FolderKanban, Users, FileBarChart } from 'lucide-react';
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userService, setUserService] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
+    const service = localStorage.getItem('user_type');
     if (token) {
       setIsLoggedIn(true);
+      setUserService(service);
     }
+    console.log('User Service:', service);
   }, []);
+
+  const cards = {
+    terminal: [
+      {
+        label: 'STREAMS',
+        desc: 'For Terminal Operators',
+        to: '/streams-dashboard/dashboard',
+        icon: <Table2 size={40} />,
+        bg: 'bg-blue-400',
+      },
+      {
+        label: 'CAMP',
+        desc: 'Container Management',
+        to: '/streams-camp-dashboard/dashboard',
+        icon: <Truck size={40} />,
+        bg: 'bg-green-700',
+      },
+    ],
+    regulator: [
+      {
+        label: 'CAMP',
+        desc: 'Container Management',
+        to: '/maritime-police-dashboard/dashboard',
+        icon: <Truck size={40} />,
+        bg: 'bg-green-700',
+      },
+    ],
+    nsc: [
+      {
+        label: 'STREAMS',
+        desc: 'For Terminal Operators',
+        to: '/streams-dashboard/dashboard',
+        icon: <Table2 size={40} />,
+        bg: 'bg-blue-600',
+      },
+      {
+        label: 'CAMP',
+        desc: 'Container Management',
+        to: '/nsc-camp-dashboard/dashboard',
+        icon: <FolderKanban size={40} />,
+        bg: 'bg-emerald-700',
+      },
+      {
+        label: 'CRD',
+        desc: 'Crude Reasonableness Demurrage',
+        to: '/crd-dashboard/dashboard',
+        icon: <FileBarChart size={40} />,
+        bg: 'bg-purple-600',
+      },
+      {
+        label: 'Stakeholders',
+        desc: 'Engagement & Reports',
+        to: '/stakeholders-dashboard/dashboard',
+        icon: <Users size={40} />,
+        bg: 'bg-indigo-600',
+      },
+    ],
+  };
+
+  const renderCards = cards[userService] || [];
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
-
-      {/* If logged in, show cards instead of hero section */}
       {isLoggedIn ? (
-        <div className="relative w-full bg-gradient-to-br from-blue-100 to-green-100 py-16 px-4 flex flex-col items-center justify-center">
-          <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 text-gray-800">
-            Choose a Portal
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
-            {/* STREAMS Card */}
-            <Link
-              to="/streams-dashboard/dashboard"
-              className="rounded-xl p-8 text-white shadow-md hover:shadow-xl transition duration-300 bg-blue-400 hover:scale-105 flex flex-col items-center justify-center gap-4"
-            >
-              <Table2 size={40} />
-              <h2 className="text-xl font-bold">STREAMS</h2>
-              <p className="text-sm opacity-80 text-bold text-center">For Terminal Operators</p>
-            </Link>
+        <div className="w-full bg-gradient-to-br from-blue-100 to-green-100 py-16 px-4">
+          <div className="max-w-6xl mx-auto text-center mb-10">
+            <h2 className="text-2xl md:text-4xl font-extrabold text-gray-800">
+              Choose a Portal
+            </h2>
+          </div>
 
-            {/* CAMP Card */}
-            <a
-              href="/camp"
-              className="rounded-xl p-8 text-white shadow-md hover:shadow-xl transition duration-300 bg-green-700 hover:scale-105 flex flex-col items-center justify-center gap-4"
-            >
-              <Truck size={40} />
-              <h2 className="text-xl font-bold">CAMP</h2>
-              <p className="text-sm opacity-80 text-center">Container Management</p>
-            </a>
+          {/* Layout adapts based on card count */}
+          <div className="flex flex-wrap justify-center gap-6">
+            {renderCards.map((card, index) => (
+              <Link
+                key={index}
+                to={card.to}
+                className={`w-full max-w-xs rounded-2xl p-8 text-white shadow-md hover:shadow-xl transition-transform duration-300 ${card.bg} hover:scale-105 flex flex-col items-center justify-center gap-4`}
+              >
+                {card.icon}
+                <h3 className="text-xl font-semibold">{card.label}</h3>
+                <p className="text-sm text-center opacity-90">{card.desc}</p>
+              </Link>
+            ))}
           </div>
         </div>
       ) : (
-        // Original hero section if NOT logged in
         <div
           className="relative h-[400px] bg-cover w-full bg-center flex items-center justify-center text-white text-center px-4"
           style={{

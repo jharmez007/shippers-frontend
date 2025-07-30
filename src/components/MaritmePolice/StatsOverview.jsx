@@ -1,4 +1,4 @@
-import { Boxes, ShieldCheck, CheckCircle2, XCircle } from "lucide-react";
+import { Boxes, ShieldCheck, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusStyles = {
@@ -13,6 +13,12 @@ const statusStyles = {
     text: "text-blue-700",
     border: "border-blue-200",
     iconBg: "bg-blue-100",
+  },
+  Pending: {
+    bg: "bg-gray-50",
+    text: "text-gray-700",
+    border: "border-gray-200",
+    iconBg: "bg-gray-100",
   },
   Released: {
     bg: "bg-green-50",
@@ -31,12 +37,13 @@ const statusStyles = {
 const statusIcons = {
   Flagged: Boxes,
   Contested: ShieldCheck,
+  Pending: Clock,
   Released: CheckCircle2,
   Confiscated: XCircle,
 };
 
 const StatsOverview = ({ containers = [] }) => {
-  const statuses = ["Flagged", "Contested", "Released", "Confiscated"];
+  const statuses = ["Flagged", "Contested", "Pending", "Released", "Confiscated"];
 
   const counts = statuses.reduce((acc, status) => {
     acc[status] = containers.filter((c) => c.status === status).length;
@@ -44,7 +51,7 @@ const StatsOverview = ({ containers = [] }) => {
   }, {});
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
       {statuses.map((status, i) => {
         const Icon = statusIcons[status];
         const styles = statusStyles[status];

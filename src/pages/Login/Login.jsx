@@ -93,7 +93,10 @@ const Login = () => {
       const userType = response?.data?.data?.user_type;
       const first_name = response?.data?.data?.first_name;
       const last_name = response?.data?.data?.last_name;
-
+      const department = response?.data?.data?.department;
+      const division = response?.data?.data?.division;
+      const is_head = response?.data?.data?.is_head;
+      const agency_name = response?.data?.data?.agency_name;
 
       if (response.status === 200 && token) {
         // Save session info
@@ -103,6 +106,11 @@ const Login = () => {
         localStorage.setItem("user_type", userType);
         localStorage.setItem("first_name", first_name);
         localStorage.setItem("last_name", last_name);
+        localStorage.setItem("department", department);
+        localStorage.setItem("division", division);
+        localStorage.setItem("is_head", is_head);
+        localStorage.setItem("agency_name", agency_name);
+
 
            
           // Navigate based on user type
@@ -114,10 +122,10 @@ const Login = () => {
             navigate("/streams-dashboard/dashboard");
           } else if (userType === "regulator") {
             setLoading(false);
-            navigate("/regulator-dashboard/dashboard");
-          } else if (userType === "regulator") {
+            navigate("/maritime-police-dashboard/dashboard");
+          } else if (userType === "nsc") {
             setLoading(false);
-            navigate("/nsc-dashboard/dashboard");
+            navigate("/home");
           }
       } else {
         setLoading(false); // Hide the loader

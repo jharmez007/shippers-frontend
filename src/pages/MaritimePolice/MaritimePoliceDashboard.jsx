@@ -71,6 +71,14 @@ const mockData = [
     dateFlagged: "2025-07-26",
     status: "Released",
   },
+  {
+    id: "9",
+    containerNumber: "COSU4567890",
+    terminal: "Onne",
+    reason: "Random Inspection",
+    dateFlagged: "2025-07-26",
+    status: "Pending",
+  },
 ];
 
 const MaritimePoliceDashboard = () => {
@@ -107,7 +115,7 @@ const MaritimePoliceDashboard = () => {
     );
   };
 
-  const tabs = ["Flagged", "Contested", "Released", "Confiscated"];
+  const tabs = ["Flagged", "Contested", "Pending", "Released", "Confiscated"];
 
   return (
     <main className="flex-1 bg-gray-50 px-4 py-6 md:px-8 space-y-6 min-h-screen">
@@ -174,6 +182,7 @@ const MaritimePoliceDashboard = () => {
         onClose={closeModal}
         action={modalInfo.action}
         container={modalInfo.container}
+        onStatusChange={handleStatusChange}
       />
     </main>
   );

@@ -15,18 +15,20 @@ const WhoAreYou = () => {
 
     // Store userType in localStorage
     localStorage.setItem("userType", userType);
+    localStorage.setItem("userService", userType);
 
     Loader();
     if (userType === "individual" || userType === "corporate") {
       navigate("/whoareyou/your-services", { state: { userType } });
-    } else if (userType === "government") {
-      navigate("/whoareyou/your-agency");
+    } else if (userType === "regulator") {
+      navigate("/whoareyou/signup", { state: { userType } });
     }
   };
 
   const handleNscClick = () => {
     // Store NSC staff type in localStorage
     localStorage.setItem("userType", "nsc");
+    localStorage.setItem("userService", "nsc");
     
     Loader();
     navigate("/whoareyou/signup");
@@ -35,7 +37,7 @@ const WhoAreYou = () => {
   const userOptions = [
     { value: "individual", label: "Individual" },
     { value: "corporate", label: "Corporate" },
-    { value: "government", label: "Government" },
+    { value: "regulator", label: "Government" },
   ];
 
   return (

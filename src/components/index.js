@@ -74,3 +74,4 @@ export { default as StreamsCampSidebar } from './StreamsCamp/StreamsCampSidebar'
 
 
 export { default as Modal } from './ui/Modal';
+export { default as ConfirmModal } from './ui/ConfirmModal';

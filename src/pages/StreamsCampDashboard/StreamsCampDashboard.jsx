@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  StreamsStatsOverview,
+  // StreamsStatsOverview,
   StreamsContainerTable,
   StreamsSharedActionModal,
 } from "../../components";
@@ -36,7 +36,7 @@ const mockData = [
     terminal: "Onne",
     reason: "Random Inspection",
     dateFlagged: "2025-07-26",
-    status: "Contested",
+    status: "Realeased",
   },
   {
     id: "5",
@@ -100,7 +100,7 @@ const MaritimePoliceDashboard = () => {
     );
   };
 
-  const tabs = ["Flagged", "Contested", "Released", "Confiscated"];
+  const tabs = ["Flagged", "Released", "Confiscated"];
 
   return (
     <main className="flex-1 bg-gray-50 px-4 py-6 md:px-8 space-y-6 min-h-screen">
@@ -110,9 +110,9 @@ const MaritimePoliceDashboard = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="animate-fadeIn delay-100">
+      {/* <div className="animate-fadeIn delay-100">
         <StreamsStatsOverview containers={containers} />
-      </div>
+      </div> */}
 
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-gray-200 mt-6 animate-fadeIn delay-200">

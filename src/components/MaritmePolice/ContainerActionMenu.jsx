@@ -3,6 +3,8 @@ import { MoreHorizontal, Eye, Upload, CheckCircle, XCircle, RotateCcw } from "lu
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { ConfirmModal } from ".."
+
 const actionIcons = {
   "View Container": <Eye className="w-4 h-4 mr-2 text-gray-500" />,
   "Upload Document": <Upload className="w-4 h-4 mr-2 text-gray-500" />,
@@ -13,6 +15,8 @@ const actionIcons = {
 
 const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
   const [open, setOpen] = useState(false);
+  const [confirmingAction, setConfirmingAction] = useState(null); // { action, status }
+
   const menuRef = useRef(null);
 
   const getAvailableActions = (status) => {
@@ -53,33 +57,33 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
     }
 
     if (action.startsWith("Mark as")) {
-      const newStatus = action.split(" ")[2]; // Released or Confiscated
-      const previousStatus = container.status;
-
-      onStatusChange(container.id, newStatus);
-
-      toast.success(`${action} - Success`, {
-        description: `Container ${container.containerNumber} is now ${newStatus}`,
-        action: {
-          label: "Undo",
-          onClick: () => {
-            onStatusChange(container.id, previousStatus);
-            toast.info("Undo successful", {
-              description: `Container ${container.containerNumber} reverted to ${previousStatus}`,
-            });
-          },
-        },
-      });
-
+      const newStatus = action.split(" ")[2]; // e.g. Contested
+      setConfirmingAction({ action, newStatus });
       return;
     }
 
     toast(action);
   };
 
+  const confirmStatusChange = () => {
+    if (!confirmingAction) return;
+
+    const { newStatus, action } = confirmingAction;
+
+    onStatusChange(container.id, newStatus);
+    toast.success(`${action} - Success`, {
+      description: `Container ${container.containerNumber} is now ${newStatus}`,
+    });
+
+    setConfirmingAction(null);
+  };
+
+  const cancelConfirmation = () => {
+    setConfirmingAction(null);
+  };
+
   const actions = getAvailableActions(container.status);
 
-  // Close on click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -91,39 +95,68 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
   }, []);
 
   return (
-    <div className="relative inline-block text-left" ref={menuRef}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="p-2 hover:bg-gray-100 rounded-full transition"
-      >
-        <MoreHorizontal className="w-5 h-5 text-gray-600" />
-      </button>
+    <>
+      <div className="relative inline-block text-left" ref={menuRef}>
+        <button
+          onClick={() => setOpen(!open)}
+          className="p-2 hover:bg-gray-100 rounded-full transition"
+        >
+          <MoreHorizontal className="w-5 h-5 text-gray-600" />
+        </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 z-30 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5"
-          >
-            <div className="py-2">
-              {actions.map((action) => (
-                <button
-                  key={action}
-                  onClick={() => handleAction(action)}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-                >
-                  {actionIcons[action] || <RotateCcw className="w-4 h-4 mr-2 text-gray-500" />}
-                  {action}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -4 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 z-30 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+            >
+              <div className="py-2">
+                {actions.map((action) => (
+                  <button
+                    key={action}
+                    onClick={() => handleAction(action)}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                  >
+                    {actionIcons[action] || <RotateCcw className="w-4 h-4 mr-2 text-gray-500" />}
+                    {action}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Confirmation Modal */}
+      {confirmingAction && (
+        <ConfirmModal
+          isOpen={!!confirmingAction}
+          onClose={cancelConfirmation}
+          onConfirm={confirmStatusChange}
+          title={`Mark as ${confirmingAction.newStatus}?`}
+          description={
+            <>
+              Are you sure you want to mark container <span className="font-bold">{container.containerNumber}</span> as {confirmingAction.newStatus}?
+            </>
+          }
+          confirmText={`Yes, mark as ${confirmingAction.newStatus}`}
+          confirmColor={
+            confirmingAction.newStatus === "Contested"
+              ? "bg-blue-600 hover:bg-blue-700"
+              : confirmingAction.newStatus === "Pending"
+              ? "bg-yellow-600 hover:bg-yellow-700"
+              : confirmingAction.newStatus === "Confiscated"
+              ? "bg-red-600 hover:bg-red-700"
+              : confirmingAction.newStatus === "Released"
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-gray-600 hover:bg-gray-700"
+          }
+        />
+      )}
+    </>
   );
 };
 

@@ -19,6 +19,12 @@ const StreamsSidebar = () => {
 
       navigate('/login');
     }
+
+    const toCamp = () => {
+      navigate('/streams-camp-dashboard/dashboard');
+    }
+
+
       
     return (
       <>
@@ -125,7 +131,10 @@ const StreamsSidebar = () => {
                 </div>
               </div>
               <p className="text-sm text-gray-700 mb-2">Check Container Status</p>
-              <button className="bg-green-700 text-white rounded-md px-4 py-1 text-sm font-semibold tracking-wide">
+              <button
+                onClick={toCamp}
+                className="bg-green-700 text-white rounded-md px-4 py-1 text-sm font-semibold tracking-wide"
+              >
                 CAMP
               </button>
             </div>

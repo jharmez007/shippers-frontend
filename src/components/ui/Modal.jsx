@@ -45,7 +45,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6"
+            className="bg-white rounded-xl shadow-xl max-w-3xl w-full p-6"
           >
             {title && (
               <h3 className="text-lg font-semibold mb-4 text-gray-800">{title}</h3>

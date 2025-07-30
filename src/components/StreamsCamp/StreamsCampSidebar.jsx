@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  FileText,
+  // FileText,
   Settings,
   Menu,
   X,
 } from "lucide-react";
 
+import {FaBell} from "react-icons/fa";
 import { images } from "../../constants";
 
 const navItems = [
@@ -16,11 +17,11 @@ const navItems = [
     to: "/streams-camp-dashboard/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
-  {
-    label: "Documents",
-    to: "/documents",
-    icon: <FileText className="w-5 h-5" />,
-  },
+  // {
+  //   label: "Documents",
+  //   to: "/documents",
+  //   icon: <FileText className="w-5 h-5" />,
+  // },
   {
     label: "Settings",
     to: "/streams-camp-dashboard/settings",
@@ -30,9 +31,14 @@ const navItems = [
 
 const StreamsCampSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const toStreams = () => {
+      navigate('/streams-dashboard/dashboard');
+    }
 
   const SidebarContent = ({ onClickItem }) => (
-    <div className="flex flex-col h-full p-4 pt-8 bg-green-900 w-64 text-white">
+    <div className="flex flex-col h-full px-4 py-8 bg-green-900 w-64 text-white">
       {/* Branding */}
       <div className="mb-8 flex items-center justify-between md:justify-center">
         <div className="flex items-center gap-2">
@@ -74,6 +80,23 @@ const StreamsCampSidebar = () => {
           ))}
         </ul>
       </nav>
+      {/* Enable Notifications */}
+        <div className="mt-auto pt-6">
+          <div className="bg-white px-4 py-3 rounded-xl text-center">
+            <div className="flex justify-center mb-2">
+              <div className="bg-blue-500 text-white rounded-full p-2">
+                <FaBell className="text-lg" />
+              </div>
+            </div>
+            <p className="text-sm text-gray-700 mb-2">Back to STREAMS Portal</p>
+            <button
+              onClick={toStreams}
+              className="bg-blue-700 text-white rounded-md px-4 py-1 text-sm font-semibold tracking-wide"
+            >
+              STREAMS
+            </button>
+          </div>
+        </div>
     </div>
   );
 
