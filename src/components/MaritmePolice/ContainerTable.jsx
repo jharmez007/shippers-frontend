@@ -13,11 +13,14 @@ const ContainerTable = ({
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
 
+  // Use correct keys based on backend response
   const filteredData = useMemo(() => {
     return containers
-      .filter((c) => (statusFilter ? c.status === statusFilter : true))
+      .filter((c) => (statusFilter ? c.status?.toLowerCase() === statusFilter.toLowerCase() : true))
       .filter((c) =>
-        search ? c.containerNumber.toLowerCase().includes(search.toLowerCase()) : true
+        search
+          ? (c.container_no || "").toLowerCase().includes(search.toLowerCase())
+          : true
       );
   }, [containers, search, statusFilter]);
 
@@ -29,14 +32,14 @@ const ContainerTable = ({
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   const statusColor = (status) => {
-    switch (status) {
-      case "Flagged":
+    switch ((status || "").toLowerCase()) {
+      case "flagged":
         return "bg-yellow-100 text-yellow-800";
-      case "Confiscated":
+      case "confiscated":
         return "bg-red-100 text-red-800";
-      case "Released":
+      case "released":
         return "bg-green-100 text-green-800";
-      case "Contested":
+      case "contested":
         return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-700";
@@ -78,18 +81,22 @@ const ContainerTable = ({
                 <tr key={container.id} className="border-b hover:bg-gray-50 transition">
                   <td className="py-3 px-4">{(page - 1) * rowsPerPage + index + 1}</td>
                   <td className="py-3 px-4 font-medium text-gray-800">
-                    {container.containerNumber}
+                    {container.container_no}
                   </td>
                   <td className="py-3 px-4">{container.terminal}</td>
-                  <td className="py-3 px-4">{container.reason}</td>
+                  <td className="py-3 px-4">{container.reason_for_flagging}</td>
                   <td className="py-3 px-4">
-                    {format(new Date(container.dateFlagged), "MMMM d, yyyy")}
+                    {container.created_at
+                      ? format(new Date(container.created_at), "MMMM d, yyyy")
+                      : "-"}
                   </td>
                   <td className="py-3 px-4">
                     <span
                       className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${statusColor(container.status)}`}
                     >
-                      {container.status}
+                      {(container.status && container.status.toLowerCase() === "under_review"
+                        ? "Pending"
+                        : container.status?.charAt(0).toUpperCase() + container.status?.slice(1))}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right">

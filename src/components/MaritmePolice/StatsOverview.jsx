@@ -45,8 +45,17 @@ const statusIcons = {
 const StatsOverview = ({ containers = [] }) => {
   const statuses = ["Flagged", "Contested", "Pending", "Released", "Confiscated"];
 
+  // Map frontend status to backend status for counting
+  const statusToBackend = (status) => {
+    if (status.toLowerCase() === "pending") return "under_review";
+    return status.toLowerCase();
+  };
+
+  // Count containers for each status, mapping "Pending" to "under_review"
   const counts = statuses.reduce((acc, status) => {
-    acc[status] = containers.filter((c) => c.status === status).length;
+    acc[status] = containers.filter(
+      (c) => (c.status || "").toLowerCase() === statusToBackend(status)
+    ).length;
     return acc;
   }, {});
 

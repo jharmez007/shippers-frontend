@@ -42,8 +42,9 @@ const StreamsCampSidebar = () => {
       {/* Branding */}
       <div className="mb-8 flex items-center justify-between md:justify-center">
         <div className="flex items-center gap-2">
-          <div className="text-center">
+          <div className="flex text-center">
             <img src={images.shipperslog} alt="Shippers Logo" className="mx-auto mb-2 w-20" />
+            <img src={images.camplogo} alt="Camp Logo" className="mx-auto mb-2 w-40 h-20" />
           </div>
         </div>
         {/* Close button on mobile */}

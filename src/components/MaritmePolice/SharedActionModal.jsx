@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Modal, ConfirmModal } from "..";
+import { releaseContainer } from "../../services/maritimePoliceServices"; // <-- Import contestContainers
+
 
 const SharedActionModal = ({ isOpen, onClose, action, container, onStatusChange }) => {
   const [document, setDocument] = useState(null);
@@ -21,17 +23,31 @@ const SharedActionModal = ({ isOpen, onClose, action, container, onStatusChange 
   // Prevent background modal interaction when confirm modal is open
   const isModalDisabled = showConfirm;
 
-  const confirmStatusChange = () => {
+    const confirmStatusChange = async () => {
     if (!pendingAction) return;
 
     let newStatus = "";
     let actionLabel = "";
 
     if (pendingAction === "Mark as Released") {
-      newStatus = "Released";
+      newStatus = "released";
       actionLabel = "Mark as Released";
+      // Call backend to mark as released, pass reason if needed
+      const res = await releaseContainer({ id: container.id, action: "release" });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, newStatus);
+        toast.success(`${actionLabel} - Success`, {
+          description: (
+            <>
+              Container <span className="font-bold">{container.containerNumber || container.container_no}</span> is now {newStatus}
+            </>
+          ),
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as contested.");
+      }
     } else if (pendingAction === "Mark as Confiscated") {
-      newStatus = "Confiscated";
+      newStatus = "confiscated";
       actionLabel = "Mark as Confiscated";
     }
 
@@ -117,7 +133,7 @@ const SharedActionModal = ({ isOpen, onClose, action, container, onStatusChange 
 
             {/* Status-based Action Buttons */}
             <div className={`mt-6 flex flex-wrap gap-3 justify-end ${isModalDisabled ? "pointer-events-none opacity-60" : ""}`}>
-              {container.status === "Contested" && (
+              {container.status === "contested" && (
                 <>
                   <button
                     onClick={() => {

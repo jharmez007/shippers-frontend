@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,7 +11,29 @@ const ConfirmModal = ({
   confirmText = "Confirm",
   cancelText = "Cancel",
   confirmColor = "bg-green-600 hover:bg-green-700 focus:ring-green-500",
+  action = "",
+  onReasonChange, // Optional callback for reason input
 }) => {
+  const [reason, setReason] = useState("");
+
+  // Reset reason when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) setReason("");
+  }, [isOpen]);
+
+  // Determine if reason input should be shown
+  const needsReason =
+    (typeof title === "string" && title.toLowerCase().includes("contested")) ||
+    (typeof action === "string" && action.toLowerCase().includes("contested"));
+
+  // Handle confirm with reason if needed
+  const handleConfirm = () => {
+    if (needsReason && onReasonChange) {
+      onReasonChange(reason);
+    }
+    onConfirm && onConfirm(reason);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -36,6 +59,23 @@ const ConfirmModal = ({
               {description}
             </Dialog.Description>
 
+            {needsReason && (
+              <div className="mt-5">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reason for contesting{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  rows={3}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Enter reason for contesting..."
+                  required
+                />
+              </div>
+            )}
+
             <div className="mt-6 flex justify-center gap-3">
               <button
                 onClick={onClose}
@@ -44,8 +84,9 @@ const ConfirmModal = ({
                 {cancelText}
               </button>
               <button
-                onClick={onConfirm}
+                onClick={handleConfirm}
                 className={`w-full py-2 rounded-lg text-sm font-medium text-white transition focus:outline-none focus:ring-2 ${confirmColor}`}
+                disabled={needsReason && !reason.trim()}
               >
                 {confirmText}
               </button>

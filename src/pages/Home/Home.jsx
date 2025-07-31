@@ -62,7 +62,7 @@ const Home = () => {
       },
       {
         label: 'CRD',
-        desc: 'Crude Reasonableness Demurrage',
+        desc: 'Confirmation Reasonableness Demurrage',
         to: '/crd-dashboard/dashboard',
         icon: <FileBarChart size={40} />,
         bg: 'bg-purple-600',

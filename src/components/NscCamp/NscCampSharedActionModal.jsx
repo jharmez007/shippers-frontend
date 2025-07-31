@@ -3,64 +3,68 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Modal, ConfirmModal } from "..";
+import { reviewContainers, contestContainers } from "../../services/nscCampServices"; // <-- Import contestContainers
 
 const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatusChange }) => {
-  const [document, setDocument] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [reason, setReason] = useState(""); 
 
   useEffect(() => {
-    if (!isOpen) setDocument(null);
-    // When main modal closes, also close confirm modal and clear pendingAction
     if (!isOpen) {
       setShowConfirm(false);
       setPendingAction(null);
+      setReason(""); // Reset reason on close
     }
   }, [isOpen]);
 
-  // Prevent background modal interaction when confirm modal is open
   const isModalDisabled = showConfirm;
 
-  const confirmStatusChange = () => {
+  // Accept reason from ConfirmModal
+  const confirmStatusChange = async (inputReason) => {
     if (!pendingAction) return;
 
     let newStatus = "";
     let actionLabel = "";
 
     if (pendingAction === "Mark as Contested") {
-      newStatus = "Contested";
+      newStatus = "contested";
       actionLabel = "Mark as Contested";
+      // Call backend to mark as contested, pass reason if needed
+      const res = await contestContainers({ id: container.id, remarks: inputReason || reason });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, newStatus);
+        toast.success(`${actionLabel} - Success`, {
+          description: (
+            <>
+              Container <span className="font-bold">{container.containerNumber || container.container_no}</span> is now {newStatus}
+            </>
+          ),
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as contested.");
+      }
     } else if (pendingAction === "Mark as Pending") {
-      newStatus = "Pending";
+      newStatus = "pending";
       actionLabel = "Mark as Pending";
-    }
-
-    if (newStatus) {
-      onStatusChange(container.id, newStatus);
-      toast.success(`${actionLabel} - Success`, {
-        description: (
-          <>
-            Container <span className="font-bold">{container.containerNumber}</span> is now {newStatus}
-          </>
-        ),
-      });
+      // Call backend to mark as under_review
+      const res = await reviewContainers({ id: container.id });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, "under_review");
+        toast.success(`${actionLabel} - Success`, {
+          description: (
+            <>
+              Container <span className="font-bold">{container.container_no}</span> is now Pending
+            </>
+          ),
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as pending.");
+      }
     }
 
     setPendingAction(null);
     setShowConfirm(false);
-    onClose(); // <-- Close the main modal as well to prevent resubmissions
-  };
-
-  const handleUpload = () => {
-    if (!document) {
-      toast.error("Please select a document to upload.");
-      return;
-    }
-
-    toast.success(`${action} Success`, {
-      description: `Document uploaded for ${container.containerNumber}`,
-    });
-
     onClose();
   };
 
@@ -78,10 +82,10 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
         <div className={`flex justify-between items-start mb-6 ${isModalDisabled ? "pointer-events-none opacity-60" : ""}`}>
           <div>
             <h2 className="text-xl font-semibold text-gray-800">{action}</h2>
-            {container?.containerNumber && (
+            {container?.container_no && (
               <p className="text-sm text-gray-500">
                 Container No:{" "}
-                <span className="font-medium">{container.containerNumber}</span>
+                <span className="font-medium">{container.container_no}</span>
               </p>
             )}
           </div>
@@ -103,7 +107,10 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
                 {container.terminal}
               </p>
               <p>
-                <span className="font-medium">Status:</span> {container.status}
+                <span className="font-medium">Status:</span>{" "}
+                {(container.status && container.status.toLowerCase() === "under_review"
+                  ? "Pending"
+                  : container.status?.charAt(0).toUpperCase() + container.status?.slice(1))}
               </p>
               <p>
                 <span className="font-medium">Date Flagged:</span>{" "}
@@ -117,7 +124,7 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
 
             {/* Status-based Action Buttons */}
             <div className={`mt-6 flex flex-wrap gap-3 justify-end ${isModalDisabled ? "pointer-events-none opacity-60" : ""}`}>
-              {container.status === "Flagged" && (
+              {container.status === "flagged" && (
                 <>
                   <button
                     onClick={() => {
@@ -126,7 +133,7 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
                     }}
                     className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
                   >
-                    Mark as Contested
+                    Contest
                   </button>
                   <button
                     onClick={() => {
@@ -135,12 +142,12 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
                     }}
                     className="px-4 py-2 rounded-lg bg-yellow-600 text-white text-sm font-medium hover:bg-yellow-700 transition"
                   >
-                    Mark as Pending
+                    Review
                   </button>
                 </>
               )}
 
-              {container.status === "Pending" && (
+              {(container.status === "pending" || container.status === "under_review") && (
                 <button
                   onClick={() => {
                     setPendingAction("Mark as Contested");
@@ -148,7 +155,7 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
                   }}
                   className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
                 >
-                  Mark as Contested
+                  Contest
                 </button>
               )}
             </div>
@@ -156,7 +163,7 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
         )}
 
         {/* Upload Document Section */}
-        {(action === "Upload Document" || action === "Upload Response") && (
+        {/* {(action === "Upload Document" || action === "Upload Response") && (
           <div className={`space-y-4 ${isModalDisabled ? "pointer-events-none opacity-60" : ""}`}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -187,7 +194,7 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
               </button>
             </div>
           </div>
-        )}
+        )} */}
       </Modal>
 
       {/* Confirmation Modal */}
@@ -201,13 +208,14 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
             <>
               Are you sure you want to{" "}
               {pendingAction.toLowerCase()} container{" "}
-              <span className="font-bold">{container.containerNumber}</span>?
+              <span className="font-bold">{container.containerNumber || container.container_no}</span>?
               This action cannot be undone.
             </>
           ) : ""
         }
         confirmText="Yes, Proceed"
         cancelText="Cancel"
+        onReasonChange={setReason} // <-- Pass reason handler
       />
     </>
   );

@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { ConfirmModal } from ".."
+import { reviewContainers, contestContainers } from "../../services/nscCampServices";
+
 
 const actionIcons = {
   "View Container": <Eye className="w-4 h-4 mr-2 text-gray-500" />,
@@ -23,29 +25,30 @@ const actionIcons = {
 const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
   const [open, setOpen] = useState(false);
   const [confirmingAction, setConfirmingAction] = useState(null); // { action, status }
+  const [reason, setReason] = useState(""); // <-- Add reason state
 
   const menuRef = useRef(null);
 
   const getAvailableActions = (status) => {
-    switch (status) {
-      case "Flagged":
+    // Map backend "under_review" to "pending" for UI logic
+    const normalizedStatus = (status || "").toLowerCase() === "under_review" ? "pending" : (status || "").toLowerCase();
+    switch (normalizedStatus) {
+      case "flagged":
         return [
           "View Container",
-          "Upload Response",
           "Mark as Contested",
           "Mark as Pending",
         ];
-      case "Contested":
+      case "contested":
         return ["View Container"];
-      case "Pending":
+      case "pending":
         return [
           "View Container",
-          "Upload Response",
           "Mark as Contested",
         ];
-      case "Released":
+      case "released":
         return ["View Container"];
-      case "Confiscated":
+      case "confiscated":
         return ["View Container"];
       default:
         return ["View Container"];
@@ -58,7 +61,6 @@ const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) 
     const needsModal = [
       "View Container",
       "Upload Document",
-      "Upload Response",
     ];
 
     if (needsModal.includes(action)) {
@@ -67,7 +69,7 @@ const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) 
     }
 
     if (action.startsWith("Mark as")) {
-      const newStatus = action.split(" ")[2]; // e.g. Contested
+      const newStatus = action.split(" ")[2]; // e.g. Contested or Pending
       setConfirmingAction({ action, newStatus });
       return;
     }
@@ -75,21 +77,48 @@ const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) 
     toast(action);
   };
 
-  const confirmStatusChange = () => {
+  const confirmStatusChange = async (inputReason) => {
     if (!confirmingAction) return;
 
     const { newStatus, action } = confirmingAction;
 
-    onStatusChange(container.id, newStatus);
-    toast.success(`${action} - Success`, {
-      description: `Container ${container.containerNumber} is now ${newStatus}`,
-    });
+    if (newStatus.toLowerCase() === "pending") {
+      // Mark as Pending
+      const res = await reviewContainers({ id: container.id });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, "under_review");
+        toast.success(`${action} - Success`, {
+          description: `Container ${container.container_no} is now Pending`,
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as pending.");
+      }
+    } else if (newStatus.toLowerCase() === "contested") {
+      // Mark as Contested, pass reason
+      const res = await contestContainers({ id: container.id, remarks: inputReason || reason });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, "contested");
+        toast.success(`${action} - Success`, {
+          description: `Container ${container.container_no} is now Contested`,
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as contested.");
+      }
+    } else {
+      // For other statuses, you may want to call the backend as well
+      onStatusChange(container.id, newStatus);
+      toast.success(`${action} - Success`, {
+        description: `Container ${container.container_no || container.containerNumber} is now ${newStatus}`,
+      });
+    }
 
     setConfirmingAction(null);
+    setReason(""); // Reset reason after action
   };
 
   const cancelConfirmation = () => {
     setConfirmingAction(null);
+    setReason(""); // Reset reason on cancel
   };
 
   const actions = getAvailableActions(container.status);
@@ -149,17 +178,18 @@ const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) 
           title={`Mark as ${confirmingAction.newStatus}?`}
           description={
             <>
-              Are you sure you want to mark container <span className="font-bold">{container.containerNumber}</span> as {confirmingAction.newStatus}?
+              Are you sure you want to mark container <span className="font-bold">{container.container_no || container.containerNumber}</span> as {confirmingAction.newStatus}?
             </>
           }
           confirmText={`Yes, mark as ${confirmingAction.newStatus}`}
           confirmColor={
-            confirmingAction.newStatus === "Contested"
+            confirmingAction.newStatus === "contested"
               ? "bg-blue-600 hover:bg-blue-700"
-              : confirmingAction.newStatus === "Pending"
+              : confirmingAction.newStatus === "pending"
               ? "bg-yellow-600 hover:bg-yellow-700"
               : "bg-gray-600 hover:bg-gray-700"
           }
+          onReasonChange={setReason} // <-- Pass reason handler
         />
       )}
     </>

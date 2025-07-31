@@ -6,6 +6,7 @@ import loginbg from '../assets/loginbg.png';
 import signupbg from '../assets/signupbg.png';
 import dashboardbg from '../assets/dashboardbg.png';
 import shipperslog from '../assets/shippers-log.png';
+import camplogo from '../assets/maritimepolice.png';
 import nobg from '../assets/logonobg.png';
 import port from '../assets/port.jpg';
 import porttwo from '../assets/port2.jpg';
@@ -24,6 +25,7 @@ const images = {
   port,
   porttwo,
   portthree,
+  camplogo,
 };
   
 export default images;

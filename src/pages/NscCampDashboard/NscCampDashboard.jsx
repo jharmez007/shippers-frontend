@@ -1,95 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   NscCampStatsOverview,
   NscCampContainerTable,
   NscCampSharedActionModal,
 } from "../../components";
 
+import { flaggedContainers } from "../../services/nscCampServices";
 
-const mockData = [
-  {
-    id: "1",
-    containerNumber: "MSCU1234567",
-    terminal: "Tin Can Island",
-    reason: "Suspicious manifest",
-    dateFlagged: "2025-07-24",
-    status: "Flagged",
-  },
-  {
-    id: "2",
-    containerNumber: "MAEU8901234",
-    terminal: "Apapa",
-    reason: "Incorrect documentation",
-    dateFlagged: "2025-07-25",
-    status: "Flagged",
-  },
-  {
-    id: "3",
-    containerNumber: "COSU4567890",
-    terminal: "Onne",
-    reason: "Random Inspection",
-    dateFlagged: "2025-07-26",
-    status: "Confiscated",
-  },
-  {
-    id: "4",
-    containerNumber: "COSU4764890",
-    terminal: "Onne",
-    reason: "Random Inspection",
-    dateFlagged: "2025-07-26",
-    status: "Contested",
-  },
-  {
-    id: "5",
-    containerNumber: "MJKU4567890",
-    terminal: "Onne",
-    reason: "Random Inspection",
-    dateFlagged: "2025-07-26",
-    status: "Released",
-  },
-  {
-    id: "6",
-    containerNumber: "COSU4567890",
-    terminal: "Onne",
-    reason: "Random Inspection",
-    dateFlagged: "2025-07-26",
-    status: "Flagged",
-  },
-  {
-    id: "7",
-    containerNumber: "COSU4567890",
-    terminal: "Onne",
-    reason: "Random Inspection",
-    dateFlagged: "2025-07-26",
-    status: "Confiscated",
-  },
-  {
-    id: "8",
-    containerNumber: "COSU4567890",
-    terminal: "Onne",
-    reason: "Random Inspection",
-    dateFlagged: "2025-07-26",
-    status: "Released",
-  },
-  {
-    id: "9",
-    containerNumber: "MANU4567890",
-    terminal: "Onne",
-    reason: "Random Inspection",
-    dateFlagged: "2025-07-26",
-    status: "Pending",
-  },
-];
 
 const NscCampDashboard = () => {
   const [activeTab, setActiveTab] = useState("Flagged");
-  const [containers, setContainers] = useState(mockData);
+  const [containers, setContainers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
     action: null,
     container: null,
   });
+
+  // Fetch flagged containers on mount
+    useEffect(() => {
+      const fetchContainers = async () => {
+        setLoading(true);
+        const res = await flaggedContainers();
+        // The containers array is at res.data.data
+        if (Array.isArray(res.data?.data)) {
+          // Sort containers by created_at descending
+          const sorted = [...res.data.data].sort((a, b) =>
+            new Date(b.created_at) - new Date(a.created_at)
+          );
+          setContainers(sorted);
+        } else {
+          setContainers([]);
+        }
+        setLoading(false);
+      };
+      fetchContainers();
+      
+    }, []);
 
   const openModal = ({ action, container }) => {
     setModalInfo({ isOpen: true, action, container });
@@ -98,7 +47,6 @@ const NscCampDashboard = () => {
   const closeModal = () => {
     setModalInfo({ isOpen: false, action: null, container: null });
   };
-
 
   const handleStatusChange = (containerId, newStatus) => {
     setContainers((prev) =>
@@ -110,10 +58,15 @@ const NscCampDashboard = () => {
     );
   };
 
-  const tabs = ["Flagged", "Contested", "Pending", "Released", "Confiscated"];
+  // Map UI tab to backend status
+  const tabToStatus = (tab) => {
+    if (tab.toLowerCase() === "pending") return "under_review";
+    return tab.toLowerCase();
+  };
 
+  const tabs = ["Flagged", "Contested", "Pending", "Released", "Confiscated"];
   return (
-    <main className="flex-1 bg-gray-50 px-4 py-6 md:px-8 space-y-6 min-h-screen">
+    <main className="flex-1 bg-gray-50 px-4 py-6 md:px-8 min-h-screen">
       <div className="animate-fadeIn">
         <h1 className="text-2xl md:text-3xl font-bold text-green-900">Container Alert Management Portal (CAMP)</h1>
         <p className="text-sm text-gray-500 mt-1">Monitor and manage flagged containers</p>
@@ -146,11 +99,12 @@ const NscCampDashboard = () => {
       {/* Table */}
       <div className="animate-fadeIn delay-400">
         <NscCampContainerTable
-            title={`${activeTab} Containers`}
-            statusFilter={activeTab}
-            containers={containers}
-            onModalOpen={openModal}
-            onStatusChange={handleStatusChange}
+          title={`${activeTab} Containers`}
+          statusFilter={tabToStatus(activeTab)}
+          containers={containers}
+          onModalOpen={openModal}
+          onStatusChange={handleStatusChange}
+          loading={loading}
         />
       </div>
 

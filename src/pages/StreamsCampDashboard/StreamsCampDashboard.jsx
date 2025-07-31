@@ -103,7 +103,7 @@ const MaritimePoliceDashboard = () => {
   const tabs = ["Flagged", "Released", "Confiscated"];
 
   return (
-    <main className="flex-1 bg-gray-50 px-4 py-6 md:px-8 space-y-6 min-h-screen">
+    <main className="flex-1 bg-gray-50 px-4 py-6 md:px-8 min-h-screen">
       <div className="animate-fadeIn">
         <h1 className="text-2xl md:text-3xl font-bold text-green-900">Container Alert Management Portal (CAMP)</h1>
         <p className="text-sm text-gray-500 mt-1">Monitor and manage flagged containers</p>

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { ConfirmModal } from ".."
+import { releaseContainer } from "../../services/maritimePoliceServices"; // <-- Make sure this path is correct
 
 const actionIcons = {
   "View Container": <Eye className="w-4 h-4 mr-2 text-gray-500" />,
@@ -19,23 +20,24 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
 
   const menuRef = useRef(null);
 
+  // Use backend status values (lowercase)
   const getAvailableActions = (status) => {
-    switch (status) {
-      case "Flagged":
+    switch ((status || "").toLowerCase()) {
+      case "flagged":
         return [
           "View Container",
           "Upload Document",
         ];
-      case "Contested":
+      case "contested":
         return [
           "View Container",
           "Upload Response",
           "Mark as Released",
           "Mark as Confiscated",
         ];
-      case "Released":
+      case "released":
         return ["View Container"];
-      case "Confiscated":
+      case "confiscated":
         return ["View Container"];
       default:
         return ["View Container"];
@@ -57,7 +59,8 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
     }
 
     if (action.startsWith("Mark as")) {
-      const newStatus = action.split(" ")[2]; // e.g. Contested
+      // Released/Confiscated are backend values (lowercase)
+      const newStatus = action.split(" ")[2].toLowerCase();
       setConfirmingAction({ action, newStatus });
       return;
     }
@@ -65,15 +68,29 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
     toast(action);
   };
 
-  const confirmStatusChange = () => {
+  const confirmStatusChange = async () => {
     if (!confirmingAction) return;
 
     const { newStatus, action } = confirmingAction;
 
-    onStatusChange(container.id, newStatus);
-    toast.success(`${action} - Success`, {
-      description: `Container ${container.containerNumber} is now ${newStatus}`,
-    });
+    if (newStatus === "released") {
+      // Call backend for mark as released
+      const res = await releaseContainer({ id: container.id, action: "release" });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, "released");
+        toast.success(`${action} - Success`, {
+          description: `Container ${container.container_no} is now released`,
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as released.");
+      }
+    } else {
+      // For other statuses, just update locally
+      onStatusChange(container.id, newStatus);
+      toast.success(`${action} - Success`, {
+        description: `Container ${container.container_no} is now ${newStatus}`,
+      });
+    }
 
     setConfirmingAction(null);
   };
@@ -136,21 +153,21 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
           isOpen={!!confirmingAction}
           onClose={cancelConfirmation}
           onConfirm={confirmStatusChange}
-          title={`Mark as ${confirmingAction.newStatus}?`}
+          title={`Mark as ${confirmingAction.newStatus.charAt(0).toUpperCase() + confirmingAction.newStatus.slice(1)}?`}
           description={
             <>
-              Are you sure you want to mark container <span className="font-bold">{container.containerNumber}</span> as {confirmingAction.newStatus}?
+              Are you sure you want to mark container <span className="font-bold">{container.container_no}</span> as {confirmingAction.newStatus}?
             </>
           }
-          confirmText={`Yes, mark as ${confirmingAction.newStatus}`}
+          confirmText={`Yes, mark as ${confirmingAction.newStatus.charAt(0).toUpperCase() + confirmingAction.newStatus.slice(1)}`}
           confirmColor={
-            confirmingAction.newStatus === "Contested"
+            confirmingAction.newStatus === "contested"
               ? "bg-blue-600 hover:bg-blue-700"
-              : confirmingAction.newStatus === "Pending"
+              : confirmingAction.newStatus === "pending"
               ? "bg-yellow-600 hover:bg-yellow-700"
-              : confirmingAction.newStatus === "Confiscated"
+              : confirmingAction.newStatus === "confiscated"
               ? "bg-red-600 hover:bg-red-700"
-              : confirmingAction.newStatus === "Released"
+              : confirmingAction.newStatus === "released"
               ? "bg-green-600 hover:bg-green-700"
               : "bg-gray-600 hover:bg-gray-700"
           }

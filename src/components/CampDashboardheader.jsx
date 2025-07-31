@@ -6,12 +6,27 @@ import {
 } from "lucide-react";
 
 const CampDashboardHeader = () => {
-  const navigate = useNavigate(); 
-  const handleLogOut = () => {
-    localStorage.clear()
+  const navigate = useNavigate();
 
+  // Get user_type from localStorage
+  const userType = localStorage.getItem("user_type");
+
+
+  const handleLogOut = () => {
+    localStorage.clear();
     navigate('/login');
-  }
+  };
+
+  const handleProfileClick = () => {
+    if (userType === "nsc") {
+      navigate("/nsc-camp-dashboard/profile");
+    } else if (userType === "terminal") {
+      navigate("/streams-camp-dashboard/profile");
+    } else if (userType === "regulator") {
+      navigate("/maritime-police-dashboard/profile");
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full flex items-center justify-between px-4 py-3 border-b bg-white shadow-sm">
       {/* Left: Menu button (mobile) & Home link */}
@@ -37,15 +52,16 @@ const CampDashboardHeader = () => {
         </button>
 
         {/* Profile */}
-        <Link
-          to="/streams-camp-dashboard/profile"
+        <button
+          type="button"
+          onClick={handleProfileClick}
           className="flex items-center gap-2 text-sm text-green-900 hover:text-green-800 transition"
         >
           <div className="w-7 h-7 bg-green-200 text-green-900 rounded-full flex items-center justify-center text-xs font-bold">
             U
           </div>
           <span className="hidden md:inline">Profile</span>
-        </Link>
+        </button>
 
         {/* Logout */}
         <button 
