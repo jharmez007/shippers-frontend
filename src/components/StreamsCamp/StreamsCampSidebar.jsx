@@ -8,7 +8,6 @@ import {
   X,
 } from "lucide-react";
 
-import {FaBell} from "react-icons/fa";
 import { images } from "../../constants";
 
 const navItems = [
@@ -41,7 +40,7 @@ const StreamsCampSidebar = () => {
     <div className="flex flex-col h-full px-4 py-8 bg-green-900 w-64 text-white">
       {/* Branding */}
       <div className="mb-8 flex items-center justify-between md:justify-center">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center ml-4 gap-2">
           <div className="flex text-center">
             <img src={images.shipperslog} alt="Shippers Logo" className="mx-auto mb-2 w-20" />
             <img src={images.camplogo} alt="Camp Logo" className="mx-auto mb-2 w-40 h-20" />
@@ -83,13 +82,8 @@ const StreamsCampSidebar = () => {
       </nav>
       {/* Enable Notifications */}
         <div className="mt-auto pt-6">
-          <div className="bg-white px-4 py-3 rounded-xl text-center">
-            <div className="flex justify-center mb-2">
-              <div className="bg-blue-500 text-white rounded-full p-2">
-                <FaBell className="text-lg" />
-              </div>
-            </div>
-            <p className="text-sm text-gray-700 mb-2">Back to STREAMS Portal</p>
+          <div className="bg-green-700 px-4 py-3 rounded-xl text-center">
+            <p className="text-sm text-white mb-2">Back to STREAMS Portal</p>
             <button
               onClick={toStreams}
               className="bg-blue-700 text-white rounded-md px-4 py-1 text-sm font-semibold tracking-wide"

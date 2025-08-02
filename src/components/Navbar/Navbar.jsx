@@ -21,6 +21,7 @@ const Navbar = () => {
   const [userType, setUserType] = useState(null); 
   const first_name = localStorage.getItem("first_name");
   const last_name = localStorage.getItem("last_name"); 
+  const agency_name = localStorage.getItem("agency_name");
   const timeoutRefs = {};
   const navigate = useNavigate(); 
   
@@ -121,7 +122,7 @@ const Navbar = () => {
 
         <ul className="hidden lg:flex flex-wrap justify-center items-center space-x-6 mt-4 lg:mt-0 text-base font-medium text-gray-700">
           {links
-            .filter((item) => !(userType === "terminal" && item.name === "Tools"))
+            .filter((item) => !(item.name === "Tools" && (userType === "terminal" || userType === "regulator")))
             .map((item) => {
 
             return (
@@ -163,14 +164,25 @@ const Navbar = () => {
             <>
               <div className="flex items-center gap-2 text-[#12507B]">
                 <FaUserCircle className="text-xl" />
-                <span className="font-semibold">{first_name}</span>
-                <span className="text-lg">•</span>
-                <span className="text-[#12507B]/80">{last_name}</span>
+                {userType === "regulator" ? (
+                  <span className="font-semibold">{agency_name}</span>
+                ) : (
+                  <>
+                    <span className="font-semibold">{first_name}</span>
+                    <span className="text-lg">•</span>
+                    <span className="text-[#12507B]/80">{last_name}</span>
+                  </>
+                )}
               </div>
-              <div onClick={handleLogOut} className="flex items-center gap-1 text-[#12507B] cursor-pointer">
+
+              <div
+                onClick={handleLogOut}
+                className="flex items-center gap-1 text-[#12507B] cursor-pointer"
+              >
                 <FaSignOutAlt className="text-lg" />
                 <span className="font-semibold">Sign Out</span>
               </div>
+
               <div className="relative cursor-pointer">
                 <FaBell className="text-xl text-[#12507B]" />
                 <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>

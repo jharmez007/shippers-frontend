@@ -1,4 +1,7 @@
-import { FaFileAlt, FaUser, FaChartBar, FaTachometerAlt, FaUniversity, FaGlobe, FaSlidersH, FaConnectdevelop, FaChartLine, FaExchangeAlt, FaInbox } from "react-icons/fa";
+import { FaFileAlt, FaUser, FaChartBar, FaTachometerAlt, FaUniversity, FaGlobe, FaSlidersH, FaConnectdevelop, FaClipboardList, FaCubes, FaShip, 
+  FaMoneyBillWave, FaChartLine, FaInbox, FaBook, 
+} from "react-icons/fa";
+
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,7 +14,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-
 
 
 ChartJS.register(
@@ -152,6 +154,23 @@ export const ShipperAccountLinks = [
   { name: 'Settings', icon: FaSlidersH, path: '/shipper-dashboard/settings' },
 ];
 
+/* Shipping Lines Dashboard paths */
+export const shippingLinesMainLinks = [
+  { name: 'Dashboard', icon: FaTachometerAlt, path: '/shipping-lines-dashboard/dashboard' },
+  { name: 'Demurrage Requests', icon: FaClipboardList, path: '/shipping-lines-dashboard/demurrage-requests' },
+  { name: 'Submit Demurrage', icon: FaFileAlt, path: '/shipping-lines-dashboard/submit-demurrage' },
+  { name: 'KPI', icon: FaChartBar, path: '/shipping-lines-dashboard/kpi' },
+  { name: 'Throughput', icon: FaCubes, path: '/shipping-lines-dashboard/throughput' },
+  { name: 'Voyage', icon: FaShip, path: '/shipping-lines-dashboard/voyage' },
+  { name: 'Tariff', icon: FaMoneyBillWave, path: '/shipping-lines-dashboard/tariffs' },
+  { name: 'SOP', icon: FaBook, path: '/shipping-lines-dashboard/sop' },
+];
+  
+export const ShippingLinesAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/shipping-lines-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/shipping-lines-dashboard/settings' },
+];
+
 /* Bank Dashboard paths */
 export const bankMainLinks = [
   { name: 'Dashboard', icon: FaTachometerAlt, path: '/bank-dashboard/dashboard' },
@@ -193,11 +212,30 @@ export const nscAccountLinks = [
   { name: 'Settings', icon: FaSlidersH, path: '/nsc-dashboard/settings' },
 ];
 
+/* Nsc Dashboard paths */
+export const nscStreamsMainLinks = [
+  { name: 'Dashboard', icon: FaTachometerAlt, path: '/nsc-streams-dashboard/dashboard' },
+  { name: 'KPI', icon: FaChartBar, path: '/nsc-streams-dashboard/kpi' },
+  { name: 'Throughput', icon: FaCubes, path: '/nsc-streams-dashboard/throughput' },
+  { name: 'KPI Analysis', icon: FaChartLine, path: '/nsc-streams-dashboard/kpi-analysis' },
+  { name: 'Vessel Activity', icon: FaShip, path: '/nsc-streams-dashboard/vessel-activity' },
+  { name: 'Tariff', icon: FaMoneyBillWave, path: '/nsc-streams-dashboard/tariffs' },
+  { name: 'SOP', icon: FaBook, path: '/nsc-streams-dashboard/sop' },
+];
+
+export const nscStreamsAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/nsc-streams-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/nsc-streams-dashboard/settings' },
+];
+
 /* Streams Dashboard paths */
 export const streamsMainLinks = [
   { name: 'All Submissions', icon: FaInbox, path: '/streams-dashboard/dashboard' },
   { name: 'Submit KPI', icon: FaChartLine, path: '/streams-dashboard/new-kpi-submission' },
-  { name: 'Submit Throughput', icon: FaExchangeAlt, path: '/streams-dashboard/new-throughput-submission' },
+  { name: 'Submit Throughput', icon: FaCubes, path: '/streams-dashboard/new-throughput-submission' },
+  { name: 'Submit Tariff', icon: FaMoneyBillWave, path: '/streams-dashboard/new-throughput-submission' },
+  { name: 'Submit SOP', icon: FaBook, path: '/streams-dashboard/new-throughput-submission' },
+  { name: 'Shipping Lines', icon: FaShip, path: '/streams-dashboard/new-throughput-submission' },
 ];
 
 export const streamsAccountLinks = [

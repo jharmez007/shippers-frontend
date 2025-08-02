@@ -15,7 +15,10 @@ import {
   NscFreightRateRequest, NscCharterPartyRequest, NscDemurrageRequest, StreamsDashboard, MainStreamsDashboard, 
   NewKpiSubmission, NewThroughputSubmission, MaritimePoliceDashboard,
   DashboardLayout, NscCampDashboardLayout, NscCampDashboard, StreamsCampDashboard, StreamsCampDashboardLayout,
-  NscCampFlaggedAnalysisChart, CampProfile
+  NscCampFlaggedAnalysisChart, CampProfile, NscStreamsDashboard, MainNscStreamsDashboard, NscStreamsKpi, NscStreamsThroughput,
+  NscStreamsKpiAnalysis, NscStreamsVesselActivity, NscStreamsTariffs, NscStreamsSop, ShippingLinesDashboard, MainShippingLinesDashboard,
+  ShippingLinesDemurrageRequest, ShippingLinesDemurrageSubmit, ShippingLinesKpi, ShippingLinesThroughput, ShippingLinesVoyage, 
+  ShippingLinesTariffs, ShippingLinesSop
 } from './pages';
 import {
   Navbar, Footer, SignUpLayout, ProtectedRoute, Loader
@@ -107,6 +110,20 @@ const AppRoutes = () => {
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>
 
+            {/* Shipping Lines Dashboard Routes */}
+            <Route path="/shipping-lines-dashboard" element={<ProtectedRoute><ShippingLinesDashboard /></ProtectedRoute>}>
+              <Route path="dashboard" element={<ProtectedRoute><MainShippingLinesDashboard /></ProtectedRoute>} />
+              <Route path="demurrage-requests" element={<ProtectedRoute><ShippingLinesDemurrageRequest /></ProtectedRoute>} />
+              <Route path="submit-demurrage" element={<ProtectedRoute><ShippingLinesDemurrageSubmit /></ProtectedRoute>} />
+              <Route path="kpi" element={<ProtectedRoute><ShippingLinesKpi /></ProtectedRoute>} />
+              <Route path="throughput" element={<ProtectedRoute><ShippingLinesThroughput /></ProtectedRoute>} />
+              <Route path="voyage" element={<ProtectedRoute><ShippingLinesVoyage /></ProtectedRoute>} />
+              <Route path="tariffs" element={<ProtectedRoute><ShippingLinesTariffs /></ProtectedRoute>} />
+              <Route path="sop" element={<ProtectedRoute><ShippingLinesSop /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
             {/* Bank Dashboard Routes */}
             <Route path="/bank-dashboard" element={<ProtectedRoute><BankDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainBankDashboard /></ProtectedRoute>} />
@@ -135,6 +152,19 @@ const AppRoutes = () => {
               <Route path="freight-rate-request" element={<ProtectedRoute><NscFreightRateRequest /></ProtectedRoute>} />
               <Route path="charter-party-request" element={<ProtectedRoute><NscCharterPartyRequest /></ProtectedRoute>} />
               <Route path="demurrage-request" element={<ProtectedRoute><NscDemurrageRequest /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+            {/* Nsc Streams Dashboard Routes */}
+            <Route path="/nsc-streams-dashboard" element={<ProtectedRoute><NscStreamsDashboard /></ProtectedRoute>}>
+              <Route path="dashboard" element={<ProtectedRoute><MainNscStreamsDashboard /></ProtectedRoute>} />
+              <Route path="kpi" element={<ProtectedRoute><NscStreamsKpi /></ProtectedRoute>} />
+              <Route path="throughput" element={<ProtectedRoute><NscStreamsThroughput /></ProtectedRoute>} />
+              <Route path="kpi-analysis" element={<ProtectedRoute><NscStreamsKpiAnalysis /></ProtectedRoute>} />
+              <Route path="vessel-activity" element={<ProtectedRoute><NscStreamsVesselActivity /></ProtectedRoute>} />
+              <Route path="tariffs" element={<ProtectedRoute><NscStreamsTariffs /></ProtectedRoute>} />
+              <Route path="sop" element={<ProtectedRoute><NscStreamsSop /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>

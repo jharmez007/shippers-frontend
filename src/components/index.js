@@ -21,6 +21,8 @@ export { default as ShipperApplicationDetailModal } from './Shipper/ShipperAppli
 export { default as ApplicationCard } from './Shipper/ApplicationCard';
 export { default as ApplicationDetails } from './Shipper/ApplicationDetails';
 
+export { default as ShippingLinesSidebar } from './ShippingLines/ShippingLinesSidebar';
+
 export { default as BankSidebar } from './Bank/BankSidebar';
 export { default as BankCardList } from './Bank/BankCardList';
 export { default as ConnectionList } from './Bank/ConnectionList';
@@ -65,6 +67,8 @@ export { default as NscCampContainerTable } from './NscCamp/NscCampContainerTabl
 export { default as NscCampStatsOverview } from './NscCamp/NscCampStatsOverview';
 export { default as NscCampSharedActionModal } from './NscCamp/NscCampSharedActionModal';
 export { default as NscCampSidebar } from './NscCamp/NscCampSidebar';
+
+export { default as NscStreamsSidebar } from './NscStreams/NscStreamsSidebar';
 
 export { default as StreamsContainerActionMenu } from './StreamsCamp/StreamsContainerActionMenu';
 export { default as StreamsContainerTable } from './StreamsCamp/StreamsContainerTable';

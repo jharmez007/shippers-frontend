@@ -49,7 +49,7 @@ const Home = () => {
       {
         label: 'STREAMS',
         desc: 'For Terminal Operators',
-        to: '/streams-dashboard/dashboard',
+        to: '/nsc-streams-dashboard/dashboard',
         icon: <Table2 size={40} />,
         bg: 'bg-blue-600',
       },
