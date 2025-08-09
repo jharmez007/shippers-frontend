@@ -8,6 +8,11 @@ module.exports = {
       },
       colors: {
         primary: '#58A986',
+        secondary: {
+        DEFAULT: '#004B87', // Deep Sea Blue
+        light: '#D1E6F7',
+        dark: '#002E53',
+      },
       },
       fontFamily: {
        sans: ['Inter', 'ui-sans-serif', 'system-ui'],

@@ -233,9 +233,9 @@ export const streamsMainLinks = [
   { name: 'All Submissions', icon: FaInbox, path: '/streams-dashboard/dashboard' },
   { name: 'Submit KPI', icon: FaChartLine, path: '/streams-dashboard/new-kpi-submission' },
   { name: 'Submit Throughput', icon: FaCubes, path: '/streams-dashboard/new-throughput-submission' },
-  { name: 'Submit Tariff', icon: FaMoneyBillWave, path: '/streams-dashboard/new-throughput-submission' },
-  { name: 'Submit SOP', icon: FaBook, path: '/streams-dashboard/new-throughput-submission' },
-  { name: 'Shipping Lines', icon: FaShip, path: '/streams-dashboard/new-throughput-submission' },
+  { name: 'Submit Tariff', icon: FaMoneyBillWave, path: '/streams-dashboard/new-tariff-submission' },
+  { name: 'Submit SOP', icon: FaBook, path: '/streams-dashboard/new-sop-submission' },
+  { name: 'Shipping Lines', icon: FaShip, path: '/streams-dashboard/new-shipping-lines-submission' },
 ];
 
 export const streamsAccountLinks = [
@@ -336,4 +336,227 @@ export const links = [
       link: "publications",
     },
   ];
+
+  export const portComplexData = {
+    "Apapa Port Complex": {
+      "Container Terminal": [
+        { terminal: "TICT", status: "Submitted" },
+        { terminal: "PCHS", status: "Submitted" },
+        { terminal: "APMT", status: "Remind" },
+      ],
+      "RoRo Terminal": [
+        { terminal: "Fivestar Logistics", status: "Submitted" },
+      ],
+      "Bulk Terminal": [
+        { terminal: "Apapa Bulk Terminal", status: "Past Due" },
+      ],
+      "General Cargo Terminal": [
+        { terminal: "ENL Consortium", status: "Submitted" },
+      ],
+    },
+    "Tincan Island Port Complex": {
+      "Container Terminal": [
+        { terminal: "Port & Cargo", status: "Submitted" },
+        { terminal: "Grimaldi Terminal", status: "Remind" },
+      ],
+      "RoRo Terminal": [
+        { terminal: "Tincan RoRo Services", status: "Past Due" },
+      ],
+      "Bulk Terminal": [
+        { terminal: "Dangote Bulk Terminal", status: "Submitted" },
+      ],
+      "General Cargo Terminal": [
+        { terminal: "Julius Berger Terminal", status: "Remind" },
+      ],
+    },
+    "Lekki Deep Sea Port Complex": {
+      "Container Terminal": [
+        { terminal: "Lekki Terminal", status: "Submitted" },
+        { terminal: "DeepWater Container Services", status: "Past Due" },
+      ],
+      "RoRo Terminal": [
+        { terminal: "Lekki RoRo Limited", status: "Submitted" },
+      ],
+      "Bulk Terminal": [
+        { terminal: "Lekki Agro Bulk", status: "Remind" },
+      ],
+      "General Cargo Terminal": [
+        { terminal: "Lekki General Logistics", status: "Submitted" },
+      ],
+    },
+    "Calabar Port Complex": {
+      "Container Terminal": [
+        { terminal: "Calabar Container Depot", status: "Remind" },
+      ],
+      "RoRo Terminal": [
+        { terminal: "Calabar Marine", status: "Submitted" },
+      ],
+      "Bulk Terminal": [
+        { terminal: "Calabar Bulk Ltd", status: "Past Due" },
+      ],
+      "General Cargo Terminal": [
+        { terminal: "Cross River Cargo", status: "Submitted" },
+      ],
+    },
+    "Onne Port Complex": {
+      "Container Terminal": [
+        { terminal: "West Africa Container Terminal (WACT)", status: "Submitted" },
+      ],
+      "RoRo Terminal": [
+        { terminal: "Onne RoRo Facility", status: "Submitted" },
+      ],
+      "Bulk Terminal": [
+        { terminal: "Oil & Gas Bulk Terminal", status: "Remind" },
+      ],
+      "General Cargo Terminal": [
+        { terminal: "Onne General Terminal", status: "Submitted" },
+      ],
+    },
+    "Warri Port Complex": {
+      "Container Terminal": [
+        { terminal: "Warri Container Services", status: "Past Due" },
+      ],
+      "RoRo Terminal": [
+        { terminal: "Delta RoRo", status: "Remind" },
+      ],
+      "Bulk Terminal": [
+        { terminal: "Warri Bulk Handling", status: "Submitted" },
+      ],
+      "General Cargo Terminal": [
+        { terminal: "Warri Logistics Ltd", status: "Submitted" },
+      ],
+    },
+    "Delta Port Complex": {
+      "Container Terminal": [
+        { terminal: "Delta Container Hub", status: "Submitted" },
+      ],
+      "RoRo Terminal": [
+        { terminal: "Burutu RoRo", status: "Past Due" },
+      ],
+      "Bulk Terminal": [
+        { terminal: "Delta Agro Bulk", status: "Remind" },
+      ],
+      "General Cargo Terminal": [
+        { terminal: "Delta Cargo Logistics", status: "Submitted" },
+      ],
+    },
+  };
+
+  export const portComplexes = [
+  "Apapa Port Complex",
+  "Tincan Island Port Complex",
+  "Lekki Deep Sea Port Complex",
+  "Calabar Port Complex",
+  "Onne Port Complex",
+  "Warri Port Complex",
+  "Delta Port Complex",
+];
+
+export const stepFieldMap = [
+  {
+    label: "Service Type & Submission Date",
+    keys: ["terminalType", "submissionMonth", "submissionYear"],
+  },
+  {
+    label: "Personal Information",
+    keys: ["reportingOfficer", "designation", "email", "phone"],
+  },
+  {
+    label: "Cargo & Ship Traffic Throughput",
+    keys: ["import", "export", "empty"],
+  },
+  {
+    label: "Cargo & Ship Traffic KPIs",
+    keys: [
+      "vesselTurnaround",
+      "cargoDwellTime",
+      "berthOccupancy",
+      "craneMovesPerHour",
+      "overtimeCargo",
+      "shipCalls",
+    ],
+  },
+  {
+    label: "Terminal Release Procedure",
+    keys: ["profiledBoxes", "claimsReceived", "claimsResolved"],
+  },
+  {
+    label: "Cargo Handling Equipment",
+    keys: ["equipments"],
+  },
+  {
+    label: "Cargo Delivery & Clearance",
+    keys: [
+      "truckTurnaround",
+      "complaintsHandled",
+      "complaintsType",
+      "importsTruck",
+      "importsBarge",
+      "importsRail",
+      "exportsTruck",
+      "exportsBarge",
+      "exportsRail",
+      "returnedTruck",
+      "returnedBarge",
+      "returnedRail",
+    ],
+  },
+  {
+    label: "Cargo Examination & Information",
+    keys: [
+      "positioningTime",
+      "avgContainersPositioned",
+      "jointExam",
+      "commencementOfExam",
+      "inspectionAgencies",
+      "closeOfExam",
+      "timeAgenciesCoverage",
+    ],
+  },
+  {
+    label: "Vessel Rummaging",
+    keys: [
+      "busInOutHandling",
+      "jointExamination",
+      "timeDuration",
+      "inspectionAgenciesForRummage",
+    ],
+  },
+  {
+    label: "Tariff",
+    keys: [
+      "terminalHandling",
+      "documentationCharge",
+      "positioningExamination",
+      "weighbridgeCharge",
+      "storageCharge",
+      "otherCharges",
+    ],
+  },
+  {
+    label: "Tripartite Agreement Fulfilment",
+    keys: [
+      "terminalDevelopmentExecution",
+      "agreedGMT",
+      "complianceLevel",
+      "digitalizedProcesses",
+      "ictBackupSystem",
+    ],
+  },
+  {
+    label: "Challenges",
+    keys: [
+      "operationalChallenges",
+      "invoicing",
+      "payment",
+      "receipting",
+      "examsBooking",
+      "obtainingTDO",
+      "claims",
+      "refunds",
+    ],
+  },
+];
+
+
   

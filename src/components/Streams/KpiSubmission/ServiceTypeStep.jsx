@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const terminalOptions = [
   "Bulk Terminal",
-  "RORO Terminal",
+  "Roro Terminal",
   "General Cargo",
   "Container Terminal",
 ];
@@ -13,10 +13,11 @@ const months = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
-export default function ServiceTypeStep({ data, onNext, onUpdate }) {
+export default function ServiceTypeStep({ data, onNext, onBack, onUpdate }) {
   const [form, setForm] = useState({
     terminalType: data.terminalType || "",
     submissionMonth: data.submissionMonth || "",
@@ -29,10 +30,12 @@ export default function ServiceTypeStep({ data, onNext, onUpdate }) {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    onUpdate(form);
-    onNext();
-  };
+  e.preventDefault();
+
+  onUpdate(form);
+  onNext();
+};
+
 
   return (
     <motion.form
@@ -139,15 +142,20 @@ export default function ServiceTypeStep({ data, onNext, onUpdate }) {
       </div>
 
       {/* Submit */}
-      <div className="text-right">
-        <motion.button
+      <div className="col-span-2 flex justify-between mt-4">
+        <button
+          type="button"
+          onClick={onBack}
+          className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400"
+        >
+          Back
+        </button>
+        <button
           type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-          className="bg-green-600 text-white px-10 py-3 rounded-xl font-bold shadow hover:bg-green-700 transition"
+          className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
         >
           Next
-        </motion.button>
+        </button>
       </div>
     </motion.form>
   );

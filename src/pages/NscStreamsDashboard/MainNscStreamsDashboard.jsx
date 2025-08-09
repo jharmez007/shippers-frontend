@@ -1,5 +1,5 @@
 
-import { DashboardHeader } from '../../components';
+import { DashboardHeader, NscStreamsKPILandingDashboard } from '../../components';
 
 const MainNscStreamsDashboard = () => {
   
@@ -9,16 +9,25 @@ const MainNscStreamsDashboard = () => {
       {/* Header */}
       <DashboardHeader />
 
-      <div className="bg-white rounded-2xl shadow-md p-6 w-full">
-        <h2 className="text-xl font-bold text-gray-800">
-          Welcome to the Seaport Terminal Real-Time Efficiency Assessment & Monitoring System (STREAMS)
+      {/* Welcome Banner */}
+      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 w-full">
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 tracking-tight mb-2">
+          Welcome to STREAMS
         </h2>
-        <p className="text-lg text-gray-600">
-          5  submissions  confirmed, 3 pending for this month July 2025
+        <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+          Seaport Terminal Real-Time Efficiency Assessment & Monitoring System
         </p>
-      </div>
-      <div className='h-14' />
-      
+
+        <div className="mt-4">
+          <p className="text-base md:text-lg font-medium text-gray-700">
+            <span className="text-green-600 font-semibold">5</span> submissions confirmed,&nbsp;
+            <span className="text-yellow-500 font-semibold">3</span> pending for July 2025
+          </p>
+        </div>
+      </section>
+
+      <div className='h-6' />
+      <NscStreamsKPILandingDashboard />
     </main>
   )
 }

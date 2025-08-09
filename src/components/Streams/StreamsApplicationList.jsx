@@ -1,149 +1,187 @@
-import { useEffect, useState } from 'react';
-import { StreamsApplicationDetailModal } from '..';
-import {CustomDropdown} from '../';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+
+import { Button, Select } from '../component';
+import { StreamsApplicationDetailModal, CustomTab } from '..';
+import { getKPI, getThroughput } from '../../services/streamsServices';
 
 const ITEMS_PER_PAGE = 10;
-const submissionTypes = ["All", "KPI", "Throughput", "Shipping Lines", "Tariffs", "SOP"];
-
-const dummySubmissions = [
-  {
-    id: 1,
-    type: "KPI",
-    code: "kpi_001",
-    service: "General Cargo",
-    application_status: "pending",
-    created_at: "2025-06-05T12:00:00Z",
-  },
-  {
-    id: 2,
-    type: "Throughput",
-    code: "tp_002",
-    service: "Bulk Terminal",
-    application_status: "confirmed",
-    created_at: "2025-05-20T09:00:00Z",
-  },
-  {
-    id: 3,
-    type: "Shipping Lines",
-    code: "sl_003",
-    service: "Container Terminal",
-    application_status: "pending",
-    created_at: "2025-04-18T13:30:00Z",
-  },
-  {
-    id: 4,
-    type: "Tariffs",
-    code: "tar_004",
-    service: "RoRo Cargo",
-    application_status: "confirmed",
-    created_at: "2025-03-25T10:00:00Z",
-  },
-  {
-    id: 5,
-    type: "SOP",
-    code: "sop_005",
-    service: "General Cargo",
-    application_status: "pending",
-    created_at: "2025-02-10T16:45:00Z",
-  },
-  {
-    id: 6,
-    type: "KPI",
-    code: "kpi_006",
-    service: "Bulk Terminal",
-    application_status: "confirmed",
-    created_at: "2025-01-18T11:15:00Z",
-  },
-  {
-    id: 7,
-    type: "KPI",
-    code: "kpi_006",
-    service: "Bulk Terminal",
-    application_status: "confirmed",
-    created_at: "2025-01-18T11:15:00Z",
-  },
-  {
-    id: 8,
-    type: "KPI",
-    code: "kpi_006",
-    service: "Bulk Terminal",
-    application_status: "confirmed",
-    created_at: "2025-01-18T11:15:00Z",
-  },
-  {
-    id: 9,
-    type: "KPI",
-    code: "kpi_006",
-    service: "Bulk Terminal",
-    application_status: "confirmed",
-    created_at: "2025-01-18T11:15:00Z",
-  },
-  {
-    id: 10,
-    type: "KPI",
-    code: "kpi_006",
-    service: "Bulk Terminal",
-    application_status: "confirmed",
-    created_at: "2025-01-18T11:15:00Z",
-  },
-  {
-    id: 11,
-    type: "KPI",
-    code: "kpi_006",
-    service: "Bulk Terminal",
-    application_status: "confirmed",
-    created_at: "2025-01-18T11:15:00Z",
-  },
+const submissionTypes = ["KPI", "Throughput", "Tariffs", "SOP", "Shipping Lines"];
+const monthNames = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
 
 const StreamsApplicationList = () => {
   const [submissions, setSubmissions] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [selectedType, setSelectedType] = useState("All");
+  const [selectedType, setSelectedType] = useState("KPI");
   const [selectedApp, setSelectedApp] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Filters
+  const [service, setService] = useState('');
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
+  const [quarter, setQuarter] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Fetch Data by Tab
   useEffect(() => {
-    const sorted = [...dummySubmissions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    setSubmissions(sorted);
-    setFiltered(sorted);
-  }, []);
+    const fetchData = async () => {
+      try {
+        let response;
+
+        if (selectedType === "KPI") {
+          response = await getKPI();
+        } else if (selectedType === "Throughput") {
+          response = await getThroughput();
+        } else {
+          // Placeholder for other submission type APIs
+          setSubmissions([]);
+          return;
+        }
+
+        if (response?.data?.data) {
+          const sorted = [...response.data.data].sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          );
+          setSubmissions(sorted);
+        } else {
+          setSubmissions([]);
+          toast.error(`Failed to fetch ${selectedType} submissions: ${response?.message || "Unknown error"}`);
+        }
+      } catch (error) {
+        setSubmissions([]);
+        toast.error(`Error fetching ${selectedType} submissions: ${error?.message || "Unknown error"}`);
+      }
+    };
+
+    fetchData();
+  }, [selectedType]);
+
+  // Quarter to month mapping
+  const quarterMonths = {
+    Q1: [1, 2, 3],   // Jan - Mar
+    Q2: [4, 5, 6],   // Apr - Jun
+    Q3: [7, 8, 9],   // Jul - Sep
+    Q4: [10, 11, 12] // Oct - Dec
+  };
+
+  // Handle Quarter change
+  const handleQuarterChange = (value) => {
+    setQuarter(value);
+    setMonth(''); // Clear month when quarter is selected
+  };
+
+  // Handle Month change
+  const handleMonthChange = (value) => {
+    setMonth(value);
+    setQuarter(''); // Clear quarter when month is selected
+  };
+
+  const filteredData = useMemo(() => {
+    return submissions.filter((s) => {
+      const serviceMatch =
+        !service ||
+        (selectedType === "KPI" && s.cargo_type === service) ||
+        (selectedType === "Throughput" && s.service_type === service);
+
+      const monthNum = parseInt(s.month, 10);
+
+      const quarterMatch =
+        !quarter || (quarterMonths[quarter]?.includes(monthNum));
+
+      return (
+        serviceMatch &&
+        (!year || s.year?.toString() === year) &&
+        (!month || monthNum === parseInt(month, 10)) &&
+        quarterMatch
+      );
+    });
+  }, [submissions, service, year, month, quarter, selectedType]);
+
 
   useEffect(() => {
-    if (selectedType === "All") {
-      setFiltered(submissions);
-    } else {
-      const filteredByType = submissions.filter(sub => sub.type === selectedType);
-      setFiltered(filteredByType);
-    }
+    setFiltered(filteredData);
     setCurrentPage(1);
-  }, [selectedType, submissions]);
+  }, [filteredData]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const paginatedData = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const paginatedData = filtered.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
-    <div className="py-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center">
-          <svg className="w-5 h-5 mr-2 text-[#000]" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M3 4a1 1 0 011-1h6a1 1 0 110 2H5v14h14v-5a1 1 0 112 0v6a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm17.707 1.707a1 1 0 00-1.414-1.414L16 7.586 14.707 6.293a1 1 0 10-1.414 1.414L14.586 9l-1.293 1.293a1 1 0 101.414 1.414L16 10.414l1.293 1.293a1 1 0 001.414-1.414L17.414 9l1.293-1.293z"/>
-          </svg>
-          All Submissions
-        </h2>
-
-        {/* Dropdown filter */}
-        <CustomDropdown
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="py-4"
+    >
+      {/* Tabs */}
+      <div className="flex justify-between items-center mb-6 gap-4">
+        <CustomTab
           selectedType={selectedType}
           setSelectedType={setSelectedType}
           submissionTypes={submissionTypes}
         />
+        <Button
+          onClick={() => setShowFilters(!showFilters)}
+          className="bg-primary text-white hover:bg-green-700"
+        >
+          {showFilters ? 'Hide Filters' : 'More Filters'}
+        </Button>
+        <Button
+          onClick={() => {
+            setService('');
+            setYear('');
+            setMonth('');
+            setQuarter('');
+          }}
+          className="bg-gray-100 text-gray-800 hover:bg-gray-200"
+        >
+          Reset Filters
+        </Button>
       </div>
 
+      {/* More Filters */}
+      {showFilters && (
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+          <Select onValueChange={setService} value={service} placeholder="Service">
+            <option value="Container Terminal">Container Terminal</option>
+            <option value="Roro Terminal">RoRo Terminal</option>
+            <option value="Bulk Terminal">Bulk Terminal</option>
+            <option value="General Cargo">General Cargo Terminal</option>
+          </Select>
+
+          <Select onValueChange={setYear} value={year} placeholder="Year">
+            {[2025, 2024, 2023].map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </Select>
+
+          <Select onValueChange={handleQuarterChange} value={quarter} placeholder="Quarter">
+            {['Q1', 'Q2', 'Q3', 'Q4'].map((q) => (
+              <option key={q} value={q}>{q}</option>
+            ))}
+          </Select>
+
+          <Select onValueChange={handleMonthChange} value={month} placeholder="Month">
+            {monthNames.map((m, i) => (
+              <option key={m} value={i + 1}>{m}</option>
+            ))}
+          </Select>
+        </div>
+      )}
+
+      {/* Table */}
       {filtered.length === 0 ? (
         <div className="flex justify-center items-center h-40 text-gray-500 text-lg font-semibold">
-          No submissions available for this category
+          No {selectedType} submissions available
         </div>
       ) : (
         <>
@@ -151,38 +189,34 @@ const StreamsApplicationList = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-100 sticky top-0 z-10">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">Type</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">Code</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">Service</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">Date</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">Action</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">OFFICER</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">MONTH</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">YEAR</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">SERVICE</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">STATUS</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">DATE</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {paginatedData.map(sub => (
-                  <tr key={sub.id} className="hover:bg-gray-50 transition" onClick={() => setSelectedApp(sub.id)}>
-                    <td className="px-6 py-4 font-medium">{sub.type}</td>
-                    <td className="px-6 py-4">{sub.code}</td>
-                    <td className="px-6 py-4">{sub.service}</td>
+                  <tr
+                    key={sub.id}
+                    className="hover:bg-gray-50 transition cursor-pointer"
+                    onClick={() => setSelectedApp(sub)}
+                  >
+                    <td className="px-6 py-4 font-medium">{sub.officer_name}</td>
+                    <td className="px-6 py-4">{monthNames[(parseInt(sub.month, 10) || 1) - 1]}</td>
+                    <td className="px-6 py-4">{sub.year}</td>
+                    <td className="px-6 py-4">{sub.cargo_type || sub.service_type}</td>
                     <td className="px-6 py-4">
                       <span className={`text-sm px-3 py-1 rounded-full font-semibold 
-                        ${sub.application_status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
-                        {sub.application_status}
+                        ${sub.application_status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-green-100 text-green-800'}`}>
+                        {sub.status}
                       </span>
                     </td>
                     <td className="px-6 py-4">{new Date(sub.created_at).toLocaleDateString()}</td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedApp(sub.id);
-                        }}
-                        className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 transition"
-                      >
-                        View
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -191,36 +225,36 @@ const StreamsApplicationList = () => {
 
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
-            <button
+            <Button
               onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
-              className={`px-4 py-2 rounded text-sm font-medium ${currentPage === 1 ? 'bg-gray-200 text-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+              className={`bg-gray-100 hover:bg-gray-200 disabled:opacity-50`}
             >
               Previous
-            </button>
-
+            </Button>
             <span className="text-sm text-gray-700">
               Page <strong className="text-blue-600">{currentPage}</strong> of <strong className="text-blue-600">{totalPages}</strong>
             </span>
-
-            <button
+            <Button
               onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className={`px-4 py-2 rounded text-sm font-medium ${currentPage === totalPages ? 'bg-gray-200 text-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+              className={`bg-gray-100 hover:bg-gray-200 disabled:opacity-50`}
             >
               Next
-            </button>
+            </Button>
           </div>
 
+          {/* Modal */}
           {selectedApp && (
             <StreamsApplicationDetailModal
-              applicationId={selectedApp}
+              selectedType={selectedType}
+              application={selectedApp}
               onClose={() => setSelectedApp(null)}
             />
           )}
         </>
       )}
-    </div>
+    </motion.div>
   );
 };
 

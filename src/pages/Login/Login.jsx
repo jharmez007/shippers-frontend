@@ -120,6 +120,9 @@ const Login = () => {
           } else if (userType === "terminal") {
             setLoading(false);
             navigate("/streams-dashboard/dashboard");
+          } else if (userType === "shipping_line") {
+            setLoading(false);
+            navigate("/shipping-lines-dashboard/dashboard");
           } else if (userType === "regulator") {
             setLoading(false);
             navigate("/maritime-police-dashboard/dashboard");

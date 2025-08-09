@@ -1,33 +1,48 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdCheckCircle, MdRadioButtonUnchecked } from "react-icons/md";
 
-const fields = [
-  "Invoicing",
-  "Payment",
-  "Receipting",
-  "Examination Booking",
-  "Obtaining TDO",
-  "Claims",
-  "Refunds"
-];
+const fieldKeyMap = {
+  Invoicing: "invoicing",
+  Payment: "payment",
+  Receipting: "receipting",
+  "Examination Booking": "examsBooking",
+  "Obtaining TDO": "obtainingTDO",
+  Claims: "claims",
+  Refunds: "refunds",
+};
 
+const fields = Object.keys(fieldKeyMap);
 const options = ["Manual", "Online", "Manual and Online"];
 
 export default function TerminalReleaseStep({ data, onNext, onBack, onUpdate }) {
-  const [form, setForm] = useState(
-    fields.reduce((acc, field) => {
-      acc[field] = data[field] || "";
+  const [form, setForm] = useState({});
+
+  // Rehydrate form state from incoming data
+  useEffect(() => {
+    const initialForm = fields.reduce((acc, label) => {
+      const key = fieldKeyMap[label];
+      acc[label] = data[key] || "";
       return acc;
-    }, {})
-  );
+    }, {});
+    setForm(initialForm);
+  }, [data]);
 
   const handleRadioChange = (field, option) => {
-    setForm({ ...form, [field]: option });
+    setForm((prev) => ({ ...prev, [field]: option }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onUpdate(form);
+
+    const payload = Object.entries(form).reduce((acc, [label, value]) => {
+      const key = fieldKeyMap[label];
+      if (key) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    onUpdate(payload);
     onNext();
   };
 
@@ -35,17 +50,18 @@ export default function TerminalReleaseStep({ data, onNext, onBack, onUpdate }) 
     <form onSubmit={handleSubmit} className="space-y-6">
       {fields.map((field) => (
         <div key={field} className="bg-gray-50 p-4 rounded-xl shadow-sm">
-          <h3 className="text-gray-700 font-semibold mb-2 flex items-center gap-2">{field}</h3>
-          <div className="flex gap-6">
+          <h3 className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+            {field}
+          </h3>
+          <div className="flex gap-6 flex-wrap">
             {options.map((option) => (
               <label
                 key={option}
-                className={`flex items-center cursor-pointer px-4 py-2 rounded-lg transition
-                  ${
-                    form[field] === option
-                      ? "bg-green-100 border border-green-400"
-                      : "bg-white border border-gray-200 hover:bg-green-50"
-                  }`}
+                className={`flex items-center cursor-pointer px-4 py-2 rounded-lg transition ${
+                  form[field] === option
+                    ? "bg-green-100 border border-green-400"
+                    : "bg-white border border-gray-200 hover:bg-green-50"
+                }`}
               >
                 <span className="mr-2">
                   {form[field] === option ? (
@@ -87,4 +103,3 @@ export default function TerminalReleaseStep({ data, onNext, onBack, onUpdate }) 
     </form>
   );
 }
-

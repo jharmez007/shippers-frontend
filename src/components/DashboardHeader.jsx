@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { HiOutlineSearch, HiOutlineHome } from 'react-icons/hi';
+import { HiOutlineHome } from 'react-icons/hi';
 import { FaBell } from "react-icons/fa";
 
 
@@ -19,7 +19,7 @@ const DashboardHeader = () => {
             {user_type}
           </h1>
           <h1 className="text-lg font-bold mt-1">
-            {user_type === "terminal" ? "STREAMS Portal" : "CRD Portal"}
+            {user_type === "terminal" || user_type === "nsc" ? "STREAMS Portal" : "CRD Portal"}
           </h1>
         </div>
 
@@ -29,16 +29,6 @@ const DashboardHeader = () => {
             <Link to="/home">
               <HiOutlineHome className="text-2xl cursor-pointer" />
             </Link>
-
-            {/* Search Bar */}
-            <div className="relative w-full sm:w-64">
-              <input
-                type="text"
-                placeholder="Type"
-                className="pl-10 pr-4 py-1 rounded-xl bg-white text-black placeholder-gray-400 w-full focus:outline-none"
-              />
-              <HiOutlineSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            </div>
           </div>  
 
           <div className="flex relative items-center gap-4 mt-2 sm:mt-0">

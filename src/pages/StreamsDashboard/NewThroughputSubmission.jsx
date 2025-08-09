@@ -6,13 +6,13 @@ const NewThroughputSubmission = () => {
       {/* Header */}
       <DashboardHeader />
       {/* Cards */}
-      <div className="bg-white rounded-2xl shadow-md p-6 w-full">
-        <h2 className="text-xl font-bold text-gray-800">
-          Throughput Submission Form
+      <div className="p-4 w-full">
+        <h2 className="text-4xl uppercase font-bold text-white">
+          Monthly Throughput Submission Form
         </h2>
         
       </div>
-      <div className='h-24' />
+      <div className='h-20' />
       <ThroughputFormWrapper />
     </main>
   )

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const initialEquipmentTypes = [
   "RTGs",
@@ -13,23 +13,29 @@ const initialEquipmentTypes = [
 ];
 
 const defaultRow = {
-  type: "",
-  requiredLease: "",
-  requiredAcquired: "",
+  equipment_type: "",
+  required_on_lease: "",
+  required_acquired: "",
   functional: "",
-  nonFunctional: ""
+  non_functional: ""
 };
 
 export default function CargoEquipmentStep({ data, onNext, onBack, onUpdate }) {
-  // Initialize with equipment types if no data, else use saved data
-  const [rows, setRows] = useState(
-    data.equipmentRows && data.equipmentRows.length > 0
-      ? data.equipmentRows
-      : initialEquipmentTypes.map(type => ({
+  const [rows, setRows] = useState([]);
+
+  // Repopulate rows from data whenever this step is visited
+  useEffect(() => {
+    if (data.equipments && data.equipments.length > 0) {
+      setRows(data.equipments);
+    } else {
+      setRows(
+        initialEquipmentTypes.map(equipment_type => ({
           ...defaultRow,
-          type
+          equipment_type
         }))
-  );
+      );
+    }
+  }, [data]);
 
   const handleChange = (index, e) => {
     const newRows = [...rows];
@@ -47,7 +53,7 @@ export default function CargoEquipmentStep({ data, onNext, onBack, onUpdate }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onUpdate({ equipmentRows: rows });
+    onUpdate({ equipments: rows });
     onNext();
   };
 
@@ -75,8 +81,8 @@ export default function CargoEquipmentStep({ data, onNext, onBack, onUpdate }) {
                 <td className="p-2 align-middle border border-gray-200">
                   <input
                     type="text"
-                    name="type"
-                    value={row.type}
+                    name="equipment_type"
+                    value={row.equipment_type}
                     onChange={(e) => handleChange(index, e)}
                     className="w-full bg-transparent rounded-md px-2 py-2 my-1 outline-none"
                     required
@@ -86,19 +92,19 @@ export default function CargoEquipmentStep({ data, onNext, onBack, onUpdate }) {
                 <td className="p-2 align-middle border border-gray-200">
                   <input
                     type="number"
-                    name="requiredLease"
-                    value={row.requiredLease}
+                    name="required_on_lease"
+                    value={row.required_on_lease}
                     onChange={(e) => handleChange(index, e)}
-                    className="w-full bg-transparent rounded-md px-2 py-2 my-1  outline-none"
+                    className="w-full bg-transparent rounded-md px-2 py-2 my-1 outline-none"
                   />
                 </td>
                 <td className="p-2 align-middle border border-gray-200">
                   <input
                     type="number"
-                    name="requiredAcquired"
-                    value={row.requiredAcquired}
+                    name="required_acquired"
+                    value={row.required_acquired}
                     onChange={(e) => handleChange(index, e)}
-                    className="w-full bg-transparent rounded-md px-2 py-2 my-1  outline-none"
+                    className="w-full bg-transparent rounded-md px-2 py-2 my-1 outline-none"
                   />
                 </td>
                 <td className="p-2 align-middle border border-gray-200">
@@ -107,16 +113,16 @@ export default function CargoEquipmentStep({ data, onNext, onBack, onUpdate }) {
                     name="functional"
                     value={row.functional}
                     onChange={(e) => handleChange(index, e)}
-                    className="w-full bg-transparent rounded-md px-2 py-2 my-1  outline-none"
+                    className="w-full bg-transparent rounded-md px-2 py-2 my-1 outline-none"
                   />
                 </td>
                 <td className="p-2 align-middle border border-gray-200">
                   <input
                     type="number"
-                    name="nonFunctional"
-                    value={row.nonFunctional}
+                    name="non_functional"
+                    value={row.non_functional}
                     onChange={(e) => handleChange(index, e)}
-                    className="w-full bg-transparent rounded-md px-2 py-2 my-1  outline-none"
+                    className="w-full bg-transparent rounded-md px-2 py-2 my-1 outline-none"
                   />
                 </td>
                 <td className="p-2 text-center align-middle border border-gray-200">

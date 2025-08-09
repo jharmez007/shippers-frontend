@@ -2,7 +2,7 @@ import { useState } from "react";
 
 
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes, FaBell, FaSignOutAlt} from "react-icons/fa";
+import { FaBars, FaTimes, FaIdBadge , FaSignOutAlt} from "react-icons/fa";
 
 
 import { streamsMainLinks, streamsAccountLinks } from "../../constants/dummy";
@@ -127,7 +127,7 @@ const StreamsSidebar = () => {
             <div className="bg-indigo-50 px-4 py-3 rounded-xl text-center">
               <div className="flex justify-center mb-2">
                 <div className="bg-green-500 text-white rounded-full p-2">
-                  <FaBell className="text-lg" />
+                  <FaIdBadge  className="text-lg" />
                 </div>
               </div>
               <p className="text-sm text-gray-700 mb-2">Check Container Status</p>

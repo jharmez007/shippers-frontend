@@ -7,7 +7,13 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
     berthOccupancy: data.berthOccupancy || "",
     craneMovesPerHour: data.craneMovesPerHour || "",
     truckTurnaround: data.truckTurnaround || "",
-    claimsReceived: data.claimsReceived || ""
+    claimsReceived: data.claimsReceived || "",
+    claimsResolved: data.claimsResolved || "",
+    profiledBoxes: data.profiledBoxes || "",
+    overtimeCargo: data.overtimeCargo || "",
+    complaintsHandled: data.complaintsHandled || "",
+    complaintsType: data.complaintsType || "",
+    shipCalls: data.shipCalls || "",
   });
 
   const handleChange = (e) => {
@@ -24,7 +30,9 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Vessel Turnaround Time (hrs)</label>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Vessel Turnaround Time (hrs)
+        </label>
         <input
           type="number"
           name="vesselTurnaround"
@@ -37,7 +45,9 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
       </div>
 
       <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Cargo Dwell Time (days)</label>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Cargo Dwell Time (days)
+        </label>
         <input
           type="number"
           name="cargoDwellTime"
@@ -50,7 +60,9 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
       </div>
 
       <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Berth Occupancy Rate (%)</label>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Berth Occupancy Rate (%)
+        </label>
         <input
           type="number"
           name="berthOccupancy"
@@ -63,7 +75,9 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
       </div>
 
       <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Crane Moves per Hour</label>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Crane Moves per Hour
+        </label>
         <input
           type="number"
           name="craneMovesPerHour"
@@ -76,7 +90,9 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
       </div>
 
       <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Truck Turnaround Time (mins)</label>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Truck Turnaround Time (mins)
+        </label>
         <input
           type="number"
           name="truckTurnaround"
@@ -89,7 +105,9 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
       </div>
 
       <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Number of Claims Received</label>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Number of Claims Received
+        </label>
         <input
           type="number"
           name="claimsReceived"
@@ -97,6 +115,96 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
           onChange={handleChange}
           required
           className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition placeholder-green-300"
+          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+        />
+      </div>
+
+      <div>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Number of Claims Resolved
+        </label>
+        <input
+          type="number"
+          name="claimsResolved"
+          value={form.claimsResolved}
+          onChange={handleChange}
+          required
+          className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
+          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+        />
+      </div>
+
+      <div>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Number of Profiled Boxes
+        </label>
+        <input
+          type="number"
+          name="profiledBoxes"
+          value={form.profiledBoxes}
+          onChange={handleChange}
+          required
+          className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
+          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+        />
+      </div>
+
+      <div>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Overtime Cargo (TEUs)
+        </label>
+        <input
+          type="number"
+          name="overtimeCargo"
+          value={form.overtimeCargo}
+          onChange={handleChange}
+          required
+          className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
+          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+        />
+      </div>
+
+      <div>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Number of Complaints Handled
+        </label>
+        <input
+          type="number"
+          name="complaintsHandled"
+          value={form.complaintsHandled}
+          onChange={handleChange}
+          required
+          className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
+          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+        />
+      </div>
+
+      <div>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Type of Complaints
+        </label>
+        <input
+          type="text"
+          name="complaintsType"
+          value={form.complaintsType}
+          onChange={handleChange}
+          required
+          className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
+          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+        />
+      </div>
+
+      <div>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+          Ship Calls
+        </label>
+        <input
+          type="text"
+          name="shipCalls"
+          value={form.shipCalls}
+          onChange={handleChange}
+          required
+          className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
           style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
         />
       </div>
