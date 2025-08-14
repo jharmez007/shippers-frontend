@@ -1,66 +1,97 @@
-import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react'; 
-import { images } from '../constants';
+import { useEffect, useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { images } from "../constants";
 
 const slides = [
   {
-    title: 'Confirmation of Reasonableness of Freight,\nDemurrage Fees and Charter Party Fees',
+    title: "Confirmation of Reasonableness of Freight,\nDemurrage Fees and Charter Party Fees",
     text: "In an effort to eliminate incidences of illegal capital flight, the Nigerian Shippers' Council confirms reasonableness of Freight, Demurrage Fees And Charter Party Fees, on behalf of Central Bank of Nigeria (CBN).",
-    image: images.port
+    image: images.port,
   },
   {
-    title: 'Digitalization of Port Processes',
-    text: 'The Nigerian Shippers\' Council is collaborating with stakeholders to streamline port processes through technology.',
-    image: images.porttwo
+    title: "Digitalization of Port Processes",
+    text: "The Nigerian Shippers' Council is collaborating with stakeholders to streamline port processes through technology.",
+    image: images.porttwo,
   },
   {
-    title: 'Ensuring Transparent Shipping Charges',
-    text: 'Efforts are underway to regulate shipping charges across all Nigerian ports.',
-    image: images.portthree
-  }
+    title: "Ensuring Transparent Shipping Charges",
+    text: "Efforts are underway to regulate shipping charges across all Nigerian ports.",
+    image: images.portthree,
+  },
 ];
+
+// Preload images for smooth transitions
+const preloadImages = (slides) => {
+  slides.forEach((slide) => {
+    const img = new Image();
+    img.src = slide.image;
+  });
+};
 
 const variants = {
   enter: (direction) => ({
     x: direction > 0 ? 300 : -300,
-    opacity: 0
+    opacity: 0,
+    willChange: "transform, opacity",
   }),
   center: {
     x: 0,
     opacity: 1,
-    transition: { duration: 0.7 }
+    transition: { duration: 0.7 },
   },
   exit: (direction) => ({
     x: direction < 0 ? 300 : -300,
     opacity: 0,
-    transition: { duration: 0.5 }
-  })
+    transition: { duration: 0.5 },
+    willChange: "transform, opacity",
+  }),
 };
 
 const LandingSlider = () => {
   const [[current, direction], setCurrent] = useState([0, 1]);
   const [paused, setPaused] = useState(false);
-  const timeoutRef = useRef(null);
+  const requestRef = useRef(null);
 
-  const slideTo = (index) => {
-    const newDirection = index > current ? 1 : -1;
-    setCurrent([index, newDirection]);
-  };
+  // Preload images on mount
+  useEffect(() => {
+    preloadImages(slides);
+  }, []);
 
-  const nextSlide = () => {
+  const slideTo = useCallback(
+    (index) => {
+      const newDirection = index > current ? 1 : -1;
+      setCurrent([index, newDirection]);
+    },
+    [current]
+  );
+
+  const nextSlide = useCallback(() => {
     setCurrent(([prev]) => [(prev + 1) % slides.length, 1]);
-  };
+  }, []);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setCurrent(([prev]) => [(prev - 1 + slides.length) % slides.length, -1]);
-  };
+  }, []);
 
+  // Smooth autoplay with requestAnimationFrame
   useEffect(() => {
     if (paused) return;
-    timeoutRef.current = setTimeout(nextSlide, 3000);
-    return () => clearTimeout(timeoutRef.current);
-  }, [current, paused]);
+
+    let start = null;
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      if (elapsed > 3000) {
+        nextSlide();
+        start = timestamp;
+      }
+      requestRef.current = requestAnimationFrame(step);
+    };
+
+    requestRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, [current, paused, nextSlide]);
 
   return (
     <div className="app__flex w-full h-[80vh] py-8 lg:p-20">
@@ -69,18 +100,17 @@ const LandingSlider = () => {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        {/* Background Image */}
+        {/* Background Image as Motion Div for GPU acceleration */}
         <AnimatePresence initial={false} custom={direction}>
-          <motion.img
-            key={slides[current].image + current}
-            src={slides[current].image}
-            alt="Slide"
+          <motion.div
+            key={current}
             custom={direction}
             variants={variants}
             initial="enter"
             animate="center"
             exit="exit"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${slides[current].image})` }}
           />
         </AnimatePresence>
 
@@ -90,7 +120,7 @@ const LandingSlider = () => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={slides[current].title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 20, willChange: "transform, opacity" }}
                 animate={{ opacity: 1, y: 0, transition: { duration: 0.5 } }}
                 exit={{ opacity: 0, y: -10, transition: { duration: 0.3 } }}
               >
@@ -126,7 +156,7 @@ const LandingSlider = () => {
               key={i}
               onClick={() => slideTo(i)}
               className={`w-3 h-3 rounded-full ${
-                i === current ? 'bg-white' : 'bg-white/40'
+                i === current ? "bg-white" : "bg-white/40"
               } transition-colors`}
             />
           ))}

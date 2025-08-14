@@ -1,4 +1,3 @@
-'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -6,12 +5,15 @@ import { CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { Button, Select, Pagination } from '../component';
+import { NscStreamsModal } from '..';
 import { getKPI, confirmKPI } from '../../services/nscStreamsServices';
 import { getPortComplex, getTerminals } from "../../services/portComplexServices";
 
-
-
 const PAGE_SIZE = 10;
+const monthNames = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
 const NscStreamsKpiTable = () => {
   const [allData, setAllData] = useState([]);
@@ -73,14 +75,34 @@ const NscStreamsKpiTable = () => {
     fetchTerminals();
   }, [portComplex]);
 
+  // Quarter to month mapping
+  const quarterMonths = {
+    Q1: [1, 2, 3],   // Jan - Mar
+    Q2: [4, 5, 6],   // Apr - Jun
+    Q3: [7, 8, 9],   // Jul - Sep
+    Q4: [10, 11, 12] // Oct - Dec
+  };
+
+  // Handle Quarter change
+  const handleQuarterChange = (value) => {
+    setQuarter(value);
+    setMonth(''); // Clear month when quarter is selected
+  };
+
+  // Handle Month change
+  const handleMonthChange = (value) => {
+    setMonth(value);
+    setQuarter(''); // Clear quarter when month is selected
+  };
+
   const filtered = useMemo(() => {
     return allData.filter((item) => (
       (!portComplex || item.port_complex === portComplex) &&
       (!terminal || item.terminal_name === terminal) &&
       (!type || item.cargo_type === type) &&
       (!year || item.year?.toString() === year) &&
-      (!month || item.month === month) &&
-      (!quarter || item.quarter === quarter)
+      (!month || parseInt(item.month, 10) === parseInt(month, 10)) &&
+      (!quarter || (quarterMonths[quarter]?.includes(parseInt(item.month, 10))))
     ));
   }, [portComplex, terminal, type, year, month, quarter, allData]);
 
@@ -105,8 +127,6 @@ const NscStreamsKpiTable = () => {
       toast.error(result.message || "Failed to confirm submission");
     }
   };
-
-  const closeModal = () => setSelectedSubmission(null);
 
   return (
     <motion.div
@@ -150,23 +170,26 @@ const NscStreamsKpiTable = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 animate-fade-in">
           <Select onValueChange={setType} value={type} placeholder="Service">
             <option value="Container Terminal">Container Terminal</option>
-            <option value="RoRo Terminal">RoRo Terminal</option>
+            <option value="Roro Terminal">RoRo Terminal</option>
             <option value="Bulk Terminal">Bulk Terminal</option>
-            <option value="General Cargo Terminal">General Cargo Terminal</option>
+            <option value="General Cargo">General Cargo Terminal</option>
           </Select>
+
           <Select onValueChange={setYear} value={year} placeholder="Year">
             {[2025, 2024, 2023].map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
           </Select>
-          <Select onValueChange={setQuarter} value={quarter} placeholder="Quarter">
+
+          <Select onValueChange={handleQuarterChange} value={quarter} placeholder="Quarter">
             {['Q1', 'Q2', 'Q3', 'Q4'].map((q) => (
               <option key={q} value={q}>{q}</option>
             ))}
           </Select>
-          <Select onValueChange={setMonth} value={month} placeholder="Month">
-            {['January','February','March','April','May','June','July','August','September','October','November','December'].map((m) => (
-              <option key={m} value={m}>{m}</option>
+
+          <Select onValueChange={handleMonthChange} value={month} placeholder="Month">
+            {monthNames.map((m, i) => (
+              <option key={m} value={i + 1}>{m}</option>
             ))}
           </Select>
         </div>
@@ -203,7 +226,7 @@ const NscStreamsKpiTable = () => {
                     <td className="p-4">{item.unique_code}</td>
                     <td className="p-4">{item.port_complex}</td>
                     <td className="p-4">{item.terminal_name}</td>
-                    <td className="p-4">{item.month}</td>
+                    <td className="p-4">{monthNames[(parseInt(item.month, 10) || 1) - 1]}</td>
                     <td className="p-4">{item.year}</td>
                     <td className="p-4 text-center">
                       <button
@@ -251,24 +274,11 @@ const NscStreamsKpiTable = () => {
       )}
 
       {selectedSubmission && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center">
-          <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-2xl relative animate-fade-in">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">Submission Details</h2>
-            <div className="space-y-2 text-sm text-gray-700">
-              <p><strong>Port Complex:</strong> {selectedSubmission.port_complex}</p>
-              <p><strong>Terminal:</strong> {selectedSubmission.terminal_name}</p>
-              <p><strong>Type:</strong> {selectedSubmission.cargo_type}</p>
-            </div>
-            <div className="flex justify-between items-center mt-6">
-              <Button onClick={closeModal} className="bg-gray-200 hover:bg-gray-300 text-gray-800">
-                Close
-              </Button>
-              <Button onClick={() => alert('Downloading...')} className="bg-green-600 hover:bg-green-700 text-white">
-                Download KPI
-              </Button>
-            </div>
-          </div>
-        </div>
+        <NscStreamsModal
+          selectedType={'KPI'}
+          application={selectedSubmission}
+          onClose={() => setSelectedSubmission(null)}
+        />
       )}
     </motion.div>
   );

@@ -7,7 +7,7 @@ import autoTable from "jspdf-autotable";
 
 import { images } from "../../constants";
 
-import { getKPIReport, getThroughputReport } from "../../services/streamsServices";
+import { getKPIReport, getThroughputReport } from "../../services/nscStreamsServices";
 
 
 const monthNames = [
@@ -15,7 +15,7 @@ const monthNames = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-export default function StreamsApplicationDetailModal({ selectedType, application, onClose }) {
+export default function NscStreamsModal({ selectedType, application, onClose }) {
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
 

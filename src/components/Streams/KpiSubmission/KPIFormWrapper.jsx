@@ -13,8 +13,8 @@ import {
 } from "../..";
 
 const steps = [
-  { label: "Service Type & Submission Date", icon: <MdOutlineAssignment className="text-green-600" /> },
   { label: "Personal Information", icon: <MdPerson className="text-green-600" /> },
+  { label: "Service Type & Submission Date", icon: <MdOutlineAssignment className="text-green-600" /> },
   { label: "Cargo & Ship Traffic KPIs", icon: <MdLocalShipping className="text-green-600" /> },
   { label: "Terminal Release Procedure", icon: <MdFactCheck className="text-green-600" /> },
   { label: "Cargo Handling Equipment", icon: <MdOutlineSettings className="text-green-600" /> },

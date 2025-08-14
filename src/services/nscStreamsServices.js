@@ -14,6 +14,20 @@ export const getKPI = async () => {
   }
 };
 
+export const getKPIReport = async (body) => {
+  try {
+    const response = await Api({
+      method: "get",
+      url:  `/nsc/mandt/kpi-reports/${body.id}`,
+    });
+    return { data: response?.data, status: response?.status };
+  } catch (error) {
+    return {
+      message: error?.response?.data?.data?.message || error?.response?.data?.message || error.message,
+    };
+  }
+};
+
 export const confirmKPI = async (body) => {
   try {
     const response = await Api({
@@ -34,6 +48,20 @@ export const getThroughput = async () => {
     const response = await Api({
       method: "get",
       url: "/nsc/mandt/throughput-reports",
+    });
+    return { data: response?.data, status: response?.status };
+  } catch (error) {
+    return {
+      message: error?.response?.data?.data?.message || error?.response?.data?.message || error.message,
+    };
+  }
+};
+
+export const getThroughputReport = async (body) => {
+  try {
+    const response = await Api({
+      method: "get",
+      url:  `/nsc/mandt/throughput-reports/${body.id}`,
     });
     return { data: response?.data, status: response?.status };
   } catch (error) {

@@ -87,71 +87,71 @@ const FlagContainerForm = ({ isOpen, onClose, addContainer }) => {
   }, [portComplexWatch, setValue]);
 
   const onSubmit = async (data) => {
-    setLoading(true);
+  setLoading(true);
 
-    // Map form data to backend payload
-    const payload = {
-      shipper: data.shipper,
-      consignee: data.consignee,
-      container_no: data.containerNumber,
-      seal_no: data.sealNumber,
-      bill_of_lading: data.billOfLading,
-      place_of_request: data.placeOfReceipt,
-      place_of_loading: data.placeOfReceipt,
-      port_of_loading: data.portOfLoading,
-      port_of_delivery: data.placeOfDelivery,
-      port_complex: data.portComplex,
-      terminal: data.terminal,
-      vessel_number: data.vesselVoyage,
-      carriage_by: data.carriageBy,
-      quantity: Number(data.quantityPackages),
-      gross_weight: Number(data.grossWeight),
-      reason_for_flagging: data.reason,
-      goods_description: data.goodsDescription,
-      date_flagged: data.dateFlagged,
-      port_of_discharge: data.portOfDischarge,
-    };
-
-    // Handle file upload
-    const file = fileInputRef.current?.files[0];
-    let formData;
-    if (file) {
-      formData = new FormData();
-      Object.entries(payload).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-      formData.append("document", file);
-    }
-
-    // Use FormData if file exists, else send JSON
-    const res = await flagContainer(file ? formData : payload);
-
-    setLoading(false);
-
-    // Handle backend error for already flagged container
-    if (res?.error) {
-      toast.error(res.error);
-      return;
-    }
-
-    if (res.status === 201 || res.status === 200) {
-      toast.success("Container flagged!", {
-        description: "The flagged container has been added.",
-      });
-      addContainer({
-        id: Date.now().toString(),
-        container_no: data.containerNumber,
-        reason_for_flagging: data.reason,
-        created_at: data.dateFlagged,
-        status: "Flagged",
-        terminal: data.terminal,
-      });
-      reset();
-      onClose();
-    } else {
-      toast.error(res.message || "Failed to flag container.");
-    }
+  const payload = {
+    shipper: data.shipper,
+    consignee: data.consignee,
+    container_no: data.containerNumber,
+    seal_no: data.sealNumber,
+    bill_of_lading: data.billOfLading,
+    place_of_request: data.placeOfReceipt,
+    place_of_loading: data.placeOfReceipt,
+    port_of_loading: data.portOfLoading,
+    port_of_delivery: data.placeOfDelivery,
+    port_complex: data.portComplex,
+    terminal: data.terminal,
+    vessel_number: data.vesselVoyage,
+    carriage_by: data.carriageBy,
+    quantity: Number(data.quantityPackages),
+    gross_weight: Number(data.grossWeight),
+    reason_for_flagging: data.reason,
+    goods_description: data.goodsDescription,
+    date_flagged: data.dateFlagged,
+    port_of_discharge: data.portOfDischarge,
   };
+
+  // Always use FormData
+  const formData = new FormData();
+  Object.entries(payload).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
+
+  // Append file under backend's expected field name
+  const file = fileInputRef.current?.files[0];
+  if (file) {
+    formData.append("supporting_document", file);
+  }
+
+  // Send FormData directly
+  const res = await flagContainer(formData);
+
+  setLoading(false);
+
+  if (res?.error) {
+    toast.error(res.error);
+    return;
+  }
+
+  if (res.status === 201 || res.status === 200) {
+    toast.success("Container flagged!", {
+      description: "The flagged container has been added.",
+    });
+    addContainer({
+      id: Date.now().toString(),
+      container_no: data.containerNumber,
+      reason_for_flagging: data.reason,
+      created_at: data.dateFlagged,
+      status: "Flagged",
+      terminal: data.terminal,
+    });
+    reset();
+    onClose();
+  } else {
+    toast.error(res.message || "Failed to flag container.");
+  }
+};
+
 
   const renderInput = (name, label, placeholder = "", type = "text") => (
     <div>

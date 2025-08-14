@@ -84,6 +84,7 @@ export { default as VesselFilter } from './NscStreams/VesselFilter';
 export { default as MonthlyVesselTable } from './NscStreams/MonthlyVesselTable';
 export { default as VesselAnalysisDashboard } from './NscStreams/VesselAnalysisDashboard';
 export { default as AnnualVesselAverage } from './NscStreams/AnnualVesselAverage';
+export { default as NscStreamsModal } from './NscStreams/NscStreamsModal';
 
 
 export { default as StreamsContainerActionMenu } from './StreamsCamp/StreamsContainerActionMenu';

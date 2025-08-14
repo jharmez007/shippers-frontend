@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { getReportingOfficers, createReportingOfficer } from "../../../services/streamsServices";
 
 
-export default function PersonalInfoStep({ data, onNext, onBack, onUpdate, onReset }) {
+export default function PersonalInfoStep({ data, onNext, onUpdate, onReset }) {
   const [officers, setOfficers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -213,7 +213,7 @@ export default function PersonalInfoStep({ data, onNext, onBack, onUpdate, onRes
           <div className="col-span-2 flex justify-between mt-4">
             <button
               type="button"
-              onClick={onBack}
+              onClick={() => setShowForm(false)} // Switch back to officer list
               className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400"
             >
               Back

@@ -11,8 +11,8 @@ import {
 } from "../..";
 
 const steps = [
-  { label: "Service Type & Submission Date", icon: <MdOutlineAssignment className="text-green-600" /> },
   { label: "Personal Information", icon: <MdPerson className="text-green-600" /> },
+  { label: "Service Type & Submission Date", icon: <MdOutlineAssignment className="text-green-600" /> },
   { label: "Cargo Throughput", icon: <MdLocalShipping className="text-green-600" /> },
   { label: "Challenges", icon: <FaClipboardList className="text-green-600" /> },
   { label: "Review & Submit", icon: <FaCheckCircle className="text-green-600" /> }
