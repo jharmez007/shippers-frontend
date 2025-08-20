@@ -34,7 +34,7 @@ const MainDashboard = () => {
       {/* Header */}
       <DashboardHeader />
 
-       <div className="bg-white rounded-2xl shadow-md p-6 w-full">
+       {/* <div className="bg-white rounded-2xl shadow-md p-6 w-full">
         <h2 className="text-xl font-bold text-gray-800">
           Shipper’s Service
         </h2>
@@ -44,7 +44,7 @@ const MainDashboard = () => {
            +3.01 % in 2nd Quarter 2025
           </span>
         </p>
-      </div>
+      </div> */}
 
       {/* Stat Cards */}
        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8 w-full">
@@ -64,12 +64,7 @@ const MainDashboard = () => {
             );
         })}
         </div>
-          <h2 className="text-[#005baa] text-lg font-semibold flex items-center mb-4">
-          <svg className="w-5 h-5 mr-2 text-[#005baa]" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M3 4a1 1 0 011-1h6a1 1 0 110 2H5v14h14v-5a1 1 0 112 0v6a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm17.707 1.707a1 1 0 00-1.414-1.414L16 7.586 14.707 6.293a1 1 0 10-1.414 1.414L14.586 9l-1.293 1.293a1 1 0 101.414 1.414L16 10.414l1.293 1.293a1 1 0 001.414-1.414L17.414 9l1.293-1.293z"/>
-          </svg>
-          Recent Activities
-        </h2>
+          <div className="h-20"/>
         <ShipperApplicationList  />
     </main>
   )

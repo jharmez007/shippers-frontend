@@ -8,10 +8,11 @@ const MainShippingLinesDashboard = () => {
 
       <div className="bg-white rounded-2xl shadow-md p-6 w-full">
         <h2 className="text-xl font-bold text-gray-800">
-          Welcome to the Seaport Terminal Real-Time Efficiency Assessment & Monitoring System (STREAMS)
+          Demurrage Request Application
         </h2>
-        <p className="text-lg text-gray-600">
-          5  submissions  confirmed, 3 pending for this month July 2025
+        <p className="text-sm mt-2 text-gray-500">
+            <span className="text-green-600 font-semibold">5</span> Requests Approved,&nbsp;
+            <span className="text-yellow-500 font-semibold">3</span> Pending
         </p>
       </div>
       <div className='h-14' />

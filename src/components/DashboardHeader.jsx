@@ -11,6 +11,7 @@ const DashboardHeader = () => {
   const first_name = localStorage.getItem("first_name");
   const last_name = localStorage.getItem("last_name");
   const division = localStorage.getItem("division");
+  const isHead = localStorage.getItem("is_head") === "true";
 
   const [openMenus, setOpenMenus] = useState({});
   const timeoutRefs = useRef({});
@@ -60,9 +61,11 @@ const DashboardHeader = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         {/* Left Section */}
         <div>
-          <h1 className="capitalize text-sm text-white/80 font-semibold">{user_type}</h1>
+          <h1 className="capitalize text-sm text-white/80 font-semibold">{user_type === "nsc"? "NSC" : user_type === "shipping_line" ? "Shipping Line/Agency" : user_type}</h1>
           <h1 className="text-lg font-bold mt-1">
-            {user_type === "terminal" || user_type === "nsc" ? "STREAMS Portal" : "CRD Portal"}
+            {user_type === "terminal" || (user_type === "nsc" && division === "M and E")
+              ? "STREAMS Portal"
+              : "CRD Portal"}
           </h1>
         </div>
 
@@ -92,9 +95,22 @@ const DashboardHeader = () => {
 
           <div className="flex relative items-center gap-4 mt-2 sm:mt-0">
             <div className="flex items-center gap-2 text-white">
-              <span className="font-semibold">{user_type === "terminal" ? last_name : first_name}</span>
+              <span className="font-semibold">
+                {user_type === "terminal" ? last_name : first_name}
+              </span>
+
+              {/* If head of department */}
+             {isHead && (
+                <span className="ml-2 px-2 py-0.5 text-md font-semibold text-[#185F95] bg-white rounded-lg shadow-sm">
+                  Head of Department
+                </span>
+              )}
+
+
               <span className="text-lg">•</span>
-              <span className="text-white/80">{user_type === "nsc" ? division : ""}</span>
+              <span className="text-white/80">
+                {user_type === "nsc" ? division : user_type === "shipper" ? last_name : user_type === "charterer" ? last_name : user_type === "shipping_line" ? last_name : first_name}
+              </span>
             </div>
 
             <div className="ml-6 relative cursor-pointer">

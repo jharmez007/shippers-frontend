@@ -50,7 +50,6 @@ export default function FreightRateForm() {
     let errorMsg = "";
     if (!formData.nxp_number.trim()) errorMsg = 'Form NXP Application No is required';
     else if (!formData.invoice_number.trim()) errorMsg = 'Invoice No is required';
-    else if (!formData.bill_of_lading_number.trim()) errorMsg = 'BL No is required';
     else if (!formData.beneficiary.trim()) errorMsg = 'Beneficiary is required';
     else if (!formData.voyage_from.trim()) errorMsg = 'Voyage From is required';
     else if (!formData.voyage_to.trim()) errorMsg = 'Voyage To is required';
@@ -362,7 +361,6 @@ export default function FreightRateForm() {
                 onChange={handleChange}
                 placeholder="click to type"
                 className="w-full bg-white p-2 rounded text-xl"
-                required
               />
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>

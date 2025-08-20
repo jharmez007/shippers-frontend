@@ -4,7 +4,7 @@ export const getKPI = async () => {
   try {
     const response = await Api({
       method: "get",
-      url: "/nsc/mandt/kpi-reports",
+      url: "/nsc/m_and_e/streams/kpi-reports",
     });
     return { data: response?.data, status: response?.status };
   } catch (error) {
@@ -18,7 +18,7 @@ export const getKPIReport = async (body) => {
   try {
     const response = await Api({
       method: "get",
-      url:  `/nsc/mandt/kpi-reports/${body.id}`,
+      url:  `/nsc/m_and_e/streams/kpi-reports/${body.id}`,
     });
     return { data: response?.data, status: response?.status };
   } catch (error) {
@@ -32,7 +32,7 @@ export const confirmKPI = async (body) => {
   try {
     const response = await Api({
       method: "patch",
-      url: `/nsc/mandt/kpi-reports/${body.id}/status`,
+      url: `/nsc/m_and_e/streams/kpi-reports/${body.id}/status`,
       data: body.new_status ? { status: body.new_status } : {},
     });
     return { data: response?.data, status: response?.status };
@@ -47,7 +47,7 @@ export const getThroughput = async () => {
   try {
     const response = await Api({
       method: "get",
-      url: "/nsc/mandt/throughput-reports",
+      url: "/nsc/m_and_e/streams/throughput-reports",
     });
     return { data: response?.data, status: response?.status };
   } catch (error) {
@@ -61,7 +61,7 @@ export const getThroughputReport = async (body) => {
   try {
     const response = await Api({
       method: "get",
-      url:  `/nsc/mandt/throughput-reports/${body.id}`,
+      url:  `/nsc/m_and_e/streams/throughput-reports/${body.id}`,
     });
     return { data: response?.data, status: response?.status };
   } catch (error) {
@@ -75,7 +75,7 @@ export const confirmThroughput = async (body) => {
   try {
     const response = await Api({
       method: "patch",
-      url: `/nsc/mandt/throughput-reports/${body.id}/status`,
+      url: `/nsc/m_and_e/streams/throughput-reports/${body.id}/status`,
       data: body.new_status ? { status: body.new_status } : {},
     });
     return { data: response?.data, status: response?.status };

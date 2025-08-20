@@ -1,5 +1,6 @@
 import { FaFileAlt, FaUser, FaChartBar, FaTachometerAlt, FaUniversity, FaGlobe, FaSlidersH, FaConnectdevelop, FaClipboardList, FaCubes, FaShip, 
-  FaMoneyBillWave, FaChartLine, FaInbox, FaBook, 
+  FaMoneyBillWave, FaChartLine, FaInbox, FaBook, FaBalanceScale, FaFileContract, FaHourglassHalf, FaFileInvoiceDollar, FaOilCan, FaClipboardCheck,
+  FaFileSignature, FaHistory, 
 } from "react-icons/fa";
 
 import { Line } from 'react-chartjs-2';
@@ -61,7 +62,7 @@ export const GovernmentUserOptions = [
 
 export const individualUserOptions = [
   { label: "Shipper", value: "shipper" },
-  { label: "Vessel Charterers/Owners", value: "vessel_charter" },
+  { label: "Vessel Charterers/Owners", value: "charterer" },
 ];
 
 export const coporateUserOptions = [
@@ -144,14 +145,27 @@ export const barData = {
 export const shipperMainLinks = [
   { name: 'Dashboard', icon: FaTachometerAlt, path: '/shipper-dashboard/dashboard' },
   // { name: 'Bank', icon: FaUniversity, path: '/shipper-dashboard/bank' },
-  { name: 'Freight Rate Form', icon: FaFileAlt, path: '/shipper-dashboard/freight-rate-form' },
-  { name: 'Freight Rate Request', icon: FaGlobe, path: '/shipper-dashboard/freight-rate-request' },
+  { name: 'Submit Freight Form', icon: FaFileAlt, path: '/shipper-dashboard/freight-rate-form' },
+  { name: 'Freight Rate Requests', icon: FaHistory, path: '/shipper-dashboard/freight-rate-request' },
   // { name: 'Freight Analysis', icon: FaChartBar, path: '/shipper-dashboard/freight-analysis' },
 ];
   
 export const ShipperAccountLinks = [
   { name: 'My Profile', icon: FaUser, path: '/shipper-dashboard/profile' },
   { name: 'Settings', icon: FaSlidersH, path: '/shipper-dashboard/settings' },
+];
+
+/* Charterer Dashboard paths */
+export const chatererMainLinks = [
+  { name: 'Dashboard', icon: FaTachometerAlt, path: '/charterer-dashboard/dashboard' },
+  { name: 'Submit Charter Party', icon: FaFileSignature, path: '/charterer-dashboard/charter-party-form' },
+  { name: 'Charter Party Requests', icon: FaHistory, path: '/charterer-dashboard/charter-party-request' },
+  { name: 'Submit Post Audit', icon: FaFileSignature, path: '/charterer-dashboard/post-audit-form' },
+  { name: 'Post Audit Requests', icon: FaHistory, path: '/charterer-dashboard/post-audit-request' },
+];
+export const chatererAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/charterer-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/charterer-dashboard/settings' },
 ];
 
 /* Shipping Lines Dashboard paths */
@@ -202,9 +216,13 @@ export const regulatorAccountLinks = [
 /* Nsc Dashboard paths */
 export const nscMainLinks = [
   { name: 'Dashboard', icon: FaTachometerAlt, path: '/nsc-dashboard/dashboard' },
-  { name: 'Freight Rate Request', icon: FaUniversity, path: '/nsc-dashboard/freight-rate-request' },
-  { name: 'Charter Party Request', icon: FaFileAlt, path: '/nsc-dashboard/charter-party-request' },
-  { name: 'Demurrage Request', icon: FaGlobe, path: '/nsc-dashboard/demurrage-request' },
+  { name: 'Tariff', icon: FaBalanceScale, path: '/nsc-dashboard/tariff' },
+  { name: 'Freight Rate Requests', icon: FaShip, path: '/nsc-dashboard/freight-rate-request' },
+  { name: 'Charter Party Requests', icon: FaFileContract, path: '/nsc-dashboard/charter-party-request' },
+  { name: 'Demurrage Requests', icon: FaHourglassHalf, path: '/nsc-dashboard/demurrage-request' },
+  { name: 'Indicative Freight Rate', icon: FaFileInvoiceDollar, path: '/nsc-dashboard/indicative-freight' },
+  { name: 'Tanker Freight', icon: FaOilCan, path: '/nsc-dashboard/tanker-freight' },
+  { name: 'Post Audit', icon: FaClipboardCheck, path: '/nsc-dashboard/post-audit' },
 ];
 
 export const nscAccountLinks = [
@@ -212,7 +230,41 @@ export const nscAccountLinks = [
   { name: 'Settings', icon: FaSlidersH, path: '/nsc-dashboard/settings' },
 ];
 
-/* Nsc Dashboard paths */
+/* Nsc DRS Dashboard paths */
+export const nscDrsMainLinks = [
+  { name: 'Dashboard', icon: FaTachometerAlt, path: '/nsc-drs-dashboard/dashboard' },
+  { name: 'Tariff', icon: FaBalanceScale, path: '/nsc-drs-dashboard/tariff' },
+  { name: 'Freight Rate Requests', icon: FaShip, path: '/nsc-drs-dashboard/freight-rate-request' },
+  { name: 'Charter Party Requests', icon: FaFileContract, path: '/nsc-drs-dashboard/charter-party-request' },
+  { name: 'Demurrage Requests', icon: FaHourglassHalf, path: '/nsc-drs-dashboard/demurrage-request' },
+  { name: 'Indicative Freight Rate', icon: FaFileInvoiceDollar, path: '/nsc-drs-dashboard/indicative-freight' },
+  { name: 'Tanker Freight', icon: FaOilCan, path: '/nsc-drs-dashboard/tanker-freight' },
+  { name: 'Post Audit', icon: FaClipboardCheck, path: '/nsc-drs-dashboard/post-audit' },
+];
+
+export const nscDrsAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/nsc-drs-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/nsc-drs-dashboard/settings' },
+];
+
+/* Nsc Head of M and T Dashboard paths */
+export const nscMandTHeadMainLinks = [
+  { name: 'Dashboard', icon: FaTachometerAlt, path: '/nsc-mandt-head-dashboard/dashboard' },
+  { name: 'Tariff', icon: FaBalanceScale, path: '/nsc-mandt-head-dashboard/tariff' },
+  { name: 'Freight Rate Requests', icon: FaShip, path: '/nsc-mandt-head-dashboard/freight-rate-request' },
+  { name: 'Charter Party Requests', icon: FaFileContract, path: '/nsc-mandt-head-dashboard/charter-party-request' },
+  { name: 'Demurrage Requests', icon: FaHourglassHalf, path: '/nsc-mandt-head-dashboard/demurrage-request' },
+  { name: 'Indicative Freight Rate', icon: FaFileInvoiceDollar, path: '/nsc-mandt-head-dashboard/indicative-freight' },
+  { name: 'Tanker Freight', icon: FaOilCan, path: '/nsc-mandt-head-dashboard/tanker-freight' },
+  { name: 'Post Audit', icon: FaClipboardCheck, path: '/nsc-mandt-head-dashboard/post-audit' },
+];
+
+export const nscMandTHeadAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/nsc-mandt-head-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/nsc-mandt-head-dashboard/settings' },
+];
+
+/* Nsc Streams Dashboard paths */
 export const nscStreamsMainLinks = [
   { name: 'Dashboard', icon: FaTachometerAlt, path: '/nsc-streams-dashboard/dashboard' },
   { name: 'KPI', icon: FaChartBar, path: '/nsc-streams-dashboard/kpi' },
@@ -226,6 +278,26 @@ export const nscStreamsMainLinks = [
 export const nscStreamsAccountLinks = [
   { name: 'My Profile', icon: FaUser, path: '/nsc-streams-dashboard/profile' },
   { name: 'Settings', icon: FaSlidersH, path: '/nsc-streams-dashboard/settings' },
+];
+
+/* Nsc SSD Dashboard paths */
+export const ssdMainLinks = [
+  { name: 'SOP', icon: FaBook, path: '/nsc-ssd-dashboard/sop' },
+];
+
+export const ssdAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/nsc-ssd-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/nsc-ssd-dashboard/settings' },
+];
+
+/* Nsc SSD Head Dashboard paths */
+export const ssdHeadMainLinks = [
+  { name: 'SOP', icon: FaBook, path: '/nsc-ssd-head-dashboard/sop' },
+];
+
+export const ssdHeadAccountLinks = [
+  { name: 'My Profile', icon: FaUser, path: '/nsc-ssd-head-dashboard/profile' },
+  { name: 'Settings', icon: FaSlidersH, path: '/nsc-ssd-head-dashboard/settings' },
 ];
 
 /* Streams Dashboard paths */

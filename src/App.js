@@ -18,7 +18,12 @@ import {
   NscCampFlaggedAnalysisChart, CampProfile, NscStreamsDashboard, MainNscStreamsDashboard, NscStreamsKpi, NscStreamsThroughput,
   NscStreamsKpiAnalysis, NscStreamsVesselActivity, NscStreamsTariffs, NscStreamsSop, ShippingLinesDashboard, MainShippingLinesDashboard,
   ShippingLinesDemurrageRequest, ShippingLinesDemurrageSubmit, ShippingLinesKpi, ShippingLinesThroughput, ShippingLinesVoyage, 
-  ShippingLinesTariffs, ShippingLinesSop
+  ShippingLinesTariffs, ShippingLinesSop, NscIndicativeFreight, NscTankerFreight, NscPostAudit, NscTariff,
+  ChartererDashboard, MainChartererDashboard, CharterPartyForm, CharterPartyRequests, ChartererPostAuditForm, ChartererPostAuditRequest,
+  NscMandTHeadDashboard, MainNscMandTHeadDashboard, NscMandTHeadTariff, NscMandTHeadFreightRateRequest, NscMandTHeadCharterPartyRequest, NscMandTHeadDemurrageRequest,
+  NscMandTHeadIndicativeFreight, NscMandTHeadTankerFreight, NscMandTHeadPostAudit, NscDrsDashboard, MainNscDrsDashboard, NscDrsTariff, NscDrsFreightRateRequest,
+  NscDrsCharterPartyRequest, NscDrsDemurrageRequest, NscDrsIndicativeFreight, NscDrsTankerFreight, NscDrsPostAudit, NscSSDDashboard, NscSSDSop,
+  NscSSDHeadDashboard, NscSSDHeadSop
 } from './pages';
 import {
   Navbar, Footer, SignUpLayout, ProtectedRoute, Loader
@@ -110,6 +115,17 @@ const AppRoutes = () => {
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>
 
+            {/* Charterer Dashboard Routes */}
+            <Route path="/charterer-dashboard" element={<ProtectedRoute><ChartererDashboard /></ProtectedRoute>}>
+              <Route path="dashboard" element={<ProtectedRoute><MainChartererDashboard /></ProtectedRoute>} />
+              <Route path="charter-party-form" element={<ProtectedRoute><CharterPartyForm /></ProtectedRoute>} />
+              <Route path="charter-party-request" element={<ProtectedRoute><CharterPartyRequests /></ProtectedRoute>} />
+              <Route path="post-audit-form" element={<ProtectedRoute><ChartererPostAuditForm /></ProtectedRoute>} />
+              <Route path="post-audit-request" element={<ProtectedRoute><ChartererPostAuditRequest /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
             {/* Shipping Lines Dashboard Routes */}
             <Route path="/shipping-lines-dashboard" element={<ProtectedRoute><ShippingLinesDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainShippingLinesDashboard /></ProtectedRoute>} />
@@ -149,9 +165,41 @@ const AppRoutes = () => {
             {/* Nsc Dashboard Routes */}
             <Route path="/nsc-dashboard" element={<ProtectedRoute><NscDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainNscDashboard /></ProtectedRoute>} />
+              <Route path="tariff" element={<ProtectedRoute><NscTariff /></ProtectedRoute>} />
               <Route path="freight-rate-request" element={<ProtectedRoute><NscFreightRateRequest /></ProtectedRoute>} />
               <Route path="charter-party-request" element={<ProtectedRoute><NscCharterPartyRequest /></ProtectedRoute>} />
               <Route path="demurrage-request" element={<ProtectedRoute><NscDemurrageRequest /></ProtectedRoute>} />
+              <Route path="indicative-freight" element={<ProtectedRoute><NscIndicativeFreight /></ProtectedRoute>} />
+              <Route path="tanker-freight" element={<ProtectedRoute><NscTankerFreight /></ProtectedRoute>} />
+              <Route path="post-audit" element={<ProtectedRoute><NscPostAudit /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+            {/* Nsc Head of M and T Dashboard Routes */}
+            <Route path="/nsc-mandt-head-dashboard" element={<ProtectedRoute><NscMandTHeadDashboard /></ProtectedRoute>}>
+              <Route path="dashboard" element={<ProtectedRoute><MainNscMandTHeadDashboard /></ProtectedRoute>} />
+              <Route path="tariff" element={<ProtectedRoute><NscMandTHeadTariff /></ProtectedRoute>} />
+              <Route path="freight-rate-request" element={<ProtectedRoute><NscMandTHeadFreightRateRequest /></ProtectedRoute>} />
+              <Route path="charter-party-request" element={<ProtectedRoute><NscMandTHeadCharterPartyRequest /></ProtectedRoute>} />
+              <Route path="demurrage-request" element={<ProtectedRoute><NscMandTHeadDemurrageRequest /></ProtectedRoute>} />
+              <Route path="indicative-freight" element={<ProtectedRoute><NscMandTHeadIndicativeFreight /></ProtectedRoute>} />
+              <Route path="tanker-freight" element={<ProtectedRoute><NscMandTHeadTankerFreight /></ProtectedRoute>} />
+              <Route path="post-audit" element={<ProtectedRoute><NscMandTHeadPostAudit /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+            {/* Nsc DRS Dashboard Routes */}
+            <Route path="/nsc-drs-dashboard" element={<ProtectedRoute><NscDrsDashboard /></ProtectedRoute>}>
+              <Route path="dashboard" element={<ProtectedRoute><MainNscDrsDashboard /></ProtectedRoute>} />
+              <Route path="tariff" element={<ProtectedRoute><NscDrsTariff /></ProtectedRoute>} />
+              <Route path="freight-rate-request" element={<ProtectedRoute><NscDrsFreightRateRequest /></ProtectedRoute>} />
+              <Route path="charter-party-request" element={<ProtectedRoute><NscDrsCharterPartyRequest /></ProtectedRoute>} />
+              <Route path="demurrage-request" element={<ProtectedRoute><NscDrsDemurrageRequest /></ProtectedRoute>} />
+              <Route path="indicative-freight" element={<ProtectedRoute><NscDrsIndicativeFreight /></ProtectedRoute>} />
+              <Route path="tanker-freight" element={<ProtectedRoute><NscDrsTankerFreight /></ProtectedRoute>} />
+              <Route path="post-audit" element={<ProtectedRoute><NscDrsPostAudit /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>
@@ -165,6 +213,22 @@ const AppRoutes = () => {
               <Route path="vessel-activity" element={<ProtectedRoute><NscStreamsVesselActivity /></ProtectedRoute>} />
               <Route path="tariffs" element={<ProtectedRoute><NscStreamsTariffs /></ProtectedRoute>} />
               <Route path="sop" element={<ProtectedRoute><NscStreamsSop /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+            {/* Nsc SSD Dashboard Routes */}
+            <Route path="/nsc-ssd-dashboard" element={<ProtectedRoute><NscSSDDashboard /></ProtectedRoute>}>
+              {/* <Route path="dashboard" element={<ProtectedRoute><MainNscSSDDashboard /></ProtectedRoute>} /> */}
+              <Route path="sop" element={<ProtectedRoute><NscSSDSop /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            </Route>
+
+            {/* Nsc SSD Head Dashboard Routes */}
+            <Route path="/nsc-ssd-head-dashboard" element={<ProtectedRoute><NscSSDHeadDashboard /></ProtectedRoute>}>
+              {/* <Route path="dashboard" element={<ProtectedRoute><MainNscSSDDashboard /></ProtectedRoute>} /> */}
+              <Route path="sop" element={<ProtectedRoute><NscSSDHeadSop /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>

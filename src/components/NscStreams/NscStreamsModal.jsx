@@ -60,7 +60,7 @@ export default function NscStreamsModal({ selectedType, application, onClose }) 
     const basicInfoRows = [
       ["Month", monthNames[(parseInt(reportData.month, 10) || 1) - 1]],
       ["Year", reportData.year],
-      ["Officer", reportData.officer],
+      ["Officer", reportData.officer?.name || "-"],
       ["Created At", new Date(reportData.created_at).toLocaleString()],
     ];
 
@@ -382,6 +382,7 @@ export default function NscStreamsModal({ selectedType, application, onClose }) 
     };
 
     fetchReport();
+    console.log("selected type:", selectedType);
   }, [application, selectedType]);
 
   return (
@@ -436,7 +437,7 @@ export default function NscStreamsModal({ selectedType, application, onClose }) 
 
                           {selectedType === "KPI" && (
                             <div className="bg-gray-50 p-3 rounded border">
-                              <span className="font-medium">Cargo Type:</span>{" "}
+                              <span className="font-medium">Service Type:</span>{" "}
                               {reportData.cargo_type}
                             </div>
                           )}
@@ -450,7 +451,7 @@ export default function NscStreamsModal({ selectedType, application, onClose }) 
 
                           <div className="bg-gray-50 p-3 rounded border">
                             <span className="font-medium">Officer:</span>{" "}
-                            {reportData.officer}
+                            {reportData.officer?.name || "-"}
                           </div>
                           <div className="bg-gray-50 p-3 rounded border">
                             <span className="font-medium">Created At:</span>{" "}

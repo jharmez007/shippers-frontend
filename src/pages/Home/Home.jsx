@@ -21,7 +21,7 @@ const Home = () => {
     nsc: [
       { label: 'STREAMS', desc: 'For Terminal Operators', to: '/nsc-streams-dashboard/dashboard', icon: <Table2 size={40} />, bg: 'bg-blue-600' },
       { label: 'CAMP', desc: 'Container Management', to: '/nsc-camp-dashboard/dashboard', icon: <Truck size={40} />, bg: 'bg-emerald-700' },
-      { label: 'CRD', desc: 'Confirmation Reasonableness Demurrage', to: '/crd-dashboard/dashboard', icon: <FileBarChart size={40} />, bg: 'bg-purple-600' },
+      { label: 'CRD', desc: 'Confirmation Reasonableness Demurrage', to: '/nsc-dashboard/dashboard', icon: <FileBarChart size={40} />, bg: 'bg-purple-600' },
       { label: 'Stakeholders', desc: 'Engagement & Reports', to: '/stakeholders-dashboard/dashboard', icon: <Users size={40} />, bg: 'bg-indigo-600' },
       { label: 'PSSP', desc: 'Payment Settlement & Processing', to: '/pssp-dashboard/dashboard', icon: <FolderKanban size={40} />, bg: 'bg-yellow-600' },
     ],
@@ -30,10 +30,10 @@ const Home = () => {
   const renderCards = useMemo(() => {
     if (userService === 'nsc') {
       if (division === 'M and T') {
-        return cards.nsc.filter(c => ['STREAMS', 'CRD', 'Stakeholders'].includes(c.label));
+        return cards.nsc.filter(c => ['CRD', 'Stakeholders'].includes(c.label));
       }
       if (division === 'M and E') {
-        return cards.nsc.filter(c => ['CAMP', 'PSSP'].includes(c.label));
+        return cards.nsc.filter(c => ['STREAMS', 'CAMP', 'PSSP'].includes(c.label));
       }
     }
     return cards[userService] || [];

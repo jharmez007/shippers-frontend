@@ -120,16 +120,31 @@ const Login = () => {
           } else if (userType === "terminal") {
             setLoading(false);
             navigate("/streams-dashboard/dashboard");
+          } else if (userType === "charterer") {
+            setLoading(false);
+            navigate("/charterer-dashboard/dashboard");
           } else if (userType === "shipping_line") {
             setLoading(false);
             navigate("/shipping-lines-dashboard/dashboard");
           } else if (userType === "regulator") {
             setLoading(false);
             navigate("/maritime-police-dashboard/dashboard");
+          } else if (division === "M and T" && is_head) {
+            setLoading(false);
+            navigate("/nsc-mandt-head-dashboard/dashboard");
+          } else if (division === "SSD" && is_head) {
+            setLoading(false);
+            navigate("/nsc-ssd-head-dashboard/sop");
+          } else if (division === "SSD") {
+            setLoading(false);
+            navigate("/nsc-ssd-dashboard/sop");
+          } else if (division === "DRS") {
+            setLoading(false);
+            navigate("/nsc-drs-dashboard/dashboard");
           } else if (userType === "nsc") {
             setLoading(false);
             navigate("/home");
-          }
+          } 
       } else {
         setLoading(false); // Hide the loader
         toast.error(response?.message || "Login failed. Please try again.");

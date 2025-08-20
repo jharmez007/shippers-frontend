@@ -209,7 +209,7 @@ const NscStreamsThroughputTable = () => {
                   <th className="p-4">Terminal</th>
                   <th className="p-4">MONTH</th>
                   <th className="p-4">YEAR</th>
-                  <th className="p-4">Action</th>
+                  <th className="p-4">STATUS</th>
                 </tr>
               </thead>
               <tbody>

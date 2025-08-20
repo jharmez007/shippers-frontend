@@ -21,7 +21,7 @@ const YourBVN = () => {
     try {
           const payload = {
             user_type: userService,
-            is_corporate: userType === "individual",
+            is_corporate: userType === "corporate",
             bvn: bvn,
           };
     

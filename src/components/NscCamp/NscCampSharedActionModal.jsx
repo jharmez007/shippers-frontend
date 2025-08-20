@@ -1,9 +1,9 @@
-import { X, File } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Modal, ConfirmModal } from "..";
-import { reviewContainers, contestContainers } from "../../services/nscCampServices"; // <-- Import contestContainers
+import { reviewContainers, contestContainers } from "../../services/nscCampServices"; 
 
 const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatusChange }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -14,7 +14,7 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
     if (!isOpen) {
       setShowConfirm(false);
       setPendingAction(null);
-      setReason(""); // Reset reason on close
+      setReason(""); 
     }
   }, [isOpen]);
 

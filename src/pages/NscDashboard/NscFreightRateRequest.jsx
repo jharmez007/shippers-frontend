@@ -1,4 +1,4 @@
-import { DashboardHeader } from '../../components';
+import { DashboardHeader, NscShipperApplicationList } from '../../components';
 
 const NscFreightRateRequest = () => {
   return (
@@ -8,15 +8,15 @@ const NscFreightRateRequest = () => {
       {/* Cards */}
       <div className="bg-white rounded-2xl shadow-md p-6 w-full">
         <h2 className="text-xl font-bold text-gray-800">
-          Connect to Bank
+          Freight Rate Request Confirmation
         </h2>
-        <p className="text-lg text-gray-600 mt-2">
-          Connect to your bank account to view transactions and manage payments.
-        </p>
-        <p className="text-sm text-green-500 mt-2">
-          Bank Account
+        <p className="text-sm mt-2 text-gray-500">
+            <span className="text-green-600 font-semibold">5</span> Requests Approved,&nbsp;
+            <span className="text-yellow-500 font-semibold">3</span> Pending
         </p>
       </div>
+        <div className="h-8"/>
+      <NscShipperApplicationList  />
     </main>
   )
 }
