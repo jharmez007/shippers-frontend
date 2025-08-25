@@ -153,7 +153,7 @@ const Signup = () => {
           agency_name: form.agencyName,
           email: form.email,
           phone_number: form.phoneNumber,
-        };
+        }
       } else if (userType === "nsc") {
         payload = {
           ...payload,
@@ -164,7 +164,13 @@ const Signup = () => {
           staff_id: form.staffId, 
           email: form.email,
           phone_number: form.phoneNumber,
-        };
+        } 
+      } else if (userService === "terminal") {
+        payload = {
+          ...payload, 
+          email: form.email,
+          phone_number: form.phoneNumber,
+        } 
       }
 
       setLoading(true); 
