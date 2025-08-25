@@ -1,26 +1,26 @@
 // src/pages/Signup.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { checkStatus } from "../services/checkStatusServices";
-import Loader from "../components/Loader"; // Import the Loader component
+import Loader from "../components/Loader"; 
 
 const EmailVerification = () => {
   const location = useLocation();
   const { email } = location.state || {};
-  const navigate = useNavigate(); // Initialize the navigate function
-  const [loading, setLoading] = useState(false); // State to manage the loader
+  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const response = await checkStatus({ email }); // Pass the email to checkStatus
+        const response = await checkStatus({ email }); 
 
         const { is_verified, is_validated, user_type } = response?.data?.data;
 
         if (is_verified) {
-          setLoading(true); // Show the loader
-          clearInterval(interval); // Stop the interval once verified
+          setLoading(true); 
+          clearInterval(interval); 
 
           if (
             (user_type === "bank" ||
@@ -30,20 +30,20 @@ const EmailVerification = () => {
               user_type === "nsc") &&
             !is_validated
           ) {
-            setLoading(false); // Hide the loader after delay
+            setLoading(false);
             navigate("/whoareyou/check-validation", { state: { email } });
           } else {
-            setLoading(false); // Hide the loader after delay
-            navigate("/login"); // Redirect to login for all other cases
+            setLoading(false);
+            navigate("/login"); 
           }
         }
       } catch (error) {
         console.error("Failed to check user status:", error);
       }
-    }, 20000); // 20 seconds
+    }, 20000);
 
     return () => clearInterval(interval);
-  }, [email, navigate]); // Add email and navigate to dependencies
+  }, [email, navigate]); 
 
   return (
     <div className="flex flex-col items-center justify-center flex-grow max-w-lg space-y-6">

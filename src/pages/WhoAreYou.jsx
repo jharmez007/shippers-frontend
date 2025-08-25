@@ -1,73 +1,82 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-
 import { Loader } from "../utils/loader";
-import { userOptions } from "../constants/dummy";
-
 
 const WhoAreYou = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [userType, setUserType] = useState(""); 
-  const navigate = useNavigate(); 
+  const [userType, setUserType] = useState("");
+  const navigate = useNavigate();
 
-  const handleNext = () => {
+  const handleProceed = () => {
     if (!userType) {
       toast.error("Please select a user type before proceeding");
       return;
     }
 
+    // Store userType in localStorage
+    localStorage.setItem("userType", userType);
+    localStorage.setItem("userService", userType);
+
+    Loader();
+    if (userType === "individual" || userType === "corporate") {
+      navigate("/whoareyou/your-services", { state: { userType } });
+    } else if (userType === "regulator") {
+      navigate("/whoareyou/signup", { state: { userType } });
+    }
+  };
+
+  const handleNscClick = () => {
+    // Store NSC staff type in localStorage
+    localStorage.setItem("userType", "nsc");
+    localStorage.setItem("userService", "nsc");
     
-    Loader(); 
-    navigate("/whoareyou/signup", { state: { userType } });
+    Loader();
+    navigate("/whoareyou/signup");
   };
 
-   const handleSelect = (value) => {
-    setUserType(value);
-    setIsOpen(false);
-  };
+  const userOptions = [
+    { value: "individual", label: "Individual" },
+    { value: "corporate", label: "Corporate" },
+    { value: "regulator", label: "Government" },
+  ];
 
-  const selectedLabel = userOptions.find((opt) => opt.value === userType)?.label || "What Type of User Are You?";
+  return (
+    <div className="flex flex-col items-center justify-center space-y-6 bg-white px-4">
+      <h1 className="text-3xl font-bold mb-6 tracking-wide">Sign Up As</h1>
 
-   return (
-    <div className="flex flex-col items-center justify-center flex-grow space-y-6">
-      <h1 className="text-3xl font-bold mb-10 tracking-wide">WHO ARE YOU ?</h1>
-
-      <div className="relative w-[300px] md:w-[400px] mb-10 font-medium">
-        {/* Dropdown Trigger */}
-        <div
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex  w-full p-3 pr-10 border-2 border-gray-300 rounded-xl text-gray-700 text-center focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 appearance-none bg-white shadow transition-all duration-200"
-        >
-          <span className='flex-1'>{selectedLabel}</span>
-          <ChevronDown className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
-        </div>
-
-        {/* Dropdown Options */}
-        {isOpen && (
-          <div className="bg-white shadow-lg rounded-b-xl border-t-0 border border-gray-200 max-h-96 overflow-y-auto z-10 absolute w-full left-0">
-            {userOptions.map((item, idx) => (
-              <div
-                key={idx}
-                onClick={() => handleSelect(item.value)}
-                className={`px-4 py-3 cursor-pointer hover:bg-blue-50 transition-all ${
-                  userType === item.value ? "bg-blue-50 border-l-4 border-blue-500" : ""
-                }`}
-              >
-                {item.label}
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="flex gap-8 mb-6">
+        {userOptions.map((option) => (
+          <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="userType"
+              value={option.value}
+              checked={userType === option.value}
+              onChange={() => setUserType(option.value)}
+              className="w-5 h-5 accent-black"
+            />
+            <span className="font-semibold text-black">{option.label}</span>
+          </label>
+        ))}
       </div>
 
-      {/* Next Button */}
       <button
-        onClick={handleNext} 
-        className="w-full max-w-[400px] md:max-w-[600px] bg-[#3d5afe] text-white py-4 text-lg font-semibold tracking-wide hover:bg-blue-700 transition-all duration-200"
+        onClick={handleProceed}
+        className={`w-[300px] md:w-[360px] rounded-md py-3 font-semibold text-white text-sm transition-all duration-200 ${
+          userType
+            ? 'bg-[#3d5afe] hover:bg-blue-700'
+            : 'bg-[#C8DCEA] cursor-not-allowed'
+        }`}
+        disabled={!userType}
       >
-        NEXT
+        Proceed
+      </button>
+
+      <button
+        onClick={handleNscClick}
+        className="text-xs text-red-500 underline mt-2 cursor-pointer"
+      >
+        Nsc staff here
       </button>
     </div>
   );

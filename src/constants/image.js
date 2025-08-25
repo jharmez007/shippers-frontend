@@ -6,18 +6,27 @@ import loginbg from '../assets/loginbg.png';
 import signupbg from '../assets/signupbg.png';
 import dashboardbg from '../assets/dashboardbg.png';
 import shipperslog from '../assets/shippers-log.png';
-
+import camplogo from '../assets/maritimepolice.png';
+import nobg from '../assets/logonobg.png';
+import port from '../assets/port.jpg';
+import porttwo from '../assets/port2.jpg';
+import portthree from '../assets/port3.jpg';
 
 const images = {
-    logo,
-    img,
-    shippersLogo,
-    laptop,
-    loginbg,
-    signupbg,
-    dashboardbg,
-    shipperslog,
-  };
+  logo,
+  img,
+  shippersLogo,
+  nobg,
+  laptop,
+  loginbg,
+  signupbg,
+  dashboardbg,
+  shipperslog,
+  port,
+  porttwo,
+  portthree,
+  camplogo,
+};
   
-  export default images;
+export default images;
 

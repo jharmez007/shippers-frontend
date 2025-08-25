@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { DashboardHeader, FreightFeeTable } from '../../components';
 
 const RegulatorFreightRateRequest = () => {
