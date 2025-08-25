@@ -14,7 +14,7 @@ const Home = () => {
 
   const cards = useMemo(() => ({
     terminal: [
-      { label: 'STREAMS', desc: 'For Terminal Operators', to: 'streams/terminal-dashboard/dashboard', icon: <Table2 size={40} />, bg: 'bg-blue-400' },
+      { label: 'STREAMS', desc: 'For Terminal Operators', to: '/streams/terminal-dashboard/dashboard', icon: <Table2 size={40} />, bg: 'bg-blue-400' },
       { label: 'CAMP', desc: 'Container Management', to: '/camp/terminal-dashboard/dashboard', icon: <Truck size={40} />, bg: 'bg-green-700' },
     ],
     shipper: [
