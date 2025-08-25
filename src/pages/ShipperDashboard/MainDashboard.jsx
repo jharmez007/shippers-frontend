@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaFileAlt, FaTruck, FaFileArchive } from "react-icons/fa";
+import { toast } from 'sonner';
 
-import { DashboardHeader } from '../../components';
+import { DashboardHeader, ShipperApplicationList } from '../../components';
 import { getStats } from '../../services/freightStatServices';
 
 
@@ -9,9 +10,16 @@ const MainDashboard = () => {
   const [value, setValue] = useState({});
 
   useEffect(() => {
-    getStats().then(res => {
-      setValue(res.data.data)
-    });
+    getStats()
+      .then(res => {
+        setValue(res.data.data);
+      })
+      .catch(err => {
+        toast.error(
+          err?.response?.data?.message ||
+          "Failed to fetch dashboard stats. Please try again."
+        );
+      });
   }, []);
 
   const statCards = [
@@ -22,15 +30,28 @@ const MainDashboard = () => {
   ];
 
   return (
-    <main className="flex-1 p-6 space-y-6 md:h-screen md:overflow-y-auto">
+    <main className="flex-1 p-6 space-y-6 md:h-screen overflow-y-auto w-full">
       {/* Header */}
       <DashboardHeader />
+
+       {/* <div className="bg-white rounded-2xl shadow-md p-6 w-full">
+        <h2 className="text-xl font-bold text-gray-800">
+          Shipper’s Service
+        </h2>
+        <p className="text-lg text-gray-600">
+          12 Requests completed 
+          <span className="text-sm text-green-500 ml-2">
+           +3.01 % in 2nd Quarter 2025
+          </span>
+        </p>
+      </div> */}
+
       {/* Stat Cards */}
-       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8 w-full">
        {statCards.map((card, index) => {
 
             return (
-            <div key={index} className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+            <div key={index} className="bg-white p-4 rounded-lg shadow flex items-center justify-between w-full">
                 <div>
                 <p className="text-sm text-gray-500">{card.title}</p>
                 <p className="text-xl font-bold">{card.value}</p>
@@ -43,16 +64,8 @@ const MainDashboard = () => {
             );
         })}
         </div>
-
-      {/* <section className="bg-white p-6 rounded-lg shadow-sm">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800">Recent Activity</h3>
-        <ul className="space-y-3 text-sm text-gray-600">
-          <li>✅ You completed a task yesterday.</li>
-          <li>📈 Your performance increased by 12% this week.</li>
-          <li>📬 You received 3 new messages.</li>
-        </ul>
-      </section>   */}
- 
+          <div className="h-8"/>
+        <ShipperApplicationList  />
     </main>
   )
 }

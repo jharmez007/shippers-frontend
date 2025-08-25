@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 
-// import { dashboard } from "../../services/dashboardServices";
 import { ShipperSidebar } from "../../components";
 import { images } from "../../constants";
  

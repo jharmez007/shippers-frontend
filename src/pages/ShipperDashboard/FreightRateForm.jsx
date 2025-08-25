@@ -14,9 +14,7 @@ const FreightRateForm = () => {
         <p className="text-lg text-gray-600 mt-2">
           Submit Freight Rate Application for Approval
         </p>
-        <p className="text-sm text-green-500 mt-2">
-          Consolidators
-        </p>
+  
       </div>
 
       <FreightRateComp />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { getProfile } from "../services/settingsServices";
 import { DashboardHeader } from "../components";
@@ -7,7 +8,14 @@ const Profile = () => {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    getProfile().then((res) => setProfile(res.data.data.profile));
+    getProfile()
+      .then((res) => setProfile(res.data.data.profile))
+      .catch((err) => {
+        toast.error(
+          err?.response?.data?.message ||
+            "Failed to fetch profile. Please try again."
+        );
+      });
   }, []);
 
   if (!profile) {
