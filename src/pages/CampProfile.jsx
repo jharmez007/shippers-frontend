@@ -1,13 +1,11 @@
-import { useNavigate } from "react-router-dom";
-import { Pencil, Mail, UserCircle2 } from "lucide-react";
+import { Pencil, Mail } from "lucide-react";
 
 const Profile = () => {
-  const navigate = useNavigate();
 
   // You can fetch user data here later
   const user = {
-    name: "Uche Okonkwo",
-    email: "uche@example.com",
+    name: "Afolabi Micheal",
+    email: "Afolabi@example.com",
     role: "NSC Staff",
   };
 
