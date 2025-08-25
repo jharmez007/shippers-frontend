@@ -23,7 +23,7 @@ import {
   NscMandTHeadDashboard, MainNscMandTHeadDashboard, NscMandTHeadTariff, NscMandTHeadFreightRateRequest, NscMandTHeadCharterPartyRequest, NscMandTHeadDemurrageRequest,
   NscMandTHeadIndicativeFreight, NscMandTHeadTankerFreight, NscMandTHeadPostAudit, NscDrsDashboard, MainNscDrsDashboard, NscDrsTariff, NscDrsFreightRateRequest,
   NscDrsCharterPartyRequest, NscDrsDemurrageRequest, NscDrsIndicativeFreight, NscDrsTankerFreight, NscDrsPostAudit, NscSSDDashboard, NscSSDSop,
-  NscSSDHeadDashboard, NscSSDHeadSop
+  NscSSDHeadDashboard, NscSSDHeadSop, StreamsTariff, StreamsSOP, StreamsShippingLines 
 } from './pages';
 import {
   Navbar, Footer, SignUpLayout, ProtectedRoute, Loader
@@ -67,7 +67,7 @@ const AppRoutes = () => {
         setLoading(false);
         setFade(true); 
         prevPathRef.current = location.pathname;
-      }, 2500); 
+      }, 1500); 
 
       return () => clearTimeout(timeout);
     } else {
@@ -245,6 +245,9 @@ const AppRoutes = () => {
               <Route path="dashboard" element={<ProtectedRoute><MainStreamsDashboard /></ProtectedRoute>} />
               <Route path="new-kpi-submission" element={<ProtectedRoute><NewKpiSubmission /></ProtectedRoute>} />
               <Route path="new-throughput-submission" element={<ProtectedRoute><NewThroughputSubmission /></ProtectedRoute>} />
+              <Route path="tariff" element={<ProtectedRoute><StreamsTariff /></ProtectedRoute>} />
+              <Route path="sop" element={<ProtectedRoute><StreamsSOP /></ProtectedRoute>} />
+              <Route path="shipping-lines" element={<ProtectedRoute><StreamsShippingLines /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>

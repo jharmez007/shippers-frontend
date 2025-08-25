@@ -305,9 +305,9 @@ export const streamsMainLinks = [
   { name: 'All Submissions', icon: FaInbox, path: '/streams/terminal-dashboard/dashboard' },
   { name: 'Submit KPI', icon: FaChartLine, path: '/streams/terminal-dashboard/new-kpi-submission' },
   { name: 'Submit Throughput', icon: FaCubes, path: '/streams/terminal-dashboard/new-throughput-submission' },
-  { name: 'Submit Tariff', icon: FaMoneyBillWave, path: '/streams/terminal-dashboard/new-tariff-submission' },
-  { name: 'Submit SOP', icon: FaBook, path: '/streams/terminal-dashboard/new-sop-submission' },
-  { name: 'Shipping Lines', icon: FaShip, path: '/streams/terminal-dashboard/new-shipping-lines-submission' },
+  { name: 'Submit Tariff', icon: FaMoneyBillWave, path: '/streams/terminal-dashboard/tariff' },
+  { name: 'Submit SOP', icon: FaBook, path: '/streams/terminal-dashboard/sop' },
+  { name: 'Shipping Lines', icon: FaShip, path: '/streams/terminal-dashboard/shipping-lines' },
 ];
 
 export const streamsAccountLinks = [
