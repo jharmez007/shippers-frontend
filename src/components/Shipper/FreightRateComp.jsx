@@ -75,7 +75,7 @@ export default function FreightRateForm() {
 
   // Navigation after submit
   const handleNavigate = () => {
-    navigate('/shipper-dashboard/freight-rate-request');
+    navigate('/crd/shipper-dashboard/freight-rate-request');
   };
 
   // Step 0: Prefill logic

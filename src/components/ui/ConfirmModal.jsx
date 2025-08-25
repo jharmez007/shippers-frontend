@@ -12,7 +12,7 @@ const ConfirmModal = ({
   cancelText = "Cancel",
   confirmColor = "bg-green-600 hover:bg-green-700 focus:ring-green-500",
   action = "",
-  onReasonChange, // Optional callback for reason input
+  onReasonChange, 
 }) => {
   const [reason, setReason] = useState("");
 
@@ -24,7 +24,9 @@ const ConfirmModal = ({
   // Determine if reason input should be shown
   const needsReason =
     (typeof title === "string" && title.toLowerCase().includes("contested")) ||
-    (typeof action === "string" && action.toLowerCase().includes("contested"));
+    (typeof action === "string" && action.toLowerCase().includes("contested")) ||
+    (typeof title === "string" && title.toLowerCase().includes("recommended")) ||
+    (typeof action === "string" && action.toLowerCase().includes("recommended"));
 
   // Handle confirm with reason if needed
   const handleConfirm = () => {
@@ -62,7 +64,7 @@ const ConfirmModal = ({
             {needsReason && (
               <div className="mt-5">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Reason for contesting{" "}
+                  Reason {" "}
                   <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -70,7 +72,7 @@ const ConfirmModal = ({
                   rows={3}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="Enter reason for contesting..."
+                  placeholder="Enter reason..."
                   required
                 />
               </div>

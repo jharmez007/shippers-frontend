@@ -132,7 +132,13 @@ const ShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) => {
                         <InfoCard label="Invoice No." value={data?.form?.invoice_number} />
                         <InfoCard label="Port of Origin" value={data?.form?.voyage_from} />
                         <InfoCard label="No. of units" value={data?.form?.number_of_units} />
-                        <InfoCard label="Reasonable Price Per Unit" value={data?.form?.approved_amount} />
+                        <InfoCard label="Reasonable Price Per Unit" 
+                          value={
+                            data?.form?.approved_amount
+                              ? `$${Number(data?.form?.approved_amount).toLocaleString()}`
+                              : "—"
+                          }
+                        />
                       </div>
 
                       <div className="space-y-4">
@@ -142,7 +148,13 @@ const ShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) => {
                           valueClass={!data?.form?.bill_of_lading_number ? "text-red-500 font-medium" : ""}
                         />
                         <InfoCard label="Port of Discharge" value={data?.form?.voyage_to} />
-                        <InfoCard label="Price Per Unit" value={data?.form?.price_per_unit} />
+                        <InfoCard label="Price Per Unit" 
+                          value={
+                            data?.form?.price_per_unit
+                              ? `$${Number(data?.form?.price_per_unit).toLocaleString()}`
+                              : "—"
+                          } 
+                          />
                       </div>
                     </div>
 
@@ -152,7 +164,7 @@ const ShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) => {
                         <h3 className="text-blue-700 font-semibold text-sm">Amount Reviewed</h3>
                         <div className="flex justify-center items-center text-2xl font-bold text-blue-700 gap-2 mt-1">
                           <FaMoneyBillWave />
-                          <span>{data.amountReviewed}</span>
+                          <span>{data?.form?.total_price ? `$${Number(data?.form?.total_price).toLocaleString()}` : "—"}</span>
                         </div>
                       </div>
 

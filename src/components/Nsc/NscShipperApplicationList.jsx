@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { Button, Select } from "../component";
-import { CustomTab, NscShipperApplicationDetailModal } from ".."; 
+import { NscShipperApplicationDetailModal } from ".."; 
 import { getFreightApplications } from "../../services/nscCrdServices";
 
 const ITEMS_PER_PAGE = 10;
@@ -11,9 +11,6 @@ const monthNames = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-
-const statusTypes = ["All", "Pending", "Approved", "Rejected", "Recommended", "Reviewed"];
-
 
 const quarterMonths = {
   Q1: [1, 2, 3],
@@ -31,7 +28,6 @@ const NscShipperApplicationList = () => {
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
   const [quarter, setQuarter] = useState("");
-  const [status, setStatus] = useState("All");
   const [showFilters, setShowFilters] = useState(false);
 
   // Modal
@@ -57,6 +53,7 @@ const NscShipperApplicationList = () => {
 
     fetchApplications();
   }, []);
+
 
   const parseDateString = (dateStr) => {
     if (!dateStr) return new Date(""); // returns Invalid Date safely
@@ -85,11 +82,10 @@ const NscShipperApplicationList = () => {
       const yearMatch = !year || appYear.toString() === year;
       const monthMatch = !month || appMonth === parseInt(month, 10);
       const quarterMatch = !quarter || quarterMonths[quarter]?.includes(appMonth);
-      const statusMatch = status === "All" || app.status === status;
 
-      return yearMatch && monthMatch && quarterMatch && statusMatch;
+      return yearMatch && monthMatch && quarterMatch;
     });
-  }, [applications, year, month, quarter, status]);
+  }, [applications, year, month, quarter]);
 
   useEffect(() => {
     setFiltered(filteredData);
@@ -107,6 +103,44 @@ const NscShipperApplicationList = () => {
     setOpen(true);
   };
 
+  // 🔹 Status renderer based on pick_status
+  const renderStatus = (app) => {
+    if (app.pick_status === "picked") {
+      return (
+        <span className="text-sm px-3 py-1 rounded-full font-semibold bg-blue-100 text-blue-800">
+          Under Review
+        </span>
+      );
+    }
+    if (app.pick_status === null) {
+      return (
+        <span className="text-sm px-3 py-1 rounded-full font-semibold bg-yellow-100 text-yellow-800">
+          Awaiting Review
+        </span>
+      );
+    }
+    // fallback if backend starts returning "approved" / "rejected"
+    if (app.status === "approved") {
+      return (
+        <span className="text-sm px-3 py-1 rounded-full font-semibold bg-green-100 text-green-800">
+          Approved
+        </span>
+      );
+    }
+    if (app.status === "rejected") {
+      return (
+        <span className="text-sm px-3 py-1 rounded-full font-semibold bg-red-100 text-red-800">
+          Rejected
+        </span>
+      );
+    }
+    return (
+      <span className="text-sm px-3 py-1 rounded-full font-semibold bg-gray-100 text-gray-700">
+        {app.status || "Unknown"}
+      </span>
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -114,26 +148,20 @@ const NscShipperApplicationList = () => {
       transition={{ duration: 0.3 }}
       className="py-4"
     >
-      {/* Tabs & Actions */}
-      <div className="flex justify-between items-center mb-6 gap-4">
-        <CustomTab
-          selectedType={status}
-          setSelectedType={setStatus}
-          submissionTypes={statusTypes}
-        />
+      {/* Actions */}
+      <div className="flex justify-start items-center mb-6 gap-4">
         <div className="flex gap-3">
           <Button
             onClick={() => setShowFilters(!showFilters)}
             className="bg-primary text-white hover:bg-green-700"
           >
-            {showFilters ? "Hide Filters" : "More Filters"}
+            {showFilters ? "Hide Filters" : "Filters"}
           </Button>
           <Button
             onClick={() => {
               setYear("");
               setMonth("");
               setQuarter("");
-              setStatus("All");
             }}
             className="bg-gray-100 text-gray-800 hover:bg-gray-200"
           >
@@ -198,18 +226,7 @@ const NscShipperApplicationList = () => {
                       <td className="px-6 py-4">
                         {isNaN(appDate) ? "-" : appDate.toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`text-sm px-3 py-1 rounded-full font-semibold 
-                          ${app.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : app.status === "Approved"
-                              ? "bg-green-100 text-green-800"
-                              : app.status === "Rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"}`}>
-                          {app.status}
-                        </span>
-                      </td>
+                      <td className="px-6 py-4">{renderStatus(app)}</td>
                       <td className="px-6 py-4">{app.cci_number}</td>
                       <td className="px-6 py-4 text-center">
                         <Button
@@ -252,13 +269,11 @@ const NscShipperApplicationList = () => {
           </div>
 
           {/* Modal */}
-          
-            <NscShipperApplicationDetailModal
-              isOpen={open}
-              onClose={() => setOpen(false)}
-              applicationId={selectedAppId}
-            />
-         
+          <NscShipperApplicationDetailModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            applicationId={selectedAppId}
+          />
         </>
       )}
     </motion.div>

@@ -12,13 +12,22 @@ const monthNames = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-const statusTypes = ["All", "Pending", "Approved", "Rejected", "Recommended", "Reviewed"];
+const statusTypes = ["All", "Pending", "Approved", "Rejected"];
 
 const quarterMonths = {
   Q1: [1, 2, 3],
   Q2: [4, 5, 6],
   Q3: [7, 8, 9],
   Q4: [10, 11, 12]
+};
+
+// ✅ Normalize backend statuses into just 3
+const normalizeStatus = (status) => {
+  if (!status) return "Pending";
+  const lower = status.toLowerCase();
+  if (lower === "approved") return "Approved";
+  if (lower === "rejected") return "Rejected";
+  return "Pending";
 };
 
 const ShipperApplicationList = () => {
@@ -73,6 +82,7 @@ const ShipperApplicationList = () => {
     setQuarter("");
   };
 
+  // ✅ Apply normalized statuses in filtering
   const filteredData = useMemo(() => {
     return applications.filter((app) => {
       const appDate = parseDateString(app.date || app.created_at);
@@ -80,11 +90,12 @@ const ShipperApplicationList = () => {
 
       const appYear = appDate.getFullYear();
       const appMonth = appDate.getMonth() + 1;
+      const normalizedStatus = normalizeStatus(app.application_status);
 
       const yearMatch = !year || appYear.toString() === year;
       const monthMatch = !month || appMonth === parseInt(month, 10);
       const quarterMatch = !quarter || quarterMonths[quarter]?.includes(appMonth);
-      const statusMatch = status === "All" || app.status === status || app.application_status === status;
+      const statusMatch = status === "All" || normalizedStatus === status;
 
       return yearMatch && monthMatch && quarterMatch && statusMatch;
     });
@@ -185,10 +196,12 @@ const ShipperApplicationList = () => {
               <tbody className="divide-y divide-gray-200">
                 {paginatedData.map((app, index) => {
                   const appDate = parseDateString(app.date || app.created_at);
+                  const normalizedStatus = normalizeStatus(app.application_status);
+
                   return (
                     <tr
                       key={app.id}
-                      className="hover:bg-gray-50 transition"
+                      className="hover:bg-gray-50 transition cursor-pointer"
                       onClick={() => handleOpenModal(app.id)}
                     >
                       <td className="px-6 py-4">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
@@ -196,18 +209,18 @@ const ShipperApplicationList = () => {
                       <td className="px-6 py-4">{app.cci_number}</td>
                       <td className="px-6 py-4">{!isNaN(appDate) ? appDate.toLocaleDateString() : "—"}</td>
                       <td className="px-6 py-4">
-                        <span className={`text-sm px-3 py-1 rounded-full font-semibold 
-                          ${app.application_status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : app.application_status === "Approved"
-                              ? "bg-green-100 text-green-800"
-                              : app.application_status === "Rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"}`}>
-                          {app.application_status}
+                        <span
+                          className={`text-sm px-3 py-1 rounded-full font-semibold
+                            ${normalizedStatus === "Pending"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : normalizedStatus === "Approved"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"}`}
+                        >
+                          {normalizedStatus}
                         </span>
                       </td>
-                      <td className="px-6 py-4">{app.amount ? `$${Number(app.amount).toLocaleString()}` : "—"}</td>
+                      <td className="px-6 py-4 text-center">{app.amount ? `$${Number(app.amount).toLocaleString()}` : "—"}</td>
                       <td className="px-6 py-4 text-center">
                         {app.approved_amount ? `$${Number(app.approved_amount).toLocaleString()}` : "—"}
                       </td>

@@ -65,7 +65,7 @@ const DashboardHeader = () => {
           <h1 className="text-lg font-bold mt-1">
             {user_type === "terminal" || (user_type === "nsc" && division === "M and E")
               ? "STREAMS Portal"
-              : "CRD Portal"}
+              : division === "SSD" ? "" : "CRD Portal"}
           </h1>
         </div>
 

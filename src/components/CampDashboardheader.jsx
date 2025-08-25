@@ -19,11 +19,11 @@ const CampDashboardHeader = () => {
 
   const handleProfileClick = () => {
     if (userType === "nsc") {
-      navigate("/nsc-camp-dashboard/profile");
+      navigate("/camp/nsc-dashboard/profile");
     } else if (userType === "terminal") {
-      navigate("/streams-camp-dashboard/profile");
+      navigate("/camp/terminal-dashboard/profile");
     } else if (userType === "regulator") {
-      navigate("/maritime-police-dashboard/profile");
+      navigate("/camp/maritime-police-dashboard/profile");
     }
   };
 

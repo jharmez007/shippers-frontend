@@ -5,19 +5,21 @@ import { toast } from "sonner";
 import { ProgressTracker } from "..";
 import {
   getFreightDetails,
-  attendFreight,
   submitFreight,
   rejectFreight,
-} from "../../services/nscCrdServices";
+} from "../../services/nscMandTHeadServices";
 
-const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) => {
+const NscMandTHeadShipperApplicationDetailModal = ({ 
+  isOpen, 
+  onClose, 
+  applicationId,
+}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("free"); // free | picked | completed
+  const [status, setStatus] = useState("in-progress"); 
 
-  const [rppu, setRppu] = useState("");
   const [reason, setReason] = useState("");
-  const [showReasonInput, setShowReasonInput] = useState(false); // only for reject
+  const [showReasonInput, setShowReasonInput] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -34,12 +36,7 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
         if (isMounted) {
           const details = resData?.data?.data;
           setData(details);
-
-          if (details?.application?.picked_by_id) {
-            setStatus("picked");
-          } else {
-            setStatus("free");
-          }
+          setStatus("in-progress");
         }
       } catch (err) {
         toast.error("Failed to fetch application details.");
@@ -54,31 +51,14 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
     };
   }, [isOpen, applicationId]);
 
-  /** Pick or release freight form */
-  const handleAttendAction = async (action) => {
-    try {
-      const res = await attendFreight({ id: applicationId, action });
-      if (res?.data?.message) toast.success(res.data.message);
-
-      if (action === "pick") setStatus("picked");
-      else if (action === "release") setStatus("free");
-    } catch (err) {
-      toast.error("Something went wrong, please try again.");
-    }
-  };
-
   /** Submit or reject freight form */
   const handleDecision = async (decision) => {
     try {
       let res;
-      if (decision === "submit") {
-        if (!rppu) {
-          toast.error("Please provide a Reasonable Price Per Unit before submitting.");
-          return;
-        }
-        res = await submitFreight({ id: applicationId, rppu });
-      } else {
-        if (!reason) {
+      if (decision === "recommend") {
+        res = await submitFreight({ id: applicationId });
+      } else if (decision === "reject") {
+        if (!reason.trim()) {
           toast.error("Please provide a reason for rejection.");
           return;
         }
@@ -86,7 +66,11 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
       }
 
       if (res?.data?.message) toast.success(res.data.message);
+      
+      // mark completed and reset fields
       setStatus("completed");
+      setShowReasonInput(false);
+      setReason("");
     } catch (err) {
       toast.error("Action failed. Please try again.");
     }
@@ -143,7 +127,6 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
                       <ProgressTracker currentStep={data.step || 2} />
                     </div>
 
-                    {/* Section Title */}
                     <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">
                       Application Summary
                     </h3>
@@ -167,15 +150,14 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
                       <div className="space-y-4">
                         <InfoCard label="Invoice No." value={data?.form?.invoice_number} />
                         <InfoCard label="Port of Origin" value={data?.form?.voyage_from} />
+                        <InfoCard label="No. of units" value={data?.form?.number_of_units} />
                         <InfoCard
-                          label="No. of units"
-                          value={data?.form?.number_of_units}
-                        />
-                        <InfoInput
                           label="Reasonable Price Per Unit"
-                          placeholder="Input here..."
-                          value={rppu}
-                          onChange={(e) => setRppu(e.target.value)}
+                          value={
+                            data?.form?.rppu
+                              ? `$${Number(data?.form?.rppu).toLocaleString()}`
+                              : "—"
+                          }
                         />
                       </div>
 
@@ -183,8 +165,7 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
                         <InfoCard
                           label="Bill of Lading No."
                           value={
-                            data?.form?.bill_of_lading_number ||
-                            "Not yet provided"
+                            data?.form?.bill_of_lading_number || "Not yet provided"
                           }
                           valueClass={
                             !data?.form?.bill_of_lading_number
@@ -193,7 +174,14 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
                           }
                         />
                         <InfoCard label="Port of Discharge" value={data?.form?.voyage_to} />
-                        <InfoCard label="Price Per Unit" value={data?.form?.price_per_unit} />
+                        <InfoCard
+                          label="Price Per Unit"
+                          value={
+                            data?.form?.price_per_unit
+                              ? `$${Number(data?.form?.price_per_unit).toLocaleString()}`
+                              : "—"
+                          }
+                        />
                       </div>
                     </div>
 
@@ -210,39 +198,30 @@ const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicatio
                     )}
 
                     {/* Actions */}
-                    {status === "free" && (
-                      <div className="flex gap-4">
+                    {status === "in-progress" && (
+                      <div className="border rounded-md p-4 bg-gray-50 flex gap-4">
                         <button
-                          onClick={() => handleAttendAction("pick")}
-                          className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+                          onClick={() => handleDecision("recommend")}
+                          className="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
                         >
-                          Pick
+                          Recommend
                         </button>
-                      </div>
-                    )}
 
-                    {status === "picked" && (
-                      <div>
-                        <div className="border rounded-md p-4 bg-gray-50 flex gap-4">
-                          <button
-                            onClick={() => handleDecision("submit")}
-                            className="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-                          >
-                            Submit
-                          </button>
+                        {!showReasonInput ? (
                           <button
                             onClick={() => setShowReasonInput(true)}
                             className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
                           >
                             Reject
                           </button>
-                        </div>
-                        <button
-                          onClick={() => handleAttendAction("release")}
-                          className="mt-3 w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 transition"
-                        >
-                          Release
-                        </button>
+                        ) : (
+                          <button
+                            onClick={() => handleDecision("reject")}
+                            className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+                          >
+                            Confirm Reject
+                          </button>
+                        )}
                       </div>
                     )}
 
@@ -267,20 +246,6 @@ const InfoCard = ({ label, value, valueClass = "font-semibold text-gray-800" }) 
   <div className="border border-gray-200 bg-white p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow">
     <p className="text-gray-500 text-xs">{label}</p>
     <p className={`mt-1 text-sm ${valueClass}`}>{value}</p>
-  </div>
-);
-
-/* Reusable info card with input */
-const InfoInput = ({ label, placeholder, value, onChange }) => (
-  <div className="border border-gray-200 bg-white p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-    <p className="text-gray-500 text-xs">{label}</p>
-    <input
-      type="text"
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="mt-1 w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-green-500 outline-none"
-    />
   </div>
 );
 

@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 
 import { Button, Select } from "../component";
 import { CustomTab, ChartererPostAuditApplicationDetailModal } from ".."; 
-// import { getFreightApplications } from "../../services/shipperFreightServices";
+import { getPostAuditApplications } from "../../services/chatererServices";
 
 const ITEMS_PER_PAGE = 10;
 const monthNames = [
@@ -13,15 +13,6 @@ const monthNames = [
 ];
 
 const statusTypes = ["All", "Pending", "Approved", "Rejected"];
-
-const mockApplications = [
-  { id: 1, status: "Pending",  date: "5th January 2024", title: "Charter Request A", shipper: "Vessel A" },
-  { id: 2, status: "Approved", date: "5th February 2025", title: "Charter Request B", shipper: "Vessel B" },
-  { id: 3, status: "Rejected", date: "5th March 2025", title: "Charter Request C", shipper: "Vessel C" },
-  { id: 4, status: "Pending", date: "5th April 2025", title: "Charter Request D", shipper: "Vessel D" },
-  { id: 5, status: "Rejected", date: "5th May 2025", title: "Charter Request E", shipper: "Vessel E" },
-  // ... more data
-];
 
 const quarterMonths = {
   Q1: [1, 2, 3],
@@ -44,23 +35,31 @@ const ChartererPostAuditApplicationList = () => {
 
   // Modal
   const [open, setOpen] = useState(false);
-  // const [selectedApp, setSelectedApp] = useState(null);
+  const [selectedAppId, setSelectedAppId] = useState(null);
 
   useEffect(() => {
-    // Replace with API fetch later
-    // getFreightApplications()
-    //   .then(res => {
-    //     const sorted = [...res.data.data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    //     setApplications(sorted);
-    //   })
-    //   .catch(err => {
-    //     toast.error(err?.response?.data?.message || "Failed to fetch applications.");
-    //   });
+    const fetchApplications = async () => {
+      try {
+        const res = await getPostAuditApplications();
+        if (res?.data?.data) {
+          // Sort applications by date (newest first)
+          const sorted = [...res.data.data].sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          );
+          setApplications(sorted);
+        } else {
+          setApplications([]);
+        }
+      } catch (err) {
+        toast.error(err?.response?.data?.message || "Failed to fetch applications.");
+      }
+    };
 
-    setApplications(mockApplications);
+    fetchApplications();
   }, []);
 
   const parseDateString = (dateStr) => {
+    if (!dateStr) return new Date(""); 
     const cleanDateStr = dateStr.replace(/(\d+)(st|nd|rd|th)/, "$1");
     return new Date(cleanDateStr);
   };
@@ -77,7 +76,7 @@ const ChartererPostAuditApplicationList = () => {
 
   const filteredData = useMemo(() => {
     return applications.filter((app) => {
-      const appDate = parseDateString(app.date);
+      const appDate = parseDateString(app.date || app.created_at);
       if (isNaN(appDate)) return false;
 
       const appYear = appDate.getFullYear();
@@ -102,6 +101,11 @@ const ChartererPostAuditApplicationList = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+
+  const handleOpenModal = (id) => {
+    setSelectedAppId(id);
+    setOpen(true);
+  };
 
   return (
     <motion.div
@@ -171,8 +175,8 @@ const ChartererPostAuditApplicationList = () => {
               <thead className="bg-gray-100 sticky top-0 z-10">
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">NO.</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">REQUEST TITLE</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">VESSEL NAME</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">VOYAGE NUMBER</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">DATE</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">STATUS</th>
                   <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 uppercase">ACTION</th>
@@ -180,7 +184,7 @@ const ChartererPostAuditApplicationList = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {paginatedData.map((app, index) => {
-                  const appDate = parseDateString(app.date);
+                  const appDate = parseDateString(app.created_at);
                   return (
                     <tr
                       key={app.id}
@@ -188,8 +192,8 @@ const ChartererPostAuditApplicationList = () => {
                       onClick={() => setOpen(true)}
                     >
                       <td className="px-6 py-4">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
-                      <td className="px-6 py-4 font-medium">{app.title}</td>
-                      <td className="px-6 py-4">{app.shipper}</td>
+                      <td className="px-6 py-4 font-medium">{app.vessel_name}</td>
+                      <td className="px-6 py-4">{app.voyage_number}</td>
                       <td className="px-6 py-4">{appDate.toLocaleDateString()}</td>
                       <td className="px-6 py-4">
                         <span className={`text-sm px-3 py-1 rounded-full font-semibold 
@@ -205,7 +209,7 @@ const ChartererPostAuditApplicationList = () => {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <Button
-                          onClick={() => setOpen(true)}
+                          onClick={() => handleOpenModal(app.id)}
                           className="bg-primary text-white px-4 py-1 rounded hover:bg-green-700"
                         >
                           View
@@ -241,12 +245,11 @@ const ChartererPostAuditApplicationList = () => {
           </div>
 
           {/* Modal */}
-
-            <ChartererPostAuditApplicationDetailModal
-              isOpen={open}
-              onClose={() => setOpen(false)}
-            />
-         
+          <ChartererPostAuditApplicationDetailModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            applicationId={selectedAppId}
+          />
         </>
       )}
     </motion.div>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Modal, ConfirmModal } from "..";
-import { releaseContainer } from "../../services/maritimePoliceServices"; // <-- Import contestContainers
+import { releaseContainer, confiscateContainer } from "../../services/maritimePoliceServices"; 
 
 
 const SharedActionModal = ({ isOpen, onClose, action, container, onStatusChange }) => {
@@ -49,6 +49,20 @@ const SharedActionModal = ({ isOpen, onClose, action, container, onStatusChange 
     } else if (pendingAction === "Mark as Confiscated") {
       newStatus = "confiscated";
       actionLabel = "Mark as Confiscated";
+      // Call backend to mark as released, pass reason if needed
+      const res = await confiscateContainer({ id: container.id, action: "release" });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, newStatus);
+        toast.success(`${actionLabel} - Success`, {
+          description: (
+            <>
+              Container <span className="font-bold">{container.containerNumber || container.container_no}</span> is now {newStatus}
+            </>
+          ),
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as contested.");
+      }
     }
 
     if (newStatus) {
@@ -123,37 +137,42 @@ const SharedActionModal = ({ isOpen, onClose, action, container, onStatusChange 
               </p>
               <p>
                 <span className="font-medium">Date Flagged:</span>{" "}
-                {container.dateFlagged || "N/A"}
+                {container.created_at || "N/A"}
               </p>
               <p>
                 <span className="font-medium">Reason:</span>{" "}
-                {container.reason || "N/A"}
+                {container.reason_for_flagging || "N/A"}
               </p>
             </div>
 
             {/* Status-based Action Buttons */}
-            <div className={`mt-6 flex flex-wrap gap-3 justify-end ${isModalDisabled ? "pointer-events-none opacity-60" : ""}`}>
+            <div
+              className={`mt-6 flex flex-wrap gap-3 justify-end ${
+                isModalDisabled ? "pointer-events-none opacity-60" : ""
+              }`}
+            >
               {container.status === "contested" && (
-                <>
-                  <button
-                    onClick={() => {
-                      setPendingAction("Mark as Released");
-                      setShowConfirm(true);
-                    }}
-                    className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
-                  >
-                    Mark as Released
-                  </button>
-                  <button
-                    onClick={() => {
-                      setPendingAction("Mark as Confiscated");
-                      setShowConfirm(true);
-                    }}
-                    className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition"
-                  >
-                    Mark as Confiscated
-                  </button>
-                </>
+                <button
+                  onClick={() => {
+                    setPendingAction("Mark as Released");
+                    setShowConfirm(true);
+                  }}
+                  className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+                >
+                  Mark as Released
+                </button>
+              )}
+
+              {container.status === "consented" && (
+                <button
+                  onClick={() => {
+                    setPendingAction("Mark as Confiscated");
+                    setShowConfirm(true);
+                  }}
+                  className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+                >
+                  Mark as Confiscated
+                </button>
               )}
             </div>
           </>

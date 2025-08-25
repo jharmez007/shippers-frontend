@@ -3,17 +3,14 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { Button, Select } from "../component";
-import { CustomTab, NscDrsShipperApplicationDetailModal } from ".."; 
-import { getFreightApplications } from "../../services/nscCrdServices";
+import { NscDrsShipperApplicationDetailModal } from ".."; 
+import { getFreightApplications } from "../../services/nscDrsServices";
 
 const ITEMS_PER_PAGE = 10;
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-
-const statusTypes = ["All", "Pending", "Approved", "Rejected", "Recommended", "Reviewed"];
-
 
 const quarterMonths = {
   Q1: [1, 2, 3],
@@ -31,7 +28,6 @@ const NscDrsShipperApplicationList = () => {
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
   const [quarter, setQuarter] = useState("");
-  const [status, setStatus] = useState("All");
   const [showFilters, setShowFilters] = useState(false);
 
   // Modal
@@ -85,11 +81,10 @@ const NscDrsShipperApplicationList = () => {
       const yearMatch = !year || appYear.toString() === year;
       const monthMatch = !month || appMonth === parseInt(month, 10);
       const quarterMatch = !quarter || quarterMonths[quarter]?.includes(appMonth);
-      const statusMatch = status === "All" || app.status === status;
 
-      return yearMatch && monthMatch && quarterMatch && statusMatch;
+      return yearMatch && monthMatch && quarterMatch;
     });
-  }, [applications, year, month, quarter, status]);
+  }, [applications, year, month, quarter]);
 
   useEffect(() => {
     setFiltered(filteredData);
@@ -114,26 +109,20 @@ const NscDrsShipperApplicationList = () => {
       transition={{ duration: 0.3 }}
       className="py-4"
     >
-      {/* Tabs & Actions */}
-      <div className="flex justify-between items-center mb-6 gap-4">
-        <CustomTab
-          selectedType={status}
-          setSelectedType={setStatus}
-          submissionTypes={statusTypes}
-        />
+      {/* Actions */}
+      <div className="flex justify-start items-center mb-6 gap-3">
         <div className="flex gap-3">
           <Button
             onClick={() => setShowFilters(!showFilters)}
             className="bg-primary text-white hover:bg-green-700"
           >
-            {showFilters ? "Hide Filters" : "More Filters"}
+            {showFilters ? "Hide Filters" : "Filters"}
           </Button>
           <Button
             onClick={() => {
               setYear("");
               setMonth("");
               setQuarter("");
-              setStatus("All");
             }}
             className="bg-gray-100 text-gray-800 hover:bg-gray-200"
           >
@@ -252,13 +241,11 @@ const NscDrsShipperApplicationList = () => {
           </div>
 
           {/* Modal */}
-          
-            <NscDrsShipperApplicationDetailModal
-              isOpen={open}
-              onClose={() => setOpen(false)}
-              applicationId={selectedAppId}
-            />
-         
+          <NscDrsShipperApplicationDetailModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            applicationId={selectedAppId}
+          />
         </>
       )}
     </motion.div>

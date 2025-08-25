@@ -1,4 +1,4 @@
-import { Boxes, ShieldCheck, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { Boxes, ShieldCheck, CheckCircle2, XCircle, Star, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusStyles = {
@@ -13,6 +13,12 @@ const statusStyles = {
     text: "text-blue-700",
     border: "border-blue-200",
     iconBg: "bg-blue-100",
+  },
+  Recommended: {
+    bg: "bg-purple-50",
+    text: "text-purple-700",
+    border: "border-purple-200",
+    iconBg: "bg-purple-100",
   },
   Pending: {
     bg: "bg-gray-50",
@@ -37,18 +43,25 @@ const statusStyles = {
 const statusIcons = {
   Flagged: Boxes,
   Contested: ShieldCheck,
+  Recommended: Star,
   Pending: Clock,
   Released: CheckCircle2,
   Confiscated: XCircle,
 };
 
+
 const StatsOverview = ({ containers = [] }) => {
-  const statuses = ["Flagged", "Contested", "Pending", "Released", "Confiscated"];
+  const statuses = ["Flagged", "Contested", "Recommended", "Pending", "Released", "Confiscated"];
 
   // Map frontend status to backend status for counting
   const statusToBackend = (status) => {
-    if (status.toLowerCase() === "pending") return "under_review";
-    return status.toLowerCase();
+    if (status.toLowerCase() === "pending") {
+      return "under_review";
+    } else if (status.toLowerCase() === "recommended") {
+      return "consented"
+    } else {
+      return status.toLowerCase();
+    }
   };
 
   // Count containers for each status, mapping "Pending" to "under_review"
@@ -60,7 +73,7 @@ const StatsOverview = ({ containers = [] }) => {
   }, {});
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-4">
       {statuses.map((status, i) => {
         const Icon = statusIcons[status];
         const styles = statusStyles[status];

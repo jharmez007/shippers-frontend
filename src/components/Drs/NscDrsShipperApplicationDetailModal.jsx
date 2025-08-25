@@ -5,19 +5,21 @@ import { toast } from "sonner";
 import { ProgressTracker } from "..";
 import {
   getFreightDetails,
-  attendFreight,
   submitFreight,
   rejectFreight,
-} from "../../services/nscCrdServices";
+  downloadLetter,
+} from "../../services/nscDrsServices";
 
-const NscDrsShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) => {
+const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicationId, }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("free"); // free | picked | completed
+  const [status, setStatus] = useState("in-progress");
 
-  const [rppu, setRppu] = useState("");
   const [reason, setReason] = useState("");
-  const [showReasonInput, setShowReasonInput] = useState(false); // only for reject
+  const [showReasonInput, setShowReasonInput] = useState(false);
+
+  // new states
+  const [approvalCode, setApprovalCode] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -34,12 +36,8 @@ const NscDrsShipperApplicationDetailModal = ({ isOpen, onClose, applicationId })
         if (isMounted) {
           const details = resData?.data?.data;
           setData(details);
-
-          if (details?.application?.picked_by_id) {
-            setStatus("picked");
-          } else {
-            setStatus("free");
-          }
+          setStatus("in-progress");
+          setApprovalCode(null); // reset
         }
       } catch (err) {
         toast.error("Failed to fetch application details.");
@@ -54,31 +52,19 @@ const NscDrsShipperApplicationDetailModal = ({ isOpen, onClose, applicationId })
     };
   }, [isOpen, applicationId]);
 
-  /** Pick or release freight form */
-  const handleAttendAction = async (action) => {
-    try {
-      const res = await attendFreight({ id: applicationId, action });
-      if (res?.data?.message) toast.success(res.data.message);
-
-      if (action === "pick") setStatus("picked");
-      else if (action === "release") setStatus("free");
-    } catch (err) {
-      toast.error("Something went wrong, please try again.");
-    }
-  };
-
   /** Submit or reject freight form */
   const handleDecision = async (decision) => {
     try {
       let res;
-      if (decision === "submit") {
-        if (!rppu) {
-          toast.error("Please provide a Reasonable Price Per Unit before submitting.");
-          return;
-        }
-        res = await submitFreight({ id: applicationId, rppu });
-      } else {
-        if (!reason) {
+      if (decision === "approve") {
+        res = await submitFreight({ id: applicationId });
+
+        // assume backend returns a validation code
+        const code = res?.data?.approval_code || generateCode();
+        setApprovalCode(code);
+
+      } else if (decision === "reject") {
+        if (!reason.trim()) {
           toast.error("Please provide a reason for rejection.");
           return;
         }
@@ -86,9 +72,44 @@ const NscDrsShipperApplicationDetailModal = ({ isOpen, onClose, applicationId })
       }
 
       if (res?.data?.message) toast.success(res.data.message);
+      
       setStatus("completed");
+      setShowReasonInput(false);
+      setReason("");
     } catch (err) {
       toast.error("Action failed. Please try again.");
+    }
+  };
+
+  /** Download Letter */
+  const handleDownloadLetter = async () => {
+    try {
+      const res = await downloadLetter({ id: applicationId });
+      if (res) {
+        // create download link
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `Approval_Letter_${approvalCode}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    } catch (err) {
+      toast.error("Failed to download letter.");
+    }
+  };
+
+  /** Generate fallback code if API doesn’t return */
+  const generateCode = () => {
+    return Math.floor(100000000 + Math.random() * 900000000).toString();
+  };
+
+  /** Copy to clipboard */
+  const copyCode = () => {
+    if (approvalCode) {
+      navigator.clipboard.writeText(approvalCode);
+      toast.success("Validation code copied!");
     }
   };
 
@@ -171,11 +192,13 @@ const NscDrsShipperApplicationDetailModal = ({ isOpen, onClose, applicationId })
                           label="No. of units"
                           value={data?.form?.number_of_units}
                         />
-                        <InfoInput
+                        <InfoCard
                           label="Reasonable Price Per Unit"
-                          placeholder="Input here..."
-                          value={rppu}
-                          onChange={(e) => setRppu(e.target.value)}
+                          value={
+                            data?.form?.rppu
+                              ? `$${Number(data?.form?.rppu).toLocaleString()}`
+                              : "—"
+                          }
                         />
                       </div>
 
@@ -193,7 +216,14 @@ const NscDrsShipperApplicationDetailModal = ({ isOpen, onClose, applicationId })
                           }
                         />
                         <InfoCard label="Port of Discharge" value={data?.form?.voyage_to} />
-                        <InfoCard label="Price Per Unit" value={data?.form?.price_per_unit} />
+                        <InfoCard
+                          label="Price Per Unit"
+                          value={
+                            data?.form?.price_per_unit
+                              ? `$${Number(data?.form?.price_per_unit).toLocaleString()}`
+                              : "—"
+                          }
+                        />
                       </div>
                     </div>
 
@@ -210,43 +240,60 @@ const NscDrsShipperApplicationDetailModal = ({ isOpen, onClose, applicationId })
                     )}
 
                     {/* Actions */}
-                    {status === "free" && (
-                      <div className="flex gap-4">
+                    {status === "in-progress" && (
+                      <div className="border rounded-md p-4 bg-gray-50 flex gap-4">
                         <button
-                          onClick={() => handleAttendAction("pick")}
-                          className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+                          onClick={() => handleDecision("approve")}
+                          className="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
                         >
-                          Pick
+                          Approve
                         </button>
-                      </div>
-                    )}
 
-                    {status === "picked" && (
-                      <div>
-                        <div className="border rounded-md p-4 bg-gray-50 flex gap-4">
-                          <button
-                            onClick={() => handleDecision("submit")}
-                            className="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-                          >
-                            Submit
-                          </button>
+                        {!showReasonInput ? (
                           <button
                             onClick={() => setShowReasonInput(true)}
                             className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
                           >
                             Reject
                           </button>
+                        ) : (
+                          <button
+                            onClick={() => handleDecision("reject")}
+                            className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+                          >
+                            Confirm Reject
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {status === "completed" && approvalCode && (
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border rounded-md p-4 bg-gray-50">
+                        <div className="flex items-center gap-2 border rounded-md px-4 py-2 flex-1 justify-between">
+                          <span className="text-sm font-medium text-gray-700">
+                            Approval Letter Validation Code
+                          </span>
+                          <span className="font-bold text-gray-900 flex items-center gap-2">
+                            {approvalCode}
+                            <button
+                              onClick={copyCode}
+                              className="text-gray-600 hover:text-gray-800"
+                            >
+                              📋
+                            </button>
+                          </span>
                         </div>
+
                         <button
-                          onClick={() => handleAttendAction("release")}
-                          className="mt-3 w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 transition"
+                          onClick={handleDownloadLetter}
+                          className="bg-blue-700 text-white px-6 py-3 rounded-md hover:bg-blue-800 transition w-full sm:w-auto"
                         >
-                          Release
+                          ⬇ Download Letter
                         </button>
                       </div>
                     )}
 
-                    {status === "completed" && (
+                    {status === "completed" && !approvalCode && (
                       <p className="text-center text-gray-500 font-medium">
                         This application has been completed.
                       </p>
@@ -270,18 +317,4 @@ const InfoCard = ({ label, value, valueClass = "font-semibold text-gray-800" }) 
   </div>
 );
 
-/* Reusable info card with input */
-const InfoInput = ({ label, placeholder, value, onChange }) => (
-  <div className="border border-gray-200 bg-white p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-    <p className="text-gray-500 text-xs">{label}</p>
-    <input
-      type="text"
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="mt-1 w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-green-500 outline-none"
-    />
-  </div>
-);
-
-export default NscDrsShipperApplicationDetailModal;
+export default NscMandTHeadShipperApplicationDetailModal;

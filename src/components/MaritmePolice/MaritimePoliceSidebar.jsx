@@ -13,7 +13,7 @@ import { images } from "../../constants";
 const navItems = [
   {
     label: "Dashboard",
-    to: "/maritime-police-dashboard/dashboard",
+    to: "/camp/maritime-police-dashboard/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   {
@@ -23,7 +23,7 @@ const navItems = [
   },
   {
     label: "Settings",
-    to: "/maritime-police-dashboard/settings",
+    to: "/camp/maritime-police-dashboard/settings",
     icon: <Settings className="w-5 h-5" />,
   },
 ];

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Modal, ConfirmModal } from "..";
-import { reviewContainers, contestContainers } from "../../services/nscCampServices"; 
+import { reviewContainers, contestContainers, consentContainers } from "../../services/nscCampServices"; 
 
 const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatusChange }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -55,6 +55,23 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
           description: (
             <>
               Container <span className="font-bold">{container.container_no}</span> is now Pending
+            </>
+          ),
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as pending.");
+      }
+    } else if (pendingAction === "Mark as Recommended") {
+      newStatus = "recommended";
+      actionLabel = "Mark as Recommended";
+      // Call backend to mark as consented
+      const res = await consentContainers({ id: container.id });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, "consented");
+        toast.success(`${actionLabel} - Success`, {
+          description: (
+            <>
+              Container <span className="font-bold">{container.container_no}</span> is now Recommended
             </>
           ),
         });
@@ -114,11 +131,11 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
               </p>
               <p>
                 <span className="font-medium">Date Flagged:</span>{" "}
-                {container.dateFlagged || "N/A"}
+                {container.created_at || "N/A"}
               </p>
               <p>
                 <span className="font-medium">Reason:</span>{" "}
-                {container.reason || "N/A"}
+                {container.reason_for_flagging || "N/A"}
               </p>
             </div>
 
@@ -144,19 +161,39 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
                   >
                     Review
                   </button>
+                  <button
+                    onClick={() => {
+                      setPendingAction("Mark as Recommended");
+                      setShowConfirm(true);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-yellow-700 transition"
+                  >
+                    Recommend
+                  </button>
                 </>
               )}
 
               {(container.status === "pending" || container.status === "under_review") && (
-                <button
-                  onClick={() => {
-                    setPendingAction("Mark as Contested");
-                    setShowConfirm(true);
-                  }}
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
-                >
-                  Contest
-                </button>
+               <>
+                  <button
+                    onClick={() => {
+                      setPendingAction("Mark as Contested");
+                      setShowConfirm(true);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+                  >
+                    Contest
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPendingAction("Mark as Recommended");
+                      setShowConfirm(true);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+                  >
+                    Recommend
+                  </button>
+                </>
               )}
             </div>
           </>
@@ -215,7 +252,7 @@ const NscCampSharedActionModal = ({ isOpen, onClose, action, container, onStatus
         }
         confirmText="Yes, Proceed"
         cancelText="Cancel"
-        onReasonChange={setReason} // <-- Pass reason handler
+        onReasonChange={setReason} 
       />
     </>
   );

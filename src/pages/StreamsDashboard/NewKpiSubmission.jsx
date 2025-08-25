@@ -10,7 +10,6 @@ const NewKpiSubmission = () => {
         <h2 className="text-4xl uppercase font-bold text-white">
           Monthly KPI Submission Form
         </h2>
-        
       </div>
       <div className='h-20' />
       <KPIFormWrapper />

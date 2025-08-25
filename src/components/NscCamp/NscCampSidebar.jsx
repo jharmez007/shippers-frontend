@@ -14,12 +14,12 @@ import { images } from "../../constants";
 const navItems = [
   {
     label: "Dashboard",
-    to: "/nsc-camp-dashboard/dashboard",
+    to: "/camp/nsc-dashboard/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   {
     label: "Analysis",
-    to: "/nsc-camp-dashboard/analysis",
+    to: "/camp/nsc-dashboard/analysis",
     icon: <BarChart2 className="w-5 h-5" />,
   },
   {
@@ -29,7 +29,7 @@ const navItems = [
   },
   {
     label: "Settings",
-    to: "/nsc-camp-dashboard/settings",
+    to: "/camp/nsc-dashboard/settings",
     icon: <Settings className="w-5 h-5" />,
   },
 ];

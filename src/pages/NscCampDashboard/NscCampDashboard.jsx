@@ -58,13 +58,18 @@ const NscCampDashboard = () => {
     );
   };
 
-  // Map UI tab to backend status
+ // Map UI tab to backend status
   const tabToStatus = (tab) => {
-    if (tab.toLowerCase() === "pending") return "under_review";
-    return tab.toLowerCase();
+    if (tab.toLowerCase() === "pending") {
+      return "under_review";
+    } else if (tab.toLowerCase() === "recommended") {
+      return "consented";
+    } else {
+     return tab.toLowerCase();
+    }
   };
 
-  const tabs = ["Flagged", "Contested", "Pending", "Released", "Confiscated"];
+  const tabs = ["Flagged", "Contested", "Recommended", "Pending", "Released", "Confiscated"];
   return (
     <main className="flex-1 bg-gray-50 px-4 py-6 md:px-8 min-h-screen">
       <div className="animate-fadeIn">

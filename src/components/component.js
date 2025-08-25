@@ -5,28 +5,40 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.9 }}
+            className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[calc(100vh-4rem)] flex flex-col"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">{title}</h2>
-              <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10 rounded-t-2xl">
+              <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700 transition"
+              >
+                ✕
+              </button>
             </div>
-            {children}
+
+            {/* Body (scrollable) */}
+            <div className="p-6 overflow-y-auto">
+              {children}
+            </div>
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 };
+
 
 
 export const Select = ({ value, onValueChange, placeholder, children, className = '' }) => (
@@ -135,28 +147,50 @@ export const Selectt = ({ label, name, value, onChange, options }) => (
 
 export const Table = ({ headers, rows }) => (
   <div className="overflow-x-auto">
-    <table className="min-w-full border border-gray-200 rounded-lg">
-      <thead className="bg-gray-100 text-left">
+    <table className="min-w-full border border-gray-200 rounded-lg border-collapse">
+      <thead className="bg-gray-100 text-center">
         <tr>
           {headers.map((h, i) => (
-            <th key={i} className="px-4 py-2 border-b">{h}</th>
+            <th
+              key={i}
+              className="px-4 py-2 border-b border-r last:border-r-0 text-center"
+            >
+              {h}
+            </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {rows.length > 0 ? rows.map((row, i) => (
-          <tr key={i} className="hover:bg-gray-50">
-            {row.map((cell, j) => (
-              <td key={j} className="px-4 py-2 border-b">{cell}</td>
-            ))}
+        {rows.length > 0 ? (
+          rows.map((row, i) => (
+            <tr key={i} className="hover:bg-gray-50">
+              {row.map((cell, j) => (
+                <td
+                  key={j}
+                  className={`px-4 py-2 border-b border-r last:border-r-0 ${
+                    j === 0 ? "text-left" : "text-center"
+                  }`}
+                >
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td
+              colSpan={headers.length}
+              className="text-center py-4"
+            >
+              No records found
+            </td>
           </tr>
-        )) : (
-          <tr><td colSpan={headers.length} className="text-center py-4">No records found</td></tr>
         )}
       </tbody>
     </table>
   </div>
 );
+
 
 
 export const Card = ({ title, children }) => (

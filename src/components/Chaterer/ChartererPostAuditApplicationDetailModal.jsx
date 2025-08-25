@@ -1,6 +1,29 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const ChartererPostAuditApplicationDetailModal = ({ isOpen, onClose }) => {
+import { getPostAuditDetails } from "../../services/chatererServices";
+
+const ChartererPostAuditApplicationDetailModal = ({ isOpen, onClose, applicationId }) => {
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && applicationId) {
+      setLoading(true);
+      getPostAuditDetails({id: applicationId})
+        .then((res) => {
+          // Adjust based on your API response shape
+          setDetails(res?.data?.data || res);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch post audit details:", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [isOpen, applicationId]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -22,7 +45,6 @@ const ChartererPostAuditApplicationDetailModal = ({ isOpen, onClose }) => {
             exit={{ scale: 0.95, opacity: 0 }}
           >
             <div className="bg-white rounded shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar border border-gray-200">
-              
               {/* Header */}
               <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
                 <h2 className="text-xl font-semibold text-gray-800">
@@ -42,41 +64,48 @@ const ChartererPostAuditApplicationDetailModal = ({ isOpen, onClose }) => {
                 animate={{ opacity: 1 }}
                 className="px-6 py-6 bg-gray-50 text-sm"
               >
+                {loading ? (
+                  <p className="text-center text-gray-500">Loading details...</p>
+                ) : details ? (
+                  <>
+                    {/* Section Title */}
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">
+                      Application Summary
+                    </h3>
 
-                {/* Section Title */}
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">
-                  Application Summary
-                </h3>
+                    {/* Info Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                      {/* Column 1 */}
+                      <div className="space-y-4">
+                        <InfoCard label="Name of Vessel" value={details?.vessel_name || "-"} />
+                        <InfoCard label="Cargo Type" value={details?.extra_details.cargo_type || "-"} />
+                        <InfoCard label="Voyage Number" value={details?.voyage_number || "-"} />
+                      </div>
 
-                {/* Info Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                  {/* Column 1 */}
-                  <div className="space-y-4">
-                    <InfoCard label="Name of Vessel" value="2311112342" />
-                    <InfoCard label="Beneficiary" value="UYTIU" />
-                    <InfoCard label="Voyage Number" value="State number here" />
-                  </div>
+                      {/* Column 2 */}
+                      <div className="space-y-4">
+                        <InfoCard label="Invoice No." value={details?.title || "-"} />
+                        <InfoCard label="Port of Loading" value={details?.port_of_loading || "-"} />
+                        <InfoCard label="Period" value={details?.period || "-"} />
+                      </div>
 
-                  {/* Column 2 */}
-                  <div className="space-y-4">
-                    <InfoCard label="Invoice No." value="542" />
-                    <InfoCard label="Port of Loading" value="State Location here" />
-                    <InfoCard label="Period" value="10 Days" />
-                  </div>
+                      {/* Column 3 */}
+                      <div className="space-y-4">
+                        <InfoCard label="PACC No." value={details?.pac_number || "-"} />
+                        <InfoCard label="Port of Discharge" value={details?.port_of_discharge || "-"} />
+                        <InfoCard label="Reason to Trade" value={details?.extra_details.reason_to_trade || "-"} />
+                      </div>
+                    </div>
 
-                  {/* Column 3 */}
-                  <div className="space-y-4">
-                    <InfoCard label="Bill of Lading No." value="987564" />
-                    <InfoCard label="Port of Discharge" value="State Location here" />
-                    <InfoCard label="Others Stated" value="the initial added info" />
-                  </div>
-                </div>
-
-                <div className="border border-blue-500 rounded-md p-4 text-center mb-6">
-                  <h3 className="text-blue-700 font-semibold text-sm">Verified</h3>
-
-                </div>
-
+                    <div className="border border-blue-500 rounded-md p-4 text-center mb-6">
+                      <h3 className="text-blue-700 font-semibold text-sm">
+                        {details?.status || "Pending"}
+                      </h3>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-center text-gray-500">No details found.</p>
+                )}
               </motion.div>
             </div>
           </motion.div>
@@ -93,6 +122,5 @@ const InfoCard = ({ label, value, valueClass = "font-semibold text-gray-800" }) 
     <p className={`mt-1 text-sm ${valueClass}`}>{value}</p>
   </div>
 );
-
 
 export default ChartererPostAuditApplicationDetailModal;

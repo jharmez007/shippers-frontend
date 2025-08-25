@@ -77,7 +77,7 @@ export default function ChartererComp() {
 
   // Navigation after submit
   const handleNavigate = () => {
-    navigate('/charterer-dashboard/charter-party-request');
+    navigate('/crd/charterer-dashboard/charter-party-request');
   };
 
   // Step handling

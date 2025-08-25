@@ -453,9 +453,15 @@ export default function NscStreamsModal({ selectedType, application, onClose }) 
                             <span className="font-medium">Officer:</span>{" "}
                             {reportData.officer?.name || "-"}
                           </div>
+
                           <div className="bg-gray-50 p-3 rounded border">
                             <span className="font-medium">Created At:</span>{" "}
                             {new Date(reportData.created_at).toLocaleString()}
+                          </div>
+
+                          <div className="bg-gray-50 p-3 rounded border">
+                            <span className="font-medium">Confirmed By:</span>{" "}
+                            {reportData.confirmed_by?.name || "-"}
                           </div>
                         </div>
                       </div>

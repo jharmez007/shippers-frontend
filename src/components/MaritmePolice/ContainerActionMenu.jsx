@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { ConfirmModal } from ".."
-import { releaseContainer } from "../../services/maritimePoliceServices"; // <-- Make sure this path is correct
+import { releaseContainer, confiscateContainer } from "../../services/maritimePoliceServices"; 
 
 const actionIcons = {
   "View Container": <Eye className="w-4 h-4 mr-2 text-gray-500" />,
@@ -33,6 +33,11 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
           "View Container",
           "Upload Response",
           "Mark as Released",
+        ];
+      case "consented":
+        return [
+          "View Container",
+          "Upload Response",
           "Mark as Confiscated",
         ];
       case "released":
@@ -83,6 +88,17 @@ const ContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
         });
       } else {
         toast.error(res.message || "Failed to mark as released.");
+      }
+    } else if (newStatus === "confiscated") {
+      // Call backend for mark as released
+      const res = await confiscateContainer({ id: container.id, action: "release" });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, "confiscated");
+        toast.success(`${action} - Success`, {
+          description: `Container ${container.container_no} is now confiscated`,
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as confiscated.");
       }
     } else {
       // For other statuses, just update locally

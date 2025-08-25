@@ -62,7 +62,7 @@ const ContainerTable = ({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto pb-60">
+      <div className="overflow-x-auto pb-32">
         <table className="min-w-[800px] w-full text-sm text-left">
           <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
             <tr>

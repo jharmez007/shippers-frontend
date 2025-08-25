@@ -105,7 +105,7 @@ const AppRoutes = () => {
             </Route>
 
             {/* Shipper Dashboard Routes */}
-            <Route path="/shipper-dashboard" element={<ProtectedRoute><ShipperDashboard /></ProtectedRoute>}>
+            <Route path="/crd/shipper-dashboard" element={<ProtectedRoute><ShipperDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainDashboard /></ProtectedRoute>} />
               <Route path="bank" element={<ProtectedRoute><Bank /></ProtectedRoute>} />
               <Route path="freight-rate-form" element={<ProtectedRoute><FreightRateForm /></ProtectedRoute>} />
@@ -116,7 +116,7 @@ const AppRoutes = () => {
             </Route>
 
             {/* Charterer Dashboard Routes */}
-            <Route path="/charterer-dashboard" element={<ProtectedRoute><ChartererDashboard /></ProtectedRoute>}>
+            <Route path="/crd/charterer-dashboard" element={<ProtectedRoute><ChartererDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainChartererDashboard /></ProtectedRoute>} />
               <Route path="charter-party-form" element={<ProtectedRoute><CharterPartyForm /></ProtectedRoute>} />
               <Route path="charter-party-request" element={<ProtectedRoute><CharterPartyRequests /></ProtectedRoute>} />
@@ -127,7 +127,7 @@ const AppRoutes = () => {
             </Route>
 
             {/* Shipping Lines Dashboard Routes */}
-            <Route path="/shipping-lines-dashboard" element={<ProtectedRoute><ShippingLinesDashboard /></ProtectedRoute>}>
+            <Route path="/crd/shipping-lines-dashboard" element={<ProtectedRoute><ShippingLinesDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainShippingLinesDashboard /></ProtectedRoute>} />
               <Route path="demurrage-requests" element={<ProtectedRoute><ShippingLinesDemurrageRequest /></ProtectedRoute>} />
               <Route path="submit-demurrage" element={<ProtectedRoute><ShippingLinesDemurrageSubmit /></ProtectedRoute>} />
@@ -163,7 +163,7 @@ const AppRoutes = () => {
             </Route>
 
             {/* Nsc Dashboard Routes */}
-            <Route path="/nsc-dashboard" element={<ProtectedRoute><NscDashboard /></ProtectedRoute>}>
+            <Route path="/crd/nsc-dashboard" element={<ProtectedRoute><NscDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainNscDashboard /></ProtectedRoute>} />
               <Route path="tariff" element={<ProtectedRoute><NscTariff /></ProtectedRoute>} />
               <Route path="freight-rate-request" element={<ProtectedRoute><NscFreightRateRequest /></ProtectedRoute>} />
@@ -177,7 +177,7 @@ const AppRoutes = () => {
             </Route>
 
             {/* Nsc Head of M and T Dashboard Routes */}
-            <Route path="/nsc-mandt-head-dashboard" element={<ProtectedRoute><NscMandTHeadDashboard /></ProtectedRoute>}>
+            <Route path="/crd/nsc-mandt-head-dashboard" element={<ProtectedRoute><NscMandTHeadDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainNscMandTHeadDashboard /></ProtectedRoute>} />
               <Route path="tariff" element={<ProtectedRoute><NscMandTHeadTariff /></ProtectedRoute>} />
               <Route path="freight-rate-request" element={<ProtectedRoute><NscMandTHeadFreightRateRequest /></ProtectedRoute>} />
@@ -191,7 +191,7 @@ const AppRoutes = () => {
             </Route>
 
             {/* Nsc DRS Dashboard Routes */}
-            <Route path="/nsc-drs-dashboard" element={<ProtectedRoute><NscDrsDashboard /></ProtectedRoute>}>
+            <Route path="/crd/nsc-drs-dashboard" element={<ProtectedRoute><NscDrsDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainNscDrsDashboard /></ProtectedRoute>} />
               <Route path="tariff" element={<ProtectedRoute><NscDrsTariff /></ProtectedRoute>} />
               <Route path="freight-rate-request" element={<ProtectedRoute><NscDrsFreightRateRequest /></ProtectedRoute>} />
@@ -205,7 +205,7 @@ const AppRoutes = () => {
             </Route>
 
             {/* Nsc Streams Dashboard Routes */}
-            <Route path="/nsc-streams-dashboard" element={<ProtectedRoute><NscStreamsDashboard /></ProtectedRoute>}>
+            <Route path="/streams/nsc-dashboard" element={<ProtectedRoute><NscStreamsDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainNscStreamsDashboard /></ProtectedRoute>} />
               <Route path="kpi" element={<ProtectedRoute><NscStreamsKpi /></ProtectedRoute>} />
               <Route path="throughput" element={<ProtectedRoute><NscStreamsThroughput /></ProtectedRoute>} />
@@ -234,14 +234,14 @@ const AppRoutes = () => {
             </Route>
 
             {/* Nsc Camp Dashboard Routes */}
-            <Route path="/nsc-camp-dashboard" element={<ProtectedRoute><NscCampDashboardLayout /></ProtectedRoute>} >
+            <Route path="/camp/nsc-dashboard" element={<ProtectedRoute><NscCampDashboardLayout /></ProtectedRoute>} >
               <Route path="dashboard" element={<ProtectedRoute><NscCampDashboard /></ProtectedRoute>} />
               <Route path="analysis" element={<ProtectedRoute><NscCampFlaggedAnalysisChart /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><CampProfile /></ProtectedRoute>} />
             </Route>
 
             {/* Streams Dashboard Routes */}
-            <Route path="/streams-dashboard" element={<ProtectedRoute><StreamsDashboard /></ProtectedRoute>}>
+            <Route path="/streams/terminal-dashboard" element={<ProtectedRoute><StreamsDashboard /></ProtectedRoute>}>
               <Route path="dashboard" element={<ProtectedRoute><MainStreamsDashboard /></ProtectedRoute>} />
               <Route path="new-kpi-submission" element={<ProtectedRoute><NewKpiSubmission /></ProtectedRoute>} />
               <Route path="new-throughput-submission" element={<ProtectedRoute><NewThroughputSubmission /></ProtectedRoute>} />
@@ -250,14 +250,14 @@ const AppRoutes = () => {
             </Route>
 
              {/* Streams Camp Dashboard Routes */}
-            <Route path="/streams-camp-dashboard" element={<ProtectedRoute><StreamsCampDashboardLayout /></ProtectedRoute>} >
+            <Route path="/camp/terminal-dashboard" element={<ProtectedRoute><StreamsCampDashboardLayout /></ProtectedRoute>} >
               <Route path="dashboard" element={<ProtectedRoute><StreamsCampDashboard /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><CampProfile /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Route>
 
             {/* MaritimePolice Dashboard Routes */}
-            <Route path="/maritime-police-dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} >
+            <Route path="/camp/maritime-police-dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} >
               <Route path="dashboard" element={<ProtectedRoute><MaritimePoliceDashboard /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><CampProfile /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

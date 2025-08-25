@@ -13,7 +13,7 @@ import { images } from "../../constants";
 const navItems = [
   {
     label: "Dashboard",
-    to: "/streams-camp-dashboard/dashboard",
+    to: "/camp/terminal-dashboard/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   // {
@@ -23,7 +23,7 @@ const navItems = [
   // },
   {
     label: "Settings",
-    to: "/streams-camp-dashboard/settings",
+    to: "/camp/terminal-dashboard/settings",
     icon: <Settings className="w-5 h-5" />,
   },
 ];
@@ -33,7 +33,7 @@ const StreamsCampSidebar = () => {
   const navigate = useNavigate();
 
   const toStreams = () => {
-      navigate('/streams-dashboard/dashboard');
+      navigate('/streams/terminal-dashboard/dashboard');
     }
 
   const SidebarContent = ({ onClickItem }) => (

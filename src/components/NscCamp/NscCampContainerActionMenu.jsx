@@ -5,13 +5,14 @@ import {
   Upload,
   ShieldCheck,
   Clock,
+  Star,
   RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { ConfirmModal } from ".."
-import { reviewContainers, contestContainers } from "../../services/nscCampServices";
+import { reviewContainers, contestContainers, consentContainers } from "../../services/nscCampServices";
 
 
 const actionIcons = {
@@ -20,31 +21,36 @@ const actionIcons = {
   "Upload Response": <Upload className="w-4 h-4 mr-2 text-gray-500" />,
   "Mark as Contested": <ShieldCheck className="w-4 h-4 mr-2 text-blue-500" />,
   "Mark as Pending": <Clock className="w-4 h-4 mr-2 text-yellow-500" />,
+  "Mark as Recommended": <Star className="w-4 h-4 mr-2 text-purple-500" />,
 };
 
 const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) => {
   const [open, setOpen] = useState(false);
   const [confirmingAction, setConfirmingAction] = useState(null); // { action, status }
-  const [reason, setReason] = useState(""); // <-- Add reason state
+  const [reason, setReason] = useState(""); 
 
   const menuRef = useRef(null);
 
   const getAvailableActions = (status) => {
     // Map backend "under_review" to "pending" for UI logic
-    const normalizedStatus = (status || "").toLowerCase() === "under_review" ? "pending" : (status || "").toLowerCase();
+    const normalizedStatus = (status || "").toLowerCase() === "under_review" ? "pending" : (status || "").toLowerCase() === "consented" ? "recommended" : (status || "").toLowerCase();
     switch (normalizedStatus) {
       case "flagged":
         return [
           "View Container",
           "Mark as Contested",
           "Mark as Pending",
+          "Mark as Recommended",
         ];
       case "contested":
+        return ["View Container"];
+      case "recommended":
         return ["View Container"];
       case "pending":
         return [
           "View Container",
           "Mark as Contested",
+          "Mark as Recommended",
         ];
       case "released":
         return ["View Container"];
@@ -98,6 +104,17 @@ const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) 
       const res = await contestContainers({ id: container.id, remarks: inputReason || reason });
       if (res.status === 200 || res.status === 201) {
         onStatusChange(container.id, "contested");
+        toast.success(`${action} - Success`, {
+          description: `Container ${container.container_no} is now Contested`,
+        });
+      } else {
+        toast.error(res.message || "Failed to mark as contested.");
+      }
+    } else if (newStatus.toLowerCase() === "recommended") {
+      // Mark as Contested, pass reason
+      const res = await consentContainers({ id: container.id, remarks: inputReason || reason });
+      if (res.status === 200 || res.status === 201) {
+        onStatusChange(container.id, "consented");
         toast.success(`${action} - Success`, {
           description: `Container ${container.container_no} is now Contested`,
         });
@@ -181,7 +198,7 @@ const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) 
               Are you sure you want to mark container <span className="font-bold">{container.container_no || container.containerNumber}</span> as {confirmingAction.newStatus}?
             </>
           }
-          confirmText={`Yes, mark as ${confirmingAction.newStatus}`}
+          confirmText={`Mark as ${confirmingAction.newStatus}`}
           confirmColor={
             confirmingAction.newStatus === "contested"
               ? "bg-blue-600 hover:bg-blue-700"
@@ -189,7 +206,7 @@ const NscCampContainerActionMenu = ({ container, onModalOpen, onStatusChange }) 
               ? "bg-yellow-600 hover:bg-yellow-700"
               : "bg-gray-600 hover:bg-gray-700"
           }
-          onReasonChange={setReason} // <-- Pass reason handler
+          onReasonChange={setReason} 
         />
       )}
     </>

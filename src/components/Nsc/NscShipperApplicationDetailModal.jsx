@@ -10,14 +10,19 @@ import {
   rejectFreight,
 } from "../../services/nscCrdServices";
 
-const NscShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) => {
+const NscShipperApplicationDetailModal = ({ 
+  isOpen, 
+  onClose, 
+  applicationId, 
+  onApplicationsUpdate 
+}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("free"); // free | picked | completed
+  const [status, setStatus] = useState("free"); 
 
   const [rppu, setRppu] = useState("");
   const [reason, setReason] = useState("");
-  const [showReasonInput, setShowReasonInput] = useState(false); // only for reject
+  const [showReasonInput, setShowReasonInput] = useState(false); 
 
   useEffect(() => {
     let isMounted = true;
@@ -86,7 +91,11 @@ const NscShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) =>
       }
 
       if (res?.data?.message) toast.success(res.data.message);
+      
+      // mark completed and reset fields
       setStatus("completed");
+      setShowReasonInput(false);
+      setReason("");
     } catch (err) {
       toast.error("Action failed. Please try again.");
     }
@@ -193,7 +202,13 @@ const NscShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) =>
                           }
                         />
                         <InfoCard label="Port of Discharge" value={data?.form?.voyage_to} />
-                        <InfoCard label="Price Per Unit" value={data?.form?.price_per_unit} />
+                        <InfoCard label="Price Per Unit" 
+                          value={
+                            data?.form?.price_per_unit
+                            ? `$${Number(data?.form?.price_per_unit).toLocaleString()}`
+                              : "—"
+                          } 
+                        />
                       </div>
                     </div>
 
@@ -216,7 +231,7 @@ const NscShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) =>
                           onClick={() => handleAttendAction("pick")}
                           className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
                         >
-                          Pick
+                          Attend to
                         </button>
                       </div>
                     )}
@@ -228,15 +243,26 @@ const NscShipperApplicationDetailModal = ({ isOpen, onClose, applicationId }) =>
                             onClick={() => handleDecision("submit")}
                             className="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
                           >
-                            Submit
+                            Review
                           </button>
+                          
+                          {!showReasonInput ? (
                           <button
                             onClick={() => setShowReasonInput(true)}
                             className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
                           >
                             Reject
                           </button>
+                        ) : (
+                          <button
+                            onClick={() => handleDecision("reject")}
+                            className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+                          >
+                            Confirm Reject
+                          </button>
+                        )}
                         </div>
+
                         <button
                           onClick={() => handleAttendAction("release")}
                           className="mt-3 w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 transition"

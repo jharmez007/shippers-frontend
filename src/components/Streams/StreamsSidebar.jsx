@@ -21,7 +21,7 @@ const StreamsSidebar = () => {
     }
 
     const toCamp = () => {
-      navigate('/streams-camp-dashboard/dashboard');
+      navigate('/camp/terminal-dashboard/dashboard');
     }
 
 

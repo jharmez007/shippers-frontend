@@ -116,22 +116,22 @@ const Login = () => {
           // Navigate based on user type
           if (userType === "shipper") {
             setLoading(false);
-            navigate("/shipper-dashboard/dashboard");
+            navigate("/crd/shipper-dashboard/dashboard");
           } else if (userType === "terminal") {
             setLoading(false);
-            navigate("/streams-dashboard/dashboard");
+            navigate("/streams/terminal-dashboard/dashboard");
           } else if (userType === "charterer") {
             setLoading(false);
-            navigate("/charterer-dashboard/dashboard");
+            navigate("/crd/charterer-dashboard/dashboard");
           } else if (userType === "shipping_line") {
             setLoading(false);
-            navigate("/shipping-lines-dashboard/dashboard");
+            navigate("/crd/shipping-lines-dashboard/dashboard");
           } else if (userType === "regulator") {
             setLoading(false);
-            navigate("/maritime-police-dashboard/dashboard");
+            navigate("/camp/maritime-police-dashboard/dashboard");
           } else if (division === "M and T" && is_head) {
             setLoading(false);
-            navigate("/nsc-mandt-head-dashboard/dashboard");
+            navigate("/home");
           } else if (division === "SSD" && is_head) {
             setLoading(false);
             navigate("/nsc-ssd-head-dashboard/sop");
@@ -140,7 +140,7 @@ const Login = () => {
             navigate("/nsc-ssd-dashboard/sop");
           } else if (division === "DRS") {
             setLoading(false);
-            navigate("/nsc-drs-dashboard/dashboard");
+            navigate("/home");
           } else if (userType === "nsc") {
             setLoading(false);
             navigate("/home");

@@ -3,17 +3,14 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { Button, Select } from "../component";
-import { CustomTab, NscMandTHeadShipperApplicationDetailModal } from ".."; 
-import { getFreightApplications } from "../../services/nscCrdServices";
+import { NscMandTHeadShipperApplicationDetailModal } from ".."; 
+import { getFreightApplications } from "../../services/nscMandTHeadServices";
 
 const ITEMS_PER_PAGE = 10;
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-
-const statusTypes = ["All", "Pending", "Approved", "Rejected", "Recommended", "Reviewed"];
-
 
 const quarterMonths = {
   Q1: [1, 2, 3],
@@ -31,7 +28,6 @@ const NscMandTHeadShipperApplicationList = () => {
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
   const [quarter, setQuarter] = useState("");
-  const [status, setStatus] = useState("All");
   const [showFilters, setShowFilters] = useState(false);
 
   // Modal
@@ -42,9 +38,9 @@ const NscMandTHeadShipperApplicationList = () => {
     const fetchApplications = async () => {
       try {
         const res = await getFreightApplications();
-        if (res?.data?.data) {
-          const sorted = [...res.data.data].sort(
-            (a, b) => new Date(b.submitted_at) - new Date(a.submitted_at)
+        if (res?.data?.reviewed_freights) {
+          const sorted = [...res.data.reviewed_freights].sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
           );
           setApplications(sorted);
         } else {
@@ -59,7 +55,7 @@ const NscMandTHeadShipperApplicationList = () => {
   }, []);
 
   const parseDateString = (dateStr) => {
-    if (!dateStr) return new Date(""); // returns Invalid Date safely
+    if (!dateStr) return new Date("");
     const cleanDateStr = dateStr.replace(/(\d+)(st|nd|rd|th)/, "$1");
     return new Date(cleanDateStr);
   };
@@ -76,7 +72,7 @@ const NscMandTHeadShipperApplicationList = () => {
 
   const filteredData = useMemo(() => {
     return applications.filter((app) => {
-      const appDate = parseDateString(app.date || app.submitted_at);
+      const appDate = parseDateString(app.date || app.created_at);
       if (isNaN(appDate)) return false;
 
       const appYear = appDate.getFullYear();
@@ -85,11 +81,10 @@ const NscMandTHeadShipperApplicationList = () => {
       const yearMatch = !year || appYear.toString() === year;
       const monthMatch = !month || appMonth === parseInt(month, 10);
       const quarterMatch = !quarter || quarterMonths[quarter]?.includes(appMonth);
-      const statusMatch = status === "All" || app.status === status;
 
-      return yearMatch && monthMatch && quarterMatch && statusMatch;
+      return yearMatch && monthMatch && quarterMatch;
     });
-  }, [applications, year, month, quarter, status]);
+  }, [applications, year, month, quarter]);
 
   useEffect(() => {
     setFiltered(filteredData);
@@ -107,6 +102,20 @@ const NscMandTHeadShipperApplicationList = () => {
     setOpen(true);
   };
 
+  // Status pill renderer
+  const renderStatus = (status) => {
+    switch (status) {
+      case "Pending":
+        return <span className="text-sm px-3 py-1 rounded-full font-semibold bg-yellow-100 text-yellow-800">Pending</span>;
+      case "Approved":
+        return <span className="text-sm px-3 py-1 rounded-full font-semibold bg-green-100 text-green-800">Approved</span>;
+      case "Rejected":
+        return <span className="text-sm px-3 py-1 rounded-full font-semibold bg-red-100 text-red-800">Rejected</span>;
+      default:
+        return <span className="text-sm px-3 py-1 rounded-full font-semibold bg-blue-100 text-blue-800">{status || "Reviewed"}</span>;
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -114,32 +123,24 @@ const NscMandTHeadShipperApplicationList = () => {
       transition={{ duration: 0.3 }}
       className="py-4"
     >
-      {/* Tabs & Actions */}
-      <div className="flex justify-between items-center mb-6 gap-4">
-        <CustomTab
-          selectedType={status}
-          setSelectedType={setStatus}
-          submissionTypes={statusTypes}
-        />
-        <div className="flex gap-3">
-          <Button
-            onClick={() => setShowFilters(!showFilters)}
-            className="bg-primary text-white hover:bg-green-700"
-          >
-            {showFilters ? "Hide Filters" : "More Filters"}
-          </Button>
-          <Button
-            onClick={() => {
-              setYear("");
-              setMonth("");
-              setQuarter("");
-              setStatus("All");
-            }}
-            className="bg-gray-100 text-gray-800 hover:bg-gray-200"
-          >
-            Reset Filters
-          </Button>
-        </div>
+      {/* Actions */}
+      <div className="flex justify-start items-center mb-6 gap-3">
+        <Button
+          onClick={() => setShowFilters(!showFilters)}
+          className="bg-primary text-white hover:bg-green-700"
+        >
+          {showFilters ? "Hide Filters" : "Filters"}
+        </Button>
+        <Button
+          onClick={() => {
+            setYear("");
+            setMonth("");
+            setQuarter("");
+          }}
+          className="bg-gray-100 text-gray-800 hover:bg-gray-200"
+        >
+          Reset Filters
+        </Button>
       </div>
 
       {/* More Filters */}
@@ -176,7 +177,7 @@ const NscMandTHeadShipperApplicationList = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">NO.</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">REQUEST TITLE</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">SHIPPER</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">FORM A NUMBER</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">DATE</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">STATUS</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">CCI NUMBER</th>
@@ -185,7 +186,7 @@ const NscMandTHeadShipperApplicationList = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {paginatedData.map((app, index) => {
-                  const appDate = parseDateString(app.date || app.submitted_at);
+                  const appDate = parseDateString(app.date || app.created_at);
                   return (
                     <tr
                       key={app.id}
@@ -194,22 +195,11 @@ const NscMandTHeadShipperApplicationList = () => {
                     >
                       <td className="px-6 py-4">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
                       <td className="px-6 py-4 font-medium">{app.title}</td>
-                      <td className="px-6 py-4">{app.shipper_name}</td>
+                      <td className="px-6 py-4">{app.form_a_number}</td>
                       <td className="px-6 py-4">
                         {isNaN(appDate) ? "-" : appDate.toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`text-sm px-3 py-1 rounded-full font-semibold 
-                          ${app.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : app.status === "Approved"
-                              ? "bg-green-100 text-green-800"
-                              : app.status === "Rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"}`}>
-                          {app.status}
-                        </span>
-                      </td>
+                      <td className="px-6 py-4">{renderStatus(app.review_status)}</td>
                       <td className="px-6 py-4">{app.cci_number}</td>
                       <td className="px-6 py-4 text-center">
                         <Button
@@ -252,13 +242,11 @@ const NscMandTHeadShipperApplicationList = () => {
           </div>
 
           {/* Modal */}
-          
-            <NscMandTHeadShipperApplicationDetailModal
-              isOpen={open}
-              onClose={() => setOpen(false)}
-              applicationId={selectedAppId}
-            />
-         
+          <NscMandTHeadShipperApplicationDetailModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            applicationId={selectedAppId}
+          />
         </>
       )}
     </motion.div>
