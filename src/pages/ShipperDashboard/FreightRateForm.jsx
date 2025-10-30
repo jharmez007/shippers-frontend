@@ -1,10 +1,9 @@
-import React from 'react'
 import { DashboardHeader, FreightRateComp } from '../../components';
 
 
 const FreightRateForm = () => {
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-6 space-y-6 md:h-screen md:overflow-y-auto">
       {/* Header */}
       <DashboardHeader />
       {/* Cards */}
@@ -15,9 +14,7 @@ const FreightRateForm = () => {
         <p className="text-lg text-gray-600 mt-2">
           Submit Freight Rate Application for Approval
         </p>
-        <p className="text-sm text-green-500 mt-2">
-          Consolidators
-        </p>
+  
       </div>
 
       <FreightRateComp />

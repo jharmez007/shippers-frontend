@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 
 import StepItem from './StepItem/StepItem';
@@ -6,14 +5,23 @@ import { images } from '../constants';
 
 const SignUpLayout = () => {
   const location = useLocation();
-  const isEmailVerification = location.pathname === '/whoareyou/email-verification' || '/whoareyou/check-validation';
+  const isEmailVerification = location.pathname === '/whoareyou/email-verification' || location.pathname === '/whoareyou/check-validation';
+  
 
   // Find current step based on path
   const getCurrentStep = () => {
     switch (location.pathname) {
       case '/whoareyou':
         return 1;
-      case '/whoareyou/department':
+      case '/whoareyou/your-services':
+        return 1;
+      case '/whoareyou/your-agency':
+        return 1;
+      case '/whoareyou/your-complex':
+        return 1;
+      case '/whoareyou/your-bvn':
+        return 1;
+      case '/whoareyou/your-tin':
         return 1;
       case '/whoareyou/signup':
         return 2;

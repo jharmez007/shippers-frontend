@@ -1,12 +1,10 @@
-import React from 'react'
-
 import { DashboardHeader } from '../../components';
 import { FreightOverviewChart, barData } from "../../constants/dummy";
 import { Bar } from 'react-chartjs-2';
 
 const FreightAnalysis = () => {
   return (
-    <main className="flex-1 p-6 space-y-6">
+    <main className="flex-1 p-6 space-y-6 md:h-screen md:overflow-y-auto">
     {/* Header */}
     <DashboardHeader />
     {/* Cards */}

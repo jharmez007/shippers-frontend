@@ -16,7 +16,6 @@ export async function refreshToken() {
   });
 
   const newAccessToken = response?.data?.data?.access_token;
-  console.log("tokss:", newAccessToken);
  
   localStorage.setItem('token', newAccessToken);
   return newAccessToken;

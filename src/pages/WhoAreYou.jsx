@@ -1,72 +1,83 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Loader } from "../utils/loader";
 
-
 const WhoAreYou = () => {
-  const [userType, setUserType] = useState(""); // State to store selected user type
-  const [toast, setToast] = useState({ message: "", type: "", visible: false }); // Toast state
-  const navigate = useNavigate(); 
+  const [userType, setUserType] = useState("");
+  const navigate = useNavigate();
 
-  const showToast = (message, type) => {
-    setToast({ message, type, visible: true });
-    setTimeout(() => setToast({ ...toast, visible: false }), 3000); // Hide toast after 3 seconds
-  };
-
-  const handleNext = () => {
+  const handleProceed = () => {
     if (!userType) {
-      showToast("Please select a user type before proceeding.", "error");
+      toast.error("Please select a user type before proceeding");
       return;
     }
 
-    // Navigate to Signup page for other user types
-    Loader(); // Start loader
-    navigate("/whoareyou/signup", { state: { userType } });
+    // Store userType in localStorage
+    localStorage.setItem("userType", userType);
+    localStorage.setItem("userService", userType);
+
+    Loader();
+    if (userType === "individual" || userType === "corporate") {
+      navigate("/whoareyou/your-services", { state: { userType } });
+    } else if (userType === "regulator") {
+      navigate("/whoareyou/signup", { state: { userType } });
+    }
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center flex-grow space-y-6">
-      <h1 className="text-3xl font-bold mb-10 tracking-wide">WHO ARE YOU ?</h1>
+  const handleNscClick = () => {
+    // Store NSC staff type in localStorage
+    localStorage.setItem("userType", "nsc");
+    localStorage.setItem("userService", "nsc");
+    
+    Loader();
+    navigate("/whoareyou/signup");
+  };
 
-      {/* Dropdown Container */}
-      <div className="relative w-[300px] md:w-[400px] mb-10">
-        <select
-          className="w-full p-3 pr-10 border border-black rounded-md text-gray-700 text-center focus:outline-none appearance-none bg-white"
-          value={userType}
-          onChange={(e) => setUserType(e.target.value)} // Update userType state
-        >
-          <option value="" disabled>Select from Drop Down</option>
-          <option value="bank">Bank</option>
-          <option value="nsc">NSC Staff</option>
-          <option value="shipper">Shipper</option>
-          <option value="terminal">Terminal</option>
-          <option value="regulator">Regulator</option>
-          <option value="shipping_line">Shipping Lines</option>
-          <option value="vessel_charter">Vessel Charter</option>
-        </select>
-        {/* Dropdown arrow icon */}
-        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-700 pointer-events-none" />
+  const userOptions = [
+    { value: "individual", label: "Individual" },
+    { value: "corporate", label: "Corporate" },
+    { value: "regulator", label: "Government" },
+  ];
+
+  return (
+    <div className="flex flex-col items-center justify-center space-y-6 bg-white px-4">
+      <h1 className="text-3xl font-bold mb-6 tracking-wide">Sign Up As</h1>
+
+      <div className="flex gap-8 mb-6">
+        {userOptions.map((option) => (
+          <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="userType"
+              value={option.value}
+              checked={userType === option.value}
+              onChange={() => setUserType(option.value)}
+              className="w-5 h-5 accent-black"
+            />
+            <span className="font-semibold text-black">{option.label}</span>
+          </label>
+        ))}
       </div>
 
-      {/* Next Button */}
       <button
-        onClick={handleNext} // Call handleNext on button click
-        className="w-full max-w-[400px] md:max-w-[600px] bg-[#3d5afe] text-white py-4 text-lg font-semibold tracking-wide hover:bg-blue-700 transition-all duration-200"
+        onClick={handleProceed}
+        className={`w-[300px] md:w-[360px] rounded-md py-3 font-semibold text-white text-sm transition-all duration-200 ${
+          userType
+            ? 'bg-[#3d5afe] hover:bg-blue-700'
+            : 'bg-[#C8DCEA] cursor-not-allowed'
+        }`}
+        disabled={!userType}
       >
-        NEXT
+        Proceed
       </button>
 
-      {/* Toast Notification */}
-      {toast.visible && (
-        <div
-          className={`fixed top-4 left-[37%] transform -translate-x-1/2 px-4 py-2 rounded-lg text-white ${
-            toast.type === "success" ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
+      <button
+        onClick={handleNscClick}
+        className="text-xs text-red-500 underline mt-2 cursor-pointer"
+      >
+        Nsc staff here
+      </button>
     </div>
   );
 };

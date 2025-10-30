@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+
 import { resetPassword } from '../../services/resetPasswordServices';
 import { images } from '../../constants';
 import Loader from "../../components/Loader";
@@ -14,26 +16,20 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [toast, setToast] = useState({ message: '', type: '', visible: false });
   const [loading, setLoading] = useState(false);
   const [isResetSuccessful, setIsResetSuccessful] = useState(false); // Track success
 
-  const showToast = (message, type) => {
-    setToast({ message, type, visible: true });
-    setTimeout(() => setToast({ ...toast, visible: false }), 3000);
-  };
-
   const validateInputs = () => {
     if (!password || !confirmPassword) {
-      showToast('Please fill in all fields.', 'error');
+      toast.error('Please fill in all fields.');
       return false;
     }
     if (password.length < 6) {
-      showToast('Password must be at least 6 characters long.', 'error');
+      toast.error('Password must be at least 6 characters long.');
       return false;
     }
     if (password !== confirmPassword) {
-      showToast('Passwords do not match.', 'error');
+      toast.error('Passwords do not match.');
       return false;
     }
     return true;
@@ -50,15 +46,15 @@ const ResetPassword = () => {
       if (response.status === 200) {
         setLoading(false);
         setIsResetSuccessful(true); // Set success state
-        showToast('Password reset successful!', 'success');
+        toast.success('Password reset successful!');
       } else {
         setLoading(false);
-        showToast(response?.message || 'Something went wrong.', 'error');
+        toast.error(response?.message || 'Something went wrong.');
       }
     } catch (error) {
       console.error(error);
       setLoading(false);
-      showToast('Server error. Try again later.', 'error');
+      toast.error('Server error. Try again later.');
     }
   };
 
@@ -134,16 +130,6 @@ const ResetPassword = () => {
           </div>
         )}
 
-        {/* Toast Notification */}
-        {toast.visible && (
-          <div
-            className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg text-white ${
-              toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-            }`}
-          >
-            {toast.message}
-          </div>
-        )}
 
         {!isResetSuccessful && (
           <div className="mt-6 text-center">

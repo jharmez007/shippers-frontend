@@ -1,7 +1,5 @@
-import React from 'react';
 import { Outlet } from 'react-router-dom';
 
-// import { dashboard } from "../../services/dashboardServices";
 import { RegulatorSidebar } from "../../components";
 import { images } from "../../constants";
 

@@ -2,18 +2,18 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 
 import { login } from "../../services/loginServices";
 import { images } from "../../constants";
-import Loader from "../../components/Loader"; // Import the Loader component
+import Loader from "../../components/Loader"; 
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [toast, setToast] = useState({ message: "", type: "", visible: false });
-  const [loading, setLoading] = useState(false); // State to manage the loader
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -36,11 +36,6 @@ const Login = () => {
     },
   ];
 
-  const showToast = (message, type) => {
-    setToast({ message, type, visible: true });
-    setTimeout(() => setToast((prev) => ({ ...prev, visible: false })), 3000);
-  };
-
   // Auto-slide effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,16 +55,16 @@ const Login = () => {
 
   const validateInputs = () => {
     if (!email) {
-      showToast("Please enter your email address.", "error");
+      toast.error("Please enter your email address." );
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      showToast("Please enter a valid email address.", "error");
+      toast.error("Please enter a valid email address." );
       return false;
     }
     if (!password) {
-      showToast("Please enter your password.", "error");
+      toast.error("Please enter your password.");
       return false;
     }
     return true;
@@ -98,8 +93,10 @@ const Login = () => {
       const userType = response?.data?.data?.user_type;
       const first_name = response?.data?.data?.first_name;
       const last_name = response?.data?.data?.last_name;
-
-      console.log("message:", response?.message)
+      const department = response?.data?.data?.department;
+      const division = response?.data?.data?.division;
+      const is_head = response?.data?.data?.is_head;
+      const agency_name = response?.data?.data?.agency_name;
 
       if (response.status === 200 && token) {
         // Save session info
@@ -109,32 +106,55 @@ const Login = () => {
         localStorage.setItem("user_type", userType);
         localStorage.setItem("first_name", first_name);
         localStorage.setItem("last_name", last_name);
+        localStorage.setItem("department", department);
+        localStorage.setItem("division", division);
+        localStorage.setItem("is_head", is_head);
+        localStorage.setItem("agency_name", agency_name);
+
 
            
           // Navigate based on user type
           if (userType === "shipper") {
             setLoading(false);
-            navigate("/shipper-dashboard/dashboard");
-          } else if (userType === "bank") {
+            navigate("/crd/shipper-dashboard/dashboard");
+          } else if (userType === "terminal") {
             setLoading(false);
-            navigate("/bank-dashboard/dashboard");
+            navigate("/streams/terminal-dashboard/dashboard");
+          } else if (userType === "charterer") {
+            setLoading(false);
+            navigate("/crd/charterer-dashboard/dashboard");
+          } else if (userType === "shipping_line") {
+            setLoading(false);
+            navigate("/crd/shipping-lines-dashboard/dashboard");
           } else if (userType === "regulator") {
             setLoading(false);
-            navigate("/regulator-dashboard/dashboard");
-          } else {
+            navigate("/camp/maritime-police-dashboard/dashboard");
+          } else if (division === "M and T" && is_head) {
             setLoading(false);
-            navigate("/dashboard");
-          }
+            navigate("/home");
+          } else if (division === "SSD" && is_head) {
+            setLoading(false);
+            navigate("/nsc-ssd-head-dashboard/sop");
+          } else if (division === "SSD") {
+            setLoading(false);
+            navigate("/nsc-ssd-dashboard/sop");
+          } else if (division === "DRS") {
+            setLoading(false);
+            navigate("/home");
+          } else if (userType === "nsc") {
+            setLoading(false);
+            navigate("/home");
+          } 
       } else {
         setLoading(false); // Hide the loader
-        showToast(response?.message || "Login failed. Please try again.", "error");
+        toast.error(response?.message || "Login failed. Please try again.");
       }
     } catch (error) {
       setLoading(false); // Hide the loader
       if (error.response?.status === 401) {
-        showToast("Invalid email or password.", "error");
+        toast.error("Invalid email or password.");
       } else {
-        showToast("Error connecting to the server. Please try again later.", "error");
+        toast.error("Error connecting to the server. Please try again later.");
         console.error("Login error:", error);
       }
     }
@@ -146,11 +166,11 @@ const Login = () => {
       {/* Left Section */}
       <div className="flex flex-col w-full lg:w-3/4 relative">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 lg:px-10 lg:py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center px-6 py-4 lg:px-10 lg:py-6">
           <Link to="/home">
             <img src={images.logo} alt="Logo" className="w-40 lg:w-60 mb-2" />
           </Link>
-          <div className="hidden lg:flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <p className="text-gray-600 text-sm">No Account yet?</p>
             <Link
               to="/whoareyou"
@@ -180,7 +200,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full px-3 py-3 mb-4 border border-gray-300 rounded focus:outline-none"
+                className="w-full px-3 py-3 mb-4 border border-gray-300 rounded-xl focus:outline-none"
               />
 
               <div className="relative mb-4">
@@ -189,7 +209,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none pr-10"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none pr-10"
                 />
                 <button
                   type="button"
@@ -220,11 +240,16 @@ const Login = () => {
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded text-sm font-semibold tracking-widest"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md text-sm font-semibold tracking-widest"
               >
                 LOG IN
               </button>
             </form>
+            <p className="mt-8 text-xs text-gray-500 text-center ">
+              By Creating an Account, it means you agree to our{' '}
+              <a href="/login" className="underline text-gray-600">Privacy Policy</a> and{' '}
+              <a href="/login" className="underline text-gray-600">Terms of Service</a>
+            </p>
           </div>
         </div>
 
@@ -282,17 +307,6 @@ const Login = () => {
           </p>
         </div>
       </div>
-
-      {/* Toast Notification */}
-      {toast.visible && (
-        <div
-          className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg text-white ${
-            toast.type === "success" ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </div>
   );
 };
