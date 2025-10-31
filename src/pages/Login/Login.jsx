@@ -1,8 +1,6 @@
-// src/pages/Login.jsx
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from 'sonner';
 
 import { login } from "../../services/loginServices";
 import { images } from "../../constants";
@@ -14,6 +12,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false); 
+  const [errors, setErrors] = useState({}); // Inline errors
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -40,11 +39,11 @@ const Login = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000); // 4 seconds
-
+    }, 4000);
     return () => clearInterval(interval);
   }, [slides.length]);
 
+  // Remembered email
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
     if (savedEmail) {
@@ -53,40 +52,34 @@ const Login = () => {
     }
   }, []);
 
+  // Validation
   const validateInputs = () => {
-    if (!email) {
-      toast.error("Please enter your email address." );
-      return false;
+    const newErrors = {};
+
+    if (!email) newErrors.email = "Please enter your email address.";
+    else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) newErrors.email = "Please enter a valid email address.";
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast.error("Please enter a valid email address." );
-      return false;
-    }
-    if (!password) {
-      toast.error("Please enter your password.");
-      return false;
-    }
-    return true;
+
+    if (!password) newErrors.password = "Please enter your password.";
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateInputs()) {
-      return;
-    }
+    if (!validateInputs()) return;
 
-    if (rememberMe) {
-      localStorage.setItem("rememberedEmail", email);
-    } else {
-      localStorage.removeItem("rememberedEmail");
-    }
+    if (rememberMe) localStorage.setItem("rememberedEmail", email);
+    else localStorage.removeItem("rememberedEmail");
 
     try {
-      setLoading(true); // Show the loader
       const response = await login({ email, password });
-
+      
       const token = response?.data?.data?.access_token;
       const refreshToken = response?.data?.data?.refresh_token;
       const userId = response?.data?.data?.user_id;
@@ -98,7 +91,9 @@ const Login = () => {
       const is_head = response?.data?.data?.is_head;
       const agency_name = response?.data?.data?.agency_name;
 
+      
       if (response.status === 200 && token) {
+        setLoading(true);
         // Save session info
         localStorage.setItem("token", token);
         localStorage.setItem("refresh_token", refreshToken);
@@ -111,50 +106,26 @@ const Login = () => {
         localStorage.setItem("is_head", is_head);
         localStorage.setItem("agency_name", agency_name);
 
-
-           
-          // Navigate based on user type
-          if (userType === "shipper") {
-            setLoading(false);
-            navigate("/crd/shipper-dashboard/dashboard");
-          } else if (userType === "terminal") {
-            setLoading(false);
-            navigate("/streams/terminal-dashboard/dashboard");
-          } else if (userType === "charterer") {
-            setLoading(false);
-            navigate("/crd/charterer-dashboard/dashboard");
-          } else if (userType === "shipping_line") {
-            setLoading(false);
-            navigate("/crd/shipping-lines-dashboard/dashboard");
-          } else if (userType === "regulator") {
-            setLoading(false);
-            navigate("/camp/maritime-police-dashboard/dashboard");
-          } else if (division === "M and T" && is_head) {
-            setLoading(false);
-            navigate("/home");
-          } else if (division === "SSD" && is_head) {
-            setLoading(false);
-            navigate("/nsc-ssd-head-dashboard/sop");
-          } else if (division === "SSD") {
-            setLoading(false);
-            navigate("/nsc-ssd-dashboard/sop");
-          } else if (division === "DRS") {
-            setLoading(false);
-            navigate("/home");
-          } else if (userType === "nsc") {
-            setLoading(false);
-            navigate("/home");
-          } 
+        // Navigate based on user type
+        if (userType === "shipper") navigate("/crd/shipper-dashboard/dashboard");
+        else if (userType === "terminal") navigate("/streams/terminal-dashboard/dashboard");
+        else if (userType === "charterer") navigate("/crd/charterer-dashboard/dashboard");
+        else if (userType === "shipping_line") navigate("/crd/shipping-lines-dashboard/dashboard");
+        else if (userType === "regulator") navigate("/camp/maritime-police-dashboard/dashboard");
+        else if (division === "M and T" && is_head) navigate("/home");
+        else if (division === "SSD" && is_head) navigate("/nsc-ssd-head-dashboard/sop");
+        else if (division === "SSD") navigate("/nsc-ssd-dashboard/sop");
+        else if (division === "DRS") navigate("/home");
+        else if (userType === "nsc") navigate("/home");
       } else {
-        setLoading(false); // Hide the loader
-        toast.error(response?.message || "Login failed. Please try again.");
+        setErrors({ general: response?.message || "Login failed. Please try again." });
       }
     } catch (error) {
-      setLoading(false); // Hide the loader
+      setLoading(false);
       if (error.response?.status === 401) {
-        toast.error("Invalid email or password.");
+        setErrors({ general: "Invalid email or password." });
       } else {
-        toast.error("Error connecting to the server. Please try again later.");
+        setErrors({ general: "Error connecting to the server. Please try again later." });
         console.error("Login error:", error);
       }
     }
@@ -162,7 +133,7 @@ const Login = () => {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
-      {loading && <Loader />} {/* Show the loader when loading */}
+      {loading && <Loader />}
       {/* Left Section */}
       <div className="flex flex-col w-full lg:w-3/4 relative">
         {/* Header */}
@@ -183,27 +154,25 @@ const Login = () => {
 
         {/* Main Content */}
         <div className="flex items-center justify-center h-full w-full px-4 lg:px-0">
-          <div className="flex flex-col items-center justify-center flex-grow space-y-6">
-            <form
-              onSubmit={handleSubmit}
-              className="w-full max-w-lg space-y-4"
-            >
-              <h2 className="text-2xl font-bold text-center mb-2">
-                Account Log In
-              </h2>
+          <div className="flex flex-col items-center justify-center flex-grow space-y-6 w-full max-w-lg">
+            <form onSubmit={handleSubmit} className="w-full space-y-4">
+              <h2 className="text-2xl font-bold text-center mb-2">Account Log In</h2>
               <p className="text-center text-gray-500 mb-6 uppercase tracking-widest">
                 Please login to continue to your account
               </p>
 
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full px-3 py-3 mb-4 border border-gray-300 rounded-xl focus:outline-none"
-              />
+              <div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  className="w-full px-3 py-3 mb-1 border border-gray-300 rounded-xl focus:outline-none"
+                />
+                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+              </div>
 
-              <div className="relative mb-4">
+              <div className="relative mb-1">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -218,7 +187,10 @@ const Login = () => {
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
+                {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
               </div>
+
+              {errors.general && <p className="text-sm text-red-500 text-center">{errors.general}</p>}
 
               <div className="flex flex-col lg:flex-row items-center justify-between mb-6">
                 <label className="flex items-center">
@@ -245,7 +217,8 @@ const Login = () => {
                 LOG IN
               </button>
             </form>
-            <p className="mt-8 text-xs text-gray-500 text-center ">
+
+            <p className="mt-8 text-xs text-gray-500 text-center">
               By Creating an Account, it means you agree to our{' '}
               <a href="/login" className="underline text-gray-600">Privacy Policy</a> and{' '}
               <a href="/login" className="underline text-gray-600">Terms of Service</a>
@@ -285,9 +258,7 @@ const Login = () => {
           {slides.map((_, index) => (
             <button
               key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                currentSlide === index ? "bg-white" : "bg-gray-400"
-              }`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === index ? "bg-white" : "bg-gray-400"}`}
               onClick={() => setCurrentSlide(index)}
             />
           ))}
@@ -296,14 +267,10 @@ const Login = () => {
         {/* Quote Section */}
         <div className="text-center my-6 px-6 pb-8">
           <div className="text-3xl lg:text-5xl font-extrabold">“</div>
-          <p className="italic text-sm lg:text-base">
-            {slides[currentSlide].quote}
-          </p>
+          <p className="italic text-sm lg:text-base">{slides[currentSlide].quote}</p>
           <p className="text-sm lg:text-base mt-1">
             -{" "}
-            <span className="font-semibold italic">
-              {slides[currentSlide].author}
-            </span>
+            <span className="font-semibold italic">{slides[currentSlide].author}</span>
           </p>
         </div>
       </div>
@@ -312,4 +279,3 @@ const Login = () => {
 };
 
 export default Login;
-

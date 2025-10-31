@@ -13,8 +13,7 @@ import {
 const NscShipperApplicationDetailModal = ({ 
   isOpen, 
   onClose, 
-  applicationId, 
-  onApplicationsUpdate 
+  applicationId,  
 }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
