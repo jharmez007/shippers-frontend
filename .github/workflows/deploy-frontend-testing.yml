@@ -24,12 +24,12 @@ jobs:
           echo "=== SSH key contents ==="
           cat private_key.pem
           echo "========================"
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@3.147.59.154 'echo "SSH connection test passed"'
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@18.188.71.112 'echo "SSH connection test passed"'
 
       - name: Deploy via SSH with key file
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 3.147.59.154
+          host: 18.188.71.112
           username: ubuntu
           key_path: private_key.pem
           script: |
