@@ -112,9 +112,13 @@ export { default as StreamsDashboard } from './StreamsDashboard/StreamsDashboard
 export { default as MainStreamsDashboard } from './StreamsDashboard/MainStreamsDashboard';
 export { default as NewKpiSubmission } from './StreamsDashboard/NewKpiSubmission';
 export { default as NewThroughputSubmission } from './StreamsDashboard/NewThroughputSubmission';
+export { default as StreamsSOP } from './StreamsDashboard/StreamsSOP';
+export { default as StreamsTariff } from './StreamsDashboard/StreamsTariff';
+export { default as StreamsShippingLines } from './StreamsDashboard/StreamsShippingLines';
 
 export { default as StreamsCampDashboardLayout } from './StreamsCampDashboard/StreamsCampDashboardLayout';
 export { default as StreamsCampDashboard } from './StreamsCampDashboard/StreamsCampDashboard';
+
 
 export { default as MaritimePoliceDashboard } from './MaritimePolice/MaritimePoliceDashboard';
 export { default as DashboardLayout } from './MaritimePolice/DashboardLayout';

@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 
 import { Button, Select } from "../component";
 import { CustomTab, NscPostAuditApplicationDetailModal } from ".."; 
-// import { getFreightApplications } from "../../services/shipperFreightServices";
+import { getPostAuditApplications } from "../../services/nscCrdServices";
 
 const ITEMS_PER_PAGE = 10;
 const monthNames = [
@@ -13,15 +13,6 @@ const monthNames = [
 ];
 
 const statusTypes = ["All", "Pending", "Approved", "Rejected"];
-
-const mockApplications = [
-  { id: 1, status: "Pending",  date: "5th January 2024", title: "Charter Request A", shipper: "Vessel A" },
-  { id: 2, status: "Approved", date: "5th February 2025", title: "Charter Request B", shipper: "Vessel B" },
-  { id: 3, status: "Rejected", date: "5th March 2025", title: "Charter Request C", shipper: "Vessel C" },
-  { id: 4, status: "Pending", date: "5th April 2025", title: "Charter Request D", shipper: "Vessel D" },
-  { id: 5, status: "Rejected", date: "5th May 2025", title: "Charter Request E", shipper: "Vessel E" },
-  // ... more data
-];
 
 const quarterMonths = {
   Q1: [1, 2, 3],
@@ -44,26 +35,26 @@ const NscPostAuditApplicationList = () => {
 
   // Modal
   const [open, setOpen] = useState(false);
-  // const [selectedApp, setSelectedApp] = useState(null);
+  const [selectedAppId, setSelectedAppId] = useState(null);
 
   useEffect(() => {
-    // Replace with API fetch later
-    // getFreightApplications()
-    //   .then(res => {
-    //     const sorted = [...res.data.data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    //     setApplications(sorted);
-    //   })
-    //   .catch(err => {
-    //     toast.error(err?.response?.data?.message || "Failed to fetch applications.");
-    //   });
-
-    setApplications(mockApplications);
+    getPostAuditApplications()
+      .then(res => {
+        const sorted = [...res.data.data].sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+        setApplications(sorted);
+        console.log("Fetched Applications:", sorted);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || "Failed to fetch applications.");
+      });
   }, []);
 
   const parseDateString = (dateStr) => {
+    if (!dateStr) return new Date(""); // returns Invalid Date safely
     const cleanDateStr = dateStr.replace(/(\d+)(st|nd|rd|th)/, "$1");
     return new Date(cleanDateStr);
   };
+
 
   const handleQuarterChange = (value) => {
     setQuarter(value);
@@ -77,7 +68,7 @@ const NscPostAuditApplicationList = () => {
 
   const filteredData = useMemo(() => {
     return applications.filter((app) => {
-      const appDate = parseDateString(app.date);
+      const appDate = parseDateString(app.submitted_at);
       if (isNaN(appDate)) return false;
 
       const appYear = appDate.getFullYear();
@@ -102,6 +93,11 @@ const NscPostAuditApplicationList = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+
+  const handleOpenModal = (id) => {
+    setSelectedAppId(id);
+    setOpen(true);
+  };
 
   return (
     <motion.div
@@ -143,17 +139,23 @@ const NscPostAuditApplicationList = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
           <Select onValueChange={setYear} value={year} placeholder="Year">
             {[2025, 2024, 2023, 2022].map((y) => (
-              <option key={y} value={y}>{y}</option>
+              <option key={y} value={y}>
+                {y}
+              </option>
             ))}
           </Select>
           <Select onValueChange={handleQuarterChange} value={quarter} placeholder="Quarter">
             {["Q1", "Q2", "Q3", "Q4"].map((q) => (
-              <option key={q} value={q}>{q}</option>
+              <option key={q} value={q}>
+                {q}
+              </option>
             ))}
           </Select>
           <Select onValueChange={handleMonthChange} value={month} placeholder="Month">
             {monthNames.map((m, i) => (
-              <option key={m} value={i + 1}>{m}</option>
+              <option key={m} value={i + 1}>
+                {m}
+              </option>
             ))}
           </Select>
         </div>
@@ -173,6 +175,7 @@ const NscPostAuditApplicationList = () => {
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">NO.</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">REQUEST TITLE</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">VESSEL NAME</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">PAC NUMBER</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">DATE</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase">STATUS</th>
                   <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 uppercase">ACTION</th>
@@ -180,26 +183,33 @@ const NscPostAuditApplicationList = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {paginatedData.map((app, index) => {
-                  const appDate = parseDateString(app.date);
+                  const appDate = parseDateString(app.date || app.submitted_at);
                   return (
                     <tr
                       key={app.id}
                       className="hover:bg-gray-50 transition"
-                      onClick={() => setOpen(true)}
+                      onClick={() => handleOpenModal(app.id)}
                     >
-                      <td className="px-6 py-4">{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
-                      <td className="px-6 py-4 font-medium">{app.title}</td>
-                      <td className="px-6 py-4">{app.shipper}</td>
+                      <td className="px-6 py-4">
+                        {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
+                      </td>
+                      <td className="px-6 py-4 font-medium">{app.title }</td>
+                      <td className="px-6 py-4">{app.vessel_name}</td>
+                      <td className="px-6 py-4">{app.pac_number || "-"}</td>
                       <td className="px-6 py-4">{appDate.toLocaleDateString()}</td>
                       <td className="px-6 py-4">
-                        <span className={`text-sm px-3 py-1 rounded-full font-semibold 
-                          ${app.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : app.status === "Approved"
-                              ? "bg-green-100 text-green-800"
-                              : app.status === "Rejected"
+                        <span
+                          className={`text-sm px-3 py-1 rounded-full font-semibold
+                            ${
+                              app.status === "Pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : app.status === "Approved"
+                                ? "bg-green-100 text-green-800"
+                                : app.status === "Rejected"
                                 ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"}`}>
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                        >
                           {app.status}
                         </span>
                       </td>
@@ -241,10 +251,10 @@ const NscPostAuditApplicationList = () => {
           </div>
 
           {/* Modal */}
-
             <NscPostAuditApplicationDetailModal
               isOpen={open}
               onClose={() => setOpen(false)}
+              applicationId={selectedAppId}
             />
          
         </>
