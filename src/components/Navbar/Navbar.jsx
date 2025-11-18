@@ -92,7 +92,7 @@ const Navbar = () => {
   ), [handleMouseEnter, handleMouseLeave, openMenus]);
 
   return (
-    <div className="fixed flex z-[999] w-full items-center bg-white shadow-sm h-20">
+    <div className="fixed flex z-[999] w-full items-center bg-white shadow-lg h-20">
       <div className="flex w-full flex-col lg:flex-row justify-between items-center px-4 lg:px-8 py-3 mx-auto">
         
         {/* Left: Logo */}
