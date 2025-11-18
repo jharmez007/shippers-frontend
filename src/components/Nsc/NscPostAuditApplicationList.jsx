@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { toast } from "sonner";  
+import { toast } from "sonner";
 
 import { Button, Select } from "../component";
-import { CustomTab, NscPostAuditApplicationDetailModal } from "..";
-import { getPostAuditApplications } from "../../services/nscChartererServices";
+import { CustomTab, NscPostAuditApplicationDetailModal } from ".."; 
+import { getPostAuditApplications } from "../../services/nscCrdServices";
 
 const ITEMS_PER_PAGE = 10;
 const monthNames = [
@@ -36,32 +36,25 @@ const NscPostAuditApplicationList = () => {
   // Modal
   const [open, setOpen] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState(null);
-  
 
   useEffect(() => {
     getPostAuditApplications()
-      .then((res) => {
-        if (res?.data?.data) {
-          const sorted = [...res.data.data].sort(
-            (a, b) => new Date(b.submitted_at) - new Date(a.submitted_at)
-          );
-          setApplications(sorted);
-        } else {
-          toast.error("Invalid response from server.");
-        }
+      .then(res => {
+        const sorted = [...res.data.data].sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+        setApplications(sorted);
+        console.log("Fetched Applications:", sorted);
       })
-      .catch((err) => {
-        toast.error(
-          err?.response?.data?.message || "Failed to fetch applications."
-        );
+      .catch(err => {
+        toast.error(err?.response?.data?.message || "Failed to fetch applications.");
       });
   }, []);
 
   const parseDateString = (dateStr) => {
-    if (!dateStr) return new Date(""); // fallback invalid
+    if (!dateStr) return new Date(""); // returns Invalid Date safely
     const cleanDateStr = dateStr.replace(/(\d+)(st|nd|rd|th)/, "$1");
     return new Date(cleanDateStr);
   };
+
 
   const handleQuarterChange = (value) => {
     setQuarter(value);
@@ -75,7 +68,7 @@ const NscPostAuditApplicationList = () => {
 
   const filteredData = useMemo(() => {
     return applications.filter((app) => {
-      const appDate = parseDateString(app.date || app.submitted_at);
+      const appDate = parseDateString(app.submitted_at);
       if (isNaN(appDate)) return false;
 
       const appYear = appDate.getFullYear();
@@ -196,7 +189,6 @@ const NscPostAuditApplicationList = () => {
                       key={app.id}
                       className="hover:bg-gray-50 transition"
                       onClick={() => handleOpenModal(app.id)}
-
                     >
                       <td className="px-6 py-4">
                         {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
@@ -259,11 +251,12 @@ const NscPostAuditApplicationList = () => {
           </div>
 
           {/* Modal */}
-          <NscPostAuditApplicationDetailModal
-            isOpen={open}
-            onClose={() => setOpen(false)}
-            applicationId={selectedAppId}
-          />
+            <NscPostAuditApplicationDetailModal
+              isOpen={open}
+              onClose={() => setOpen(false)}
+              applicationId={selectedAppId}
+            />
+         
         </>
       )}
     </motion.div>
