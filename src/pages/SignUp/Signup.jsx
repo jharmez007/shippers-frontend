@@ -93,7 +93,8 @@ const Signup = () => {
     if (!form.address && ["individual", "nsc", "corporate"].includes(userType))
       newErrors.address = "Please enter your address.";
 
-    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // ✅ return true if no errors
   };
 
   const handleChange = (e) => {
