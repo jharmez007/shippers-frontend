@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 
 import { ScrollToTop } from './hooks';
 import {
-  Home, Stakeholders, TankerFreight, Tools, CargoStatistics, Publications,
+  Home, Stakeholders, TankerFreight, Tools, CargoStatistics, Publications, CheckContainer,
   Login, Signup, ResetPassword, NotFound, WhoAreYou, YourServices, YourAgency, YourComplex, YourBVN, YourTIN, EmailVerification,
   Bank, FreightRateForm, FreightRateRequest, FreightAnalysis, Profile, Settings,
   CheckValidation, BankDashboard, MainBankDashboard, BankFreightRateRequest, 
@@ -90,6 +90,7 @@ const AppRoutes = () => {
             <Route path="/tools" element={<MainLayout><Tools /></MainLayout>} />
             <Route path="/cargo-statistics" element={<MainLayout><CargoStatistics /></MainLayout>} />
             <Route path="/publications" element={<MainLayout><Publications /></MainLayout>} />
+            <Route path="/check-container" element={<MainLayout><CheckContainer /></MainLayout>} />
 
             {/* Auth Routes */}
             <Route path="/whoareyou" element={<SignUpLayout />}>
