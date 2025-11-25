@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { getflaggedContainers } from "../services/streamsCampServices";
+import { getContainerStatus } from "../services/streamsCampServices";
 import Loader from "../components/Loader";
 
 const CheckContainer = () => {
@@ -17,7 +17,7 @@ const CheckContainer = () => {
 
     try {
       setLoading(true);
-      const response = await getflaggedContainers(containerNo);
+      const response = await getContainerStatus(containerNo);
       setLoading(false);
 
       if (response?.status === 200) {
