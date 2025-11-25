@@ -112,7 +112,7 @@ export default function KPIFormWrapper() {
                 claims_resolved: Number(formData?.claimsResolved),
                 truck_turnaround_time: Number(formData?.truckTurnaround),
                 complaints_handled: Number(formData?.complaintsHandled),
-                complaints_type: formData?.complaintsType,
+                // complaints_type: formData?.complaintsType,
                 ship_calls: Number(formData?.shipCalls),
                 examined_by_scanner: Number(formData?.examinedByScanner),
                 examined_by_physical: Number(formData?.examinedByPhysical),
