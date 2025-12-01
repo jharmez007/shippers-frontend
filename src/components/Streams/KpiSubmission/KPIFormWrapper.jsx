@@ -47,8 +47,9 @@ export default function KPIFormWrapper() {
   const [formData, setFormData] = useState({});
   const containerRef = useRef(null);
 
-  const officer_id = localStorage.getItem("officerId");
-  const officer_name = localStorage.getItem("officerName");
+  const [officerName, setOfficerName] = useState(localStorage.getItem("officerName") || "");
+const [officerId, setOfficerId] = useState(localStorage.getItem("officerId") || "");
+
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -62,7 +63,19 @@ export default function KPIFormWrapper() {
 
   const updateFormData = (stepData) => {
     setFormData((prev) => ({ ...prev, ...stepData }));
+
+    // If the stepData contains a reportingOfficer or officerId, update local state immediately
+    if (stepData?.reportingOfficer) {
+      setOfficerName(stepData.reportingOfficer);
+      // also persist to localStorage here to keep in sync
+      try { localStorage.setItem("officerName", stepData.reportingOfficer); } catch (e) {}
+    }
+    if (stepData?.officerId) {
+      setOfficerId(stepData.officerId);
+      try { localStorage.setItem("officerId", stepData.officerId); } catch (e) {}
+    }
   };
+
 
   const resetForm = () => {
   setFormData({});
@@ -101,7 +114,7 @@ export default function KPIFormWrapper() {
                 cargo_type: formData?.terminalType,
                 month: monthNameToNumber[formData?.submissionMonth],
                 year: formData?.submissionYear,
-                officer_id: officer_id,
+                officer_id: officerId,
                 vessel_turnaround_time: Number(formData?.vesselTurnaround),
                 cargo_dwell_time: Number(formData?.cargoDwellTime),
                 berth_occupancy: Number(formData?.berthOccupancy),
@@ -213,9 +226,9 @@ export default function KPIFormWrapper() {
         </div>
 
         {/* Officer Name */}
-        {officer_name && (
+        {officerName && (
           <div className="text-sm text-gray-600 mt-4 sm:mt-0 sm:ml-auto">
-            <span className="font-medium text-gray-800">Officer:</span> {officer_name}
+            <span className="font-medium text-gray-800">Officer:</span> {officerName}
           </div>
         )}
       </div>
