@@ -30,80 +30,85 @@ export default function TariffStep({ data, onNext, onBack, onUpdate }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Terminal Handling Charges per TEU
+          Terminal Handling Charges per TEU <span className="text-red-500">*</span>
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           name="terminalHandling"
           value={form.terminalHandling}
           onChange={handleChange}
           className={inputClass}
           style={inputStyle}
-          placeholder="e.g. ₦30,000"
+          placeholder="e.g. 30000"
           required
         />
       </div>
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Documentation Charge per TEU
+          Documentation Charge per TEU <span className="text-red-500">*</span>
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           name="documentationCharge"
           value={form.documentationCharge}
           onChange={handleChange}
           className={inputClass}
           style={inputStyle}
-          placeholder="e.g. ₦5,000"
+          placeholder="e.g. 5000"
           required
         />
       </div>
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Positioning for Examination
+          Positioning for Examination <span className="text-red-500">*</span>
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           name="positioningExamination"
           value={form.positioningExamination}
           onChange={handleChange}
           className={inputClass}
           style={inputStyle}
-          placeholder="e.g. ₦10,000"
+          placeholder="e.g. 10000"
           required
         />
       </div>
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Weighbridge Charge
+          Weighbridge Charge <span className="text-red-500">*</span>
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           name="weighbridgeCharge"
           value={form.weighbridgeCharge}
           onChange={handleChange}
           className={inputClass}
           style={inputStyle}
-          placeholder="e.g. ₦2,000"
+          placeholder="e.g. 2000"
           required
         />
       </div>
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Storage Charge per (Tier/TEU)
+          Storage Charge per (Tier/TEU) <span className="text-red-500">*</span>
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           name="storageCharge"
           value={form.storageCharge}
           onChange={handleChange}
           className={inputClass}
           style={inputStyle}
-          placeholder="e.g. ₦1,000/day"
+          placeholder="e.g. 1000"
           required
         />
       </div>
@@ -124,8 +129,20 @@ export default function TariffStep({ data, onNext, onBack, onUpdate }) {
       </div>
 
       <div className="flex justify-between mt-4">
-        <button type="button" onClick={onBack} className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400">Back</button>
-        <button type="submit" className="bg-green-600 text-white px-10 py-3 rounded-xl font-bold shadow hover:from-green-700 hover:bg-green-500 transition">Next</button>
+        <button
+          type="button"
+          onClick={onBack}
+          className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400"
+        >
+          Back
+        </button>
+
+        <button
+          type="submit"
+          className="bg-green-600 text-white px-10 py-3 rounded-xl font-bold shadow hover:bg-green-500 transition"
+        >
+          Next
+        </button>
       </div>
     </form>
   );

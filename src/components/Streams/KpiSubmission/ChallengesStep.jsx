@@ -19,7 +19,7 @@ export default function ChallengesStep({ data, onNext, onBack, onUpdate }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Operational Challenges Faced</label>
+        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Operational Challenges Faced <span className="text-red-500">*</span></label>
         <textarea
           name="operationalChallenges"
           value={form.operationalChallenges}

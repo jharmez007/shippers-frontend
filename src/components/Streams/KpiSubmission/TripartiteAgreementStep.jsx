@@ -45,10 +45,11 @@ export default function TripartiteAgreementStep({ data, onNext, onBack, onUpdate
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Execution of Terminal Development Plan (%)
+          Execution of Terminal Development Plan (%) <span className="text-red-500">*</span>
         </label>
         <input
           type="number"
+          min="0"
           name="terminalDevelopmentExecution"
           value={form.terminalDevelopmentExecution}
           onChange={handleChange}
@@ -61,7 +62,7 @@ export default function TripartiteAgreementStep({ data, onNext, onBack, onUpdate
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Agreed Guarantee Minimum Tonnage (GMT)
+          Agreed Guarantee Minimum Tonnage (GMT) <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -77,7 +78,7 @@ export default function TripartiteAgreementStep({ data, onNext, onBack, onUpdate
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Level of Compliance with GMT
+          Level of Compliance with GMT <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -93,7 +94,7 @@ export default function TripartiteAgreementStep({ data, onNext, onBack, onUpdate
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          List of Digitalized Processes (specify the URL)
+          List of Digitalized Processes (specify the URL) <span className="text-red-500">*</span>
         </label>
         {form.digitalizedProcesses.map((url, idx) => (
           <div key={idx} className="flex items-center gap-2 mb-2">
@@ -128,7 +129,7 @@ export default function TripartiteAgreementStep({ data, onNext, onBack, onUpdate
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          ICT Back-up System
+          ICT Back-up System <span className="text-red-500">*</span>
         </label>
         <textarea
           name="ictBackupSystem"
