@@ -35,37 +35,40 @@ export default function CargoDeliveryStep({ data, onNext, onBack, onUpdate }) {
         <h3 className="font-bold text-green-700 mb-3">Number of Containers Examined Daily</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Scanner</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Scanner <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="examinedByScanner"
               value={form.examinedByScanner}
               onChange={handleChange}
               required
+              min={0}
               className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
               style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Physical</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Physical <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="examinedByPhysical"
               value={form.examinedByPhysical}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Scanner and Physical</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">Scanner and Physical <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="examinedByBoth"
               value={form.examinedByBoth}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
@@ -75,40 +78,43 @@ export default function CargoDeliveryStep({ data, onNext, onBack, onUpdate }) {
 
       {/* Section 2 */}
       <div className="bg-gray-100 rounded-xl p-4">
-        <h3 className="font-bold text-green-700 mb-3">Imports Exiting Terminal Monthly</h3>
+        <h3 className="font-bold text-green-700 mb-3">Imports Exiting Terminal</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Truck</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Truck <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="importsTruck"
               value={form.importsTruck}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Barge</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Barge <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="importsBarge"
               value={form.importsBarge}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Rail</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Rail <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="importsRail"
               value={form.importsRail}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
@@ -118,40 +124,43 @@ export default function CargoDeliveryStep({ data, onNext, onBack, onUpdate }) {
 
       {/* Section 3 */}
       <div className="bg-gray-100 rounded-xl p-4">
-        <h3 className="font-bold text-green-700 mb-3">Exports Handled Monthly</h3>
+        <h3 className="font-bold text-green-700 mb-3">Exports Handled</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Truck</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Truck <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="exportsTruck"
               value={form.exportsTruck}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Barge</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Barge <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="exportsBarge"
               value={form.exportsBarge}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Rail</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Rail <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="exportsRail"
               value={form.exportsRail}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
@@ -161,40 +170,43 @@ export default function CargoDeliveryStep({ data, onNext, onBack, onUpdate }) {
 
       {/* Section 4 */}
       <div className="bg-gray-100 rounded-xl p-4">
-        <h3 className="font-bold text-green-700 mb-3">Containers Returned Monthly</h3>
+        <h3 className="font-bold text-green-700 mb-3">Containers Returned</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Truck</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Truck <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="returnedTruck"
               value={form.returnedTruck}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Barge</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Barge <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="returnedBarge"
               value={form.returnedBarge}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
           </div>
           <div>
-            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Rail</label>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">By Rail <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="returnedRail"
               value={form.returnedRail}
               onChange={handleChange}
               required
+              min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
             />
@@ -204,7 +216,7 @@ export default function CargoDeliveryStep({ data, onNext, onBack, onUpdate }) {
 
       {/* Section 5 */}
       <div className="bg-gray-100 rounded-xl p-4">
-        <h3 className="font-bold text-green-700 mb-3">Empty Containers Shipped Out Monthly</h3>
+        <h3 className="font-bold text-green-700 mb-3">Empty Containers Shipped Out <span className="text-red-500">*</span></h3>
         <div>
           <input
             type="number"
@@ -212,6 +224,7 @@ export default function CargoDeliveryStep({ data, onNext, onBack, onUpdate }) {
             value={form.emptyShippedOut}
             onChange={handleChange}
             required
+            min={0}
             className="appearance-none w-full text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow focus:ring-2 focus:ring-green-200 transition"
             style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
           />
