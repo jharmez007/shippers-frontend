@@ -28,5 +28,19 @@ export const getflaggedContainers = async (containerNo) => {
   }
 };
 
+export const getContainerStatus = async (containerNo) => {
+  try {
+    const response = await Api({
+      method: "get",
+      url: `/common/status/${containerNo}`,
+    });
+    return { data: response?.data, status: response?.status };
+  } catch (error) {
+    return {
+      message: error?.response?.data?.data?.message || error?.response?.data?.message || error.message,
+    };
+  }
+};
+
 
 
