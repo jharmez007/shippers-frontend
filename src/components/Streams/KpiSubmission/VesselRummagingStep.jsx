@@ -78,6 +78,7 @@ export default function VesselRummagingStep({ data, onNext, onBack, onUpdate }) 
         <input
           type="text"
           name="busInOutHandling"
+          placeholder="mention who provided the vehicle"
           value={form.busInOutHandling}
           onChange={handleChange}
           required
@@ -88,7 +89,7 @@ export default function VesselRummagingStep({ data, onNext, onBack, onUpdate }) 
       {/* Joint Vessel Body - YES / NO */}
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Is there a joint body of vessel?
+          Is there Joint Boarding of Vessel?
         </label>
 
         <div className="flex gap-4">
