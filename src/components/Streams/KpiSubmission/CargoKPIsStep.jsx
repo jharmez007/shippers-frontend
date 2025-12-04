@@ -28,6 +28,8 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
     onNext();
   };
 
+  const isContainerTerminal = data?.terminalType === "Container Terminal";
+
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -91,14 +93,15 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
     {/* REQUIRED — Crane Moves per Hour */}
     <div>
       <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-        Crane Moves per Hour <span className="text-red-500">*</span>
+        Crane Moves per Hour 
+        {isContainerTerminal && <span className="text-red-500">*</span>}
       </label>
       <input
         type="number"
         name="craneMovesPerHour"
         value={form.craneMovesPerHour}
         onChange={handleChange}
-        required
+        required={isContainerTerminal}
         min={0}
         className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 
                   rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 
@@ -209,6 +212,7 @@ export default function CargoKPIsStep({ data, onNext, onBack, onUpdate }) {
         <option value="TEUs">TEUs</option>
         <option value="Tonnes">Tonnes</option>
         <option value="CBM">CBM</option>
+        <option value="Unit">Unit</option>
       </select>
     </div>
     </div>

@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function CargoThroughputStep({ data, onNext, onBack, onUpdate }) {
   const [form, setForm] = useState({
     import: data.import || "",
+    importUnit: "TEUs",
     export: data.export || "",
     empty: data.empty || "",
   });
@@ -18,14 +19,17 @@ export default function CargoThroughputStep({ data, onNext, onBack, onUpdate }) 
     onNext();
   };
 
+  const isContainerTerminal = data?.terminalType === "Container Terminal";
+
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Import */}
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Import (tonnes)
+          Import ({form.importUnit || "TEUs"}) <span className="text-red-500">*</span> 
         </label>
-        <input
+        <div className="flex gap-2">
+          <input
           type="number"
           name="import"
           value={form.import}
@@ -35,12 +39,27 @@ export default function CargoThroughputStep({ data, onNext, onBack, onUpdate }) 
           className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
           style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
         />
+
+        <select
+          name="importUnit"
+          value={form.importUnit || "TEUs"}
+          onChange={handleChange}
+          className="bg-gray-50 text-gray-900 font-medium py-3 px-4 rounded-xl border-0 shadow 
+                    outline-none focus:ring-2 focus:ring-green-200 transition"
+          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+        >
+          <option value="TEUs">TEUs</option>
+          <option value="Tonnes">Tonnes</option>
+          <option value="CBM">CBM</option>
+          <option value="Unit">Unit</option>
+        </select>
+        </div>
       </div>
 
       {/* Export */}
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Export (tonnes)
+          Export (tonnes) <span className="text-red-500">*</span>
         </label>
         <input
           type="number"
@@ -54,22 +73,26 @@ export default function CargoThroughputStep({ data, onNext, onBack, onUpdate }) 
         />
       </div>
 
-      {/* Empty */}
-      <div>
-        <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Empty (tonnes)
-        </label>
-        <input
-          type="number"
-          name="empty"
-          value={form.empty}
-          onChange={handleChange}
-          required
-          placeholder="e.g. 15000"
-          className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
-          style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
-        />
-      </div>
+      {isContainerTerminal && (
+        <>
+          {/* Empty */}
+          <div>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+              Empty (tonnes) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="empty"
+              value={form.empty}
+              onChange={handleChange}
+              required
+              placeholder="e.g. 15000"
+              className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
+              style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+            />
+          </div>
+        </>
+      )}
 
       {/* Navigation Buttons */}
       <div className="col-span-2 flex justify-between mt-6">
