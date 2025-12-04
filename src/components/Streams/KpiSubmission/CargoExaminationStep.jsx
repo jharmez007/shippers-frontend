@@ -45,6 +45,8 @@ export default function CargoExaminationStep({ data, onNext, onBack, onUpdate })
     onNext();
   };
 
+  const isContainerTerminal = data?.terminalType === "Container Terminal";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -67,43 +69,48 @@ export default function CargoExaminationStep({ data, onNext, onBack, onUpdate })
       />
     </div>
 
-    {/* Positioning Time */}
-    <div>
-      <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-        Time for Positioning of Container (hours)
-        <span className="text-red-500">*</span>
-      </label>
-      <input
-        type="number"
-        name="positioningTime"
-        min="0"
-        value={form.positioningTime}
-        onChange={handleChange}
-        required
-        className="appearance-none w-full bg-gray-100 text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow 
-                  focus:ring-2 focus:ring-green-200 transition placeholder-green-300"
-        style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
-      />
-    </div>
+    {/* ONLY SHOW THESE WHEN Container Terminal IS SELECTED */}
+      {isContainerTerminal && (
+        <>
+          {/* Positioning Time */}
+          <div>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+              Time for Positioning of Container (hours)
+              <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="positioningTime"
+              min="0"
+              value={form.positioningTime}
+              onChange={handleChange}
+              required
+              className="appearance-none w-full bg-gray-100 text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow 
+                          focus:ring-2 focus:ring-green-200 transition"
+              style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+            />
+          </div>
 
-    {/* Containers Positioned */}
-    <div>
-      <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-        Total Number of Containers Positioned
-        <span className="text-red-500">*</span>
-      </label>
-      <input
-        type="number"
-        name="avgContainersPositioned"
-        min="0"
-        value={form.avgContainersPositioned}
-        onChange={handleChange}
-        required
-        className="appearance-none w-full bg-gray-100 text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow 
-                  focus:ring-2 focus:ring-green-200 transition placeholder-green-300"
-        style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
-      />
-    </div>
+          {/* Containers Positioned */}
+          <div>
+            <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+              Total Number of Containers Positioned
+              <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="avgContainersPositioned"
+              min="0"
+              value={form.avgContainersPositioned}
+              onChange={handleChange}
+              required
+              className="appearance-none w-full bg-gray-100 text-gray-900 outline-none font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow 
+                          focus:ring-2 focus:ring-green-200 transition"
+              style={{ boxShadow: "0 1px 4px 0 rgba(30,64,175,0.07)" }}
+            />
+          </div>
+        </>
+      )}
 
     {/* Joint Exam */}
     <div>
