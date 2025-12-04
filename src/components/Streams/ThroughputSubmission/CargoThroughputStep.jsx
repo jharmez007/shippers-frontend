@@ -34,6 +34,7 @@ export default function CargoThroughputStep({ data, onNext, onBack, onUpdate }) 
           name="import"
           value={form.import}
           onChange={handleChange}
+          min={0}
           required
           placeholder="e.g. 125000"
           className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
@@ -66,6 +67,7 @@ export default function CargoThroughputStep({ data, onNext, onBack, onUpdate }) 
           name="export"
           value={form.export}
           onChange={handleChange}
+          min={0}
           required
           placeholder="e.g. 98000"
           className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
@@ -85,6 +87,7 @@ export default function CargoThroughputStep({ data, onNext, onBack, onUpdate }) 
               name="empty"
               value={form.empty}
               onChange={handleChange}
+              min={0}
               required
               placeholder="e.g. 15000"
               className="appearance-none w-full bg-gray-50 text-gray-900 font-medium py-3 pl-6 pr-8 rounded-xl border-0 shadow outline-none focus:ring-2 focus:ring-green-200 transition"
