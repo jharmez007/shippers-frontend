@@ -10,6 +10,10 @@ export default function TariffStep({ data, onNext, onBack, onUpdate }) {
     otherCharges: data.otherCharges || ""
   });
 
+  const isPositioningRequired = data?.terminalType === "Container Terminal";
+  const isWeighbridgeRequired =
+    data?.terminalType === "Container Terminal" || data?.terminalType === "Bulk Terminal";
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -64,7 +68,8 @@ export default function TariffStep({ data, onNext, onBack, onUpdate }) {
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Positioning for Examination <span className="text-red-500">*</span>
+          Positioning for Examination 
+          {isPositioningRequired && <span className="text-red-500">*</span>}
         </label>
         <input
           type="number"
@@ -75,13 +80,14 @@ export default function TariffStep({ data, onNext, onBack, onUpdate }) {
           className={inputClass}
           style={inputStyle}
           placeholder="e.g. 10000"
-          required
+          required={isPositioningRequired}
         />
       </div>
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Weighbridge Charge <span className="text-red-500">*</span>
+          Weighbridge Charge 
+          {isWeighbridgeRequired && <span className="text-red-500">*</span>}
         </label>
         <input
           type="number"
@@ -92,13 +98,13 @@ export default function TariffStep({ data, onNext, onBack, onUpdate }) {
           className={inputClass}
           style={inputStyle}
           placeholder="e.g. 2000"
-          required
+          required={isWeighbridgeRequired}
         />
       </div>
 
       <div>
         <label className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-          Storage Charge per (Tier/TEU) <span className="text-red-500">*</span>
+          Storage Charge per <span className="text-red-500">*</span>
         </label>
         <input
           type="number"
@@ -108,7 +114,7 @@ export default function TariffStep({ data, onNext, onBack, onUpdate }) {
           onChange={handleChange}
           className={inputClass}
           style={inputStyle}
-          placeholder="e.g. 1000"
+          placeholder="per tier per TEU/MT/CBM"
           required
         />
       </div>
