@@ -2,11 +2,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { toast } from 'sonner';
-
-
+import Loader from "../../components/Loader";
 import { signup } from "../../services/signupServices";
-import Loader from "../../components/Loader"; 
 
 const Signup = () => {
   const userType = localStorage.getItem("userType");
@@ -19,28 +16,27 @@ const Signup = () => {
   const agency = localStorage.getItem("company_name");
   const lookup_token = localStorage.getItem("lookup_token");
 
-
   const [form, setForm] = useState({
-    firstName: first_name,
-    lastName: last_name,
-    email: email,
-    phoneNumber: phone_number,
+    firstName: first_name || "",
+    lastName: last_name || "",
+    email: email || "",
+    phoneNumber: phone_number || "",
     password: "",
-    agencyName: agency,
-    address: address,
+    agencyName: agency || "",
+    address: address || "",
     department: "",
     division: "",
-    staffId: "", 
+    staffId: "",
   });
 
+  const [errors, setErrors] = useState({});
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); 
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); 
-  const [loading, setLoading] = useState(false); 
-  
-  const navigate = useNavigate();
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
 
   const getPasswordStrength = (pwd) => {
     if (pwd.length > 8 && /[A-Z]/.test(pwd) && /[\d\W]/.test(pwd)) return "strong";
@@ -56,95 +52,65 @@ const Signup = () => {
   }[strength];
 
   const validateInputs = () => {
-    if (!form.firstName && ["individual", "nsc"].includes(userType)) {
-      toast.error("Please enter your first name.");
-      return false;
+    const newErrors = {};
+
+    if (!form.firstName && ["individual", "nsc"].includes(userType))
+      newErrors.firstName = "Please enter your first name.";
+
+    if (!form.lastName && ["individual", "nsc"].includes(userType))
+      newErrors.lastName = "Please enter your last name.";
+
+    if (!form.staffId && ["nsc"].includes(userType))
+      newErrors.staffId = "Please enter your staff ID.";
+
+    if (!form.email) newErrors.email = "Please enter your email address.";
+    else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(form.email)) newErrors.email = "Please enter a valid email address.";
     }
-    if (!form.lastName && ["individual", "nsc"].includes(userType)) {
-      toast.error("Please enter your last name.");
-      return false;
-    }
-    if (!form.staffId && ["nsc"].includes(userType)) {
-      toast.error("Please enter your staff ID.");
-      return false;
-    }
-    if (!form.email) {
-      toast.error("Please enter your email address.");
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      toast.error("Please enter a valid email address.");
-      return false;
-    }
+
     const phoneRegex = /^\d{10,14}$/;
+    if (!form.phoneNumber || !phoneRegex.test(form.phoneNumber))
+      newErrors.phoneNumber = "Please enter a valid phone number (10–14 digits).";
 
-    if (!form.phoneNumber || !phoneRegex.test(form.phoneNumber)) {
-      toast.error("Please enter a valid phone number (10-14 digits)");
-      return false;
-    }
+    if (!password) newErrors.password = "Please enter your password.";
+    else if (password.length < 6)
+      newErrors.password = "Password must be at least 6 characters long.";
 
-    if (!password) {
-      toast.error("Please enter your password.");
-      return false;
-    }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
-      return false;
-    }
-    if (!confirmPassword) {
-      toast.error("Please confirm your password.");
-      return false;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
-      return false;
-    }
+    if (!confirmPassword) newErrors.confirmPassword = "Please confirm your password.";
+    else if (password !== confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match.";
 
-    if (!form.agencyName && userType === "corporate") {
-      toast.error("Please enter your agency name.");
-      return false;
-    }
+    if (!form.agencyName && ["corporate", "regulator"].includes(userType))
+      newErrors.agencyName = "Please enter your agency name.";
 
-    if (!form.agencyName && userType === "regulator") {
-      toast.error("Please enter your agency name.");
-      return false;
-    }
+    if (!form.department && userType === "nsc")
+      newErrors.department = "Please select your department.";
 
-    if (!form.department && userType === "nsc") {
-      toast.error("Please select your department.");
-      return false;
-    }
+    if (form.department === "Regulatory" && !form.division)
+      newErrors.division = "Please select your division.";
 
-    if (form.department === "regulatory" && !form.division) {
-      toast.error("Please select your division.");
-      return false;
-    }
+    if (!form.address && ["individual", "nsc", "corporate"].includes(userType))
+      newErrors.address = "Please enter your address.";
 
-    if (!form.address && ["individual", "nsc", "corporate"].includes(userType)) {
-      toast.error("Please enter your address.");
-      return false;
-    }
-
-    return true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // ✅ return true if no errors
   };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // Clear field-specific error
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateInputs()) {
-      return;
-    }
+    if (!validateInputs()) return;
 
     try {
       let payload = {
         user_type: userService,
-        lookup_token: lookup_token,
-        password: password,
+        lookup_token,
+        password,
       };
 
       if (userType === "regulator") {
@@ -153,7 +119,7 @@ const Signup = () => {
           agency_name: form.agencyName,
           email: form.email,
           phone_number: form.phoneNumber,
-        }
+        };
       } else if (userType === "nsc") {
         payload = {
           ...payload,
@@ -161,38 +127,40 @@ const Signup = () => {
           last_name: form.lastName,
           department: form.department,
           division: form.division,
-          staff_id: form.staffId, 
+          staff_id: form.staffId,
           email: form.email,
           phone_number: form.phoneNumber,
-        } 
-      } else if (userService === "terminal") {
+        };
+      } else if (userService === "terminal" || userType === "corporate") {
         payload = {
-          ...payload, 
+          ...payload,
+          agency_name: form.agencyName,
           email: form.email,
           phone_number: form.phoneNumber,
-        } 
+        };
       }
 
-      setLoading(true); 
+      setLoading(true);
       const response = await signup(payload);
 
       if (response.status === 201) {
-          setLoading(false); 
-          navigate("/whoareyou/email-verification", { state: { userService, email: form.email } });
+        setLoading(false);
+        navigate("/whoareyou/email-verification", {
+          state: { userService, email: form.email },
+        });
       } else {
-        setLoading(false); 
-        toast.error(response?.message || "Signup failed. Please try again.");
+        setLoading(false);
+        setErrors({ general: response?.message || "Signup failed. Please try again." });
       }
     } catch (error) {
       console.error(error);
-      setLoading(false); // Hide the loader
-      toast.error("Server error. Try again later.");
+      setLoading(false);
+      setErrors({ general: "Server error. Try again later." });
     }
   };
 
-  // Clear form on regulator or nsc sign up
   useEffect(() => {
-    if (userType === "regulator" || userType === "nsc") {
+    if (["regulator", "nsc"].includes(userType)) {
       setForm({
         firstName: "",
         lastName: "",
@@ -203,7 +171,7 @@ const Signup = () => {
         address: "",
         department: "",
         division: "",
-        staffId: "", // <-- Added
+        staffId: "",
       });
       setPassword("");
       setConfirmPassword("");
@@ -212,64 +180,66 @@ const Signup = () => {
 
   return (
     <div className="flex flex-col items-center justify-center flex-grow space-y-6">
-      {loading && <Loader />} {/* Show the loader when loading */}
+      {loading && <Loader />}
       <h1 className="text-3xl font-bold">Sign Up with NSC</h1>
       <p className="text-center text-gray-500 mb-8 uppercase tracking-widest">
         Kindly Fill in the form below to create your account
       </p>
 
       <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4">
-        {/* Render form fields based on userType */}
-        {[ "regulator", "corporate"].includes(userType) && (
+        {/* REGULATOR / CORPORATE */}
+        {["regulator", "corporate"].includes(userType) && (
           <>
-             {/* Render form fields based on userType */}
-              {userType === "corporate" && (
-                <input
-                  type="text"
-                  placeholder="Agency Name"
-                  name="agencyName"
-                  value={form.agencyName}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
-                />
-              )}
-
-              {userType === "regulator" && (
-                <input
-                  type="text"
-                  placeholder="Agency Name"
-                  name="agencyName"
-                  value={form.agencyName}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
-                />
-              )}
-            <input
-              type="email"
-              placeholder="Official Email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
-            />
-            <input
-              type="text"
-              placeholder="Phone Number"
-              name="phoneNumber"
-              value={(form.phoneNumber || '').replace(/[^0-9]/g, '')}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
-            />
-            {userType === "corporate" && (
+            <div>
               <input
                 type="text"
-                placeholder="Address"
-                name="address"
-                value={form.address}
+                placeholder="Agency Name"
+                name="agencyName"
+                value={form.agencyName}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
               />
+              {errors.agencyName && <p className="text-sm text-red-500 mt-1">{errors.agencyName}</p>}
+            </div>
+
+            <div>
+              <input
+                type="email"
+                placeholder="Official Email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+              />
+              {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+            </div>
+
+            <div>
+              <input
+                type="text"
+                placeholder="Phone Number"
+                name="phoneNumber"
+                value={(form.phoneNumber || "").replace(/[^0-9]/g, "")}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+              />
+              {errors.phoneNumber && <p className="text-sm text-red-500 mt-1">{errors.phoneNumber}</p>}
+            </div>
+
+            {userType === "corporate" && (
+              <div>
+                <input
+                  type="text"
+                  placeholder="Address"
+                  name="address"
+                  value={form.address}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+                />
+                {errors.address && <p className="text-sm text-red-500 mt-1">{errors.address}</p>}
+              </div>
             )}
+
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -289,7 +259,8 @@ const Signup = () => {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
             </div>
-            {/* Confirm Password Input */}
+            {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
+
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -306,6 +277,8 @@ const Signup = () => {
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
             </div>
+            {errors.confirmPassword && <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>}
+
             <div className="w-full flex items-center justify-between mt-1">
               <div className="flex-grow h-1 mr-2 bg-gray-300 relative">
                 <div className={`h-1 ${strengthColor}`}></div>
@@ -315,37 +288,49 @@ const Signup = () => {
           </>
         )}
 
+        {/* INDIVIDUAL / NSC */}
         {["individual", "nsc"].includes(userType) && (
           <>
             <div className="grid grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="First Name"
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+                />
+                {errors.firstName && <p className="text-sm text-red-500 mt-1">{errors.firstName}</p>}
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+                />
+                {errors.lastName && <p className="text-sm text-red-500 mt-1">{errors.lastName}</p>}
+              </div>
             </div>
-            {/* Staff ID input for NSC */}
+
             {userType === "nsc" && (
-              <input
-                type="text"
-                placeholder="Staff ID"
-                name="staffId"
-                value={form.staffId}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
-              />
+              <>
+                <input
+                  type="text"
+                  placeholder="Staff ID"
+                  name="staffId"
+                  value={form.staffId}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+                />
+                {errors.staffId && <p className="text-sm text-red-500 mt-1">{errors.staffId}</p>}
+              </>
             )}
+
             <input
               type="email"
               placeholder="Email"
@@ -354,25 +339,27 @@ const Signup = () => {
               onChange={handleChange}
               className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
+            {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+
             <input
               type="text"
               placeholder="Phone Number"
               name="phoneNumber"
-              value={(form.phoneNumber || '').replace(/[^0-9]/g, '')}
+              value={form.phoneNumber}
               onChange={handleChange}
               className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
+            {errors.phoneNumber && <p className="text-sm text-red-500 mt-1">{errors.phoneNumber}</p>}
+
             {userType === "nsc" && (
               <>
                 <select
                   name="department"
                   value={form.department}
                   onChange={handleChange}
-                  className="w-full p-3 pr-8 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
+                  className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
                 >
-                  <option value="" disabled>
-                    Select Your Department
-                  </option>
+                  <option value="">Select Your Department</option>
                   <option value="ICT">ICT</option>
                   <option value="CAD">CAD</option>
                   <option value="SPRD">SPRD</option>
@@ -381,26 +368,28 @@ const Signup = () => {
                   <option value="Complaint Unit">Complaint Unit</option>
                   <option value="Regulatory">Regulatory</option>
                 </select>
+                {errors.department && <p className="text-sm text-red-500 mt-1">{errors.department}</p>}
 
-                {/* Division Dropdown for Regulatory Department */}
                 {form.department === "Regulatory" && (
-                  <select
-                    name="division"
-                    value={form.division || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none mt-4 rounded-xl"
-                  >
-                    <option value="" disabled>
-                      Select Your Division
-                    </option>
-                    <option value="M and T">M and T</option>
-                    <option value="M and E">M and E</option>
-                    <option value="SSD">SSD</option>
-                    <option value="DRS">DRS</option>
-                  </select>
+                  <>
+                    <select
+                      name="division"
+                      value={form.division}
+                      onChange={handleChange}
+                      className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl mt-2"
+                    >
+                      <option value="">Select Your Division</option>
+                      <option value="M and T">M and T</option>
+                      <option value="M and E">M and E</option>
+                      <option value="SSD">SSD</option>
+                      <option value="DRS">DRS</option>
+                    </select>
+                    {errors.division && <p className="text-sm text-red-500 mt-1">{errors.division}</p>}
+                  </>
                 )}
               </>
             )}
+
             <input
               type="text"
               placeholder="Address"
@@ -409,6 +398,9 @@ const Signup = () => {
               onChange={handleChange}
               className="w-full p-3 border border-gray-400 bg-[#f4f6fd] outline-none rounded-xl"
             />
+            {errors.address && <p className="text-sm text-red-500 mt-1">{errors.address}</p>}
+
+            {/* Password Fields */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -428,7 +420,8 @@ const Signup = () => {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
             </div>
-            {/* Confirm Password Input */}
+            {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
+
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -445,6 +438,8 @@ const Signup = () => {
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
             </div>
+            {errors.confirmPassword && <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>}
+
             <div className="w-full flex items-center justify-between mt-1">
               <div className="flex-grow h-1 mr-2 bg-gray-300 relative">
                 <div className={`h-1 ${strengthColor}`}></div>
@@ -454,18 +449,17 @@ const Signup = () => {
           </>
         )}
 
+        {errors.general && (
+          <p className="text-xs text-red-500 text-center mt-2">{errors.general}</p>
+        )}
+
         <button
           type="submit"
-          className="uppercase w-full max-w-[400px] md:max-w-[600px] bg-[#3d5afe] text-white py-4 mt-4 text-lg font-semibold tracking-widest rounded-md hover:bg-blue-700 transition-all duration-200"
+          className="uppercase w-full bg-[#3d5afe] text-white py-4 mt-4 text-lg font-semibold tracking-widest rounded-md hover:bg-blue-700 transition-all duration-200"
         >
           SIGN UP
         </button>
       </form>
-      <p className="mt-8 text-xs text-gray-500 text-center">
-        By Creating an Account, it means you agree to our{' '}
-        <a href="/whoareyou/signup" className="underline text-gray-600">Privacy Policy</a> and{' '}
-        <a href="/whoareyou/signup" className="underline text-gray-600">Terms of Service</a>
-      </p>
     </div>
   );
 };

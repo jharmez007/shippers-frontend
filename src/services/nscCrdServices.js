@@ -1,5 +1,9 @@
 import Api from "../api";
 
+// -----------------------------
+// Freight API
+// -----------------------------
+
 export const getFreightApplications = async () => {
   try {
     const response = await Api({
@@ -89,6 +93,24 @@ export const rejectFreight = async ({ id, reason }) => {
         error?.response?.data?.data?.message ||
         error?.response?.data?.message ||
         error.message,
+    };
+  }
+};
+
+// -----------------------------
+// Post Audit API
+// -----------------------------
+
+export const getPostAuditApplications = async () => {
+  try {
+    const response = await Api({
+      method: "get",
+      url: "/nsc/mandt/post_audit_requests/pending",
+    });
+    return { data: response?.data, status: response?.status };
+  } catch (error) {
+    return {
+      message: error?.response?.data?.data?.message || error?.response?.data?.message || error.message,
     };
   }
 };

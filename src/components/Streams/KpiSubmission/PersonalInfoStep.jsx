@@ -71,30 +71,45 @@ export default function PersonalInfoStep({ data, onNext, onUpdate, onReset }) {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const payload = {
-      name: form.reportingOfficer,
-      designation: form.designation,
-      email: form.email,
-      phone_number: form.phone
-    };
+    e.preventDefault();
+    try {
+      const payload = {
+        name: form.reportingOfficer,
+        designation: form.designation,
+        email: form.email,
+        phone_number: form.phone
+      };
 
-    const response = await createReportingOfficer(payload);
+      const response = await createReportingOfficer(payload);
 
-    const officerId = response?.data?.data?.id;
-    localStorage.setItem("officerId", officerId);
+      const officer = response?.data?.data;
+      const officerId = officer?.id;
+      const officerName = officer?.name;
 
-    // Optional: Push new officer to the list or refresh the list
-    setOfficers((prev) => [...prev, response?.data?.data]);
+      // persist to localStorage as you already did
+      if (officerId) localStorage.setItem("officerId", officerId);
+      if (officerName) localStorage.setItem("officerName", officerName);
 
-    onUpdate(form);
-    onNext();
-  } catch (err) {
-    console.error("Failed to create reporting officer", err);
-    setError("Failed to create reporting officer. Please try again.");
-  }
-};
+      // update local officers list immediately
+      setOfficers((prev) => [...prev, officer]);
+
+      // IMPORTANT: send the officer name and id to parent so it can update instantly
+      onUpdate({
+        reportingOfficer: officerName,
+        designation: officer.designation,
+        email: officer.email,
+        phone: officer.phone_number,
+        officerId: officerId // optional but useful
+      });
+
+      // now move to next step
+      onNext();
+    } catch (err) {
+      console.error("Failed to create reporting officer", err);
+      setError("Failed to create reporting officer. Please try again.");
+    }
+  };
+
 
 
   return (

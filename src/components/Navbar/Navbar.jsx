@@ -92,16 +92,15 @@ const Navbar = () => {
   ), [handleMouseEnter, handleMouseLeave, openMenus]);
 
   return (
-    <div className="fixed flex z-[999] w-full items-center bg-white shadow-sm h-20">
+    <div className="fixed flex z-[999] w-full items-center bg-white shadow-lg h-20">
       <div className="flex w-full flex-col lg:flex-row justify-between items-center px-4 lg:px-8 py-3 mx-auto">
-        
-        {/* Left: Logo */}
+        {/* Left: Logo + Mobile Menu Button */}
         <div className="w-full lg:w-auto flex justify-between items-center">
           <Link to="/home">
-            <img src={images.logo} alt="logo" className="w-48 sm:w-56 object-contain" />
+            <img src={images.logo} alt="logo" className="w-40 sm:w-48 object-contain" />
           </Link>
           <div className="lg:hidden">
-            <HiMenuAlt4 onClick={() => setToggle(true)} className="text-2xl cursor-pointer" />
+            <HiMenuAlt4 onClick={() => setToggle(true)} className="text-3xl cursor-pointer" />
           </div>
         </div>
 
@@ -135,14 +134,18 @@ const Navbar = () => {
             ))}
         </ul>
 
-        {/* Right: Auth / User Info */}
+        {/* Right Desktop: Auth / User Info */}
         <div className="hidden lg:flex items-center gap-4 mt-4 lg:mt-0">
           {isLoggedIn ? (
             <>
               <div className="flex items-center gap-2 text-[#12507B]">
                 <FaUserCircle className="text-xl" />
                 <span className="font-semibold">
-                  {userType === "regulator" ? agency_name : userType === "terminal" ? last_name : first_name}
+                  {userType === "regulator"
+                    ? agency_name
+                    : userType === "terminal"
+                    ? last_name
+                    : first_name}
                 </span>
               </div>
               <span className="text-lg">•</span>
@@ -157,8 +160,12 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="hover:bg-black hover:text-white border-2 border-black text-sm font-bold px-6 py-2 rounded">Log In</Link>
-              <Link to="/whoareyou" className="hover:bg-black hover:text-white border-2 border-black text-sm font-bold px-5 py-2 rounded">Sign Up</Link>
+              <Link to="/login" className="hover:bg-black hover:text-white border-2 border-black text-sm font-bold px-6 py-2 rounded">
+                Log In
+              </Link>
+              <Link to="/whoareyou" className="hover:bg-black hover:text-white border-2 border-black text-sm font-bold px-5 py-2 rounded">
+                Sign Up
+              </Link>
             </>
           )}
         </div>
@@ -168,12 +175,45 @@ const Navbar = () => {
           <motion.div
             initial={{ x: 200 }}
             animate={{ x: 0 }}
-            transition={{ duration: 0.85, ease: "easeOut" }}
-            className="fixed top-0 right-0 w-64 h-screen bg-white shadow-lg z-[999] p-6 overflow-y-auto"
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="fixed top-0 right-0 w-72 h-screen bg-white shadow-xl z-[999] p-6 overflow-y-auto"
           >
-            <div className="flex justify-end mb-4">
-              <HiX onClick={() => setToggle(false)} className="text-2xl cursor-pointer" />
+            <div className="flex justify-end mb-6">
+              <HiX onClick={() => setToggle(false)} className="text-3xl cursor-pointer" />
             </div>
+
+            {/* Auth on Mobile */}
+            <div className="mb-6">
+              {isLoggedIn ? (
+                <div className="flex flex-col gap-3 text-[#12507B]">
+                  <div className="flex items-center gap-3">
+                    <FaUserCircle className="text-2xl" />
+                    <span className="font-semibold text-lg">
+                      {userType === "regulator"
+                        ? agency_name
+                        : userType === "terminal"
+                        ? last_name
+                        : first_name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 cursor-pointer" onClick={handleLogOut}>
+                    <FaSignOutAlt className="text-lg" />
+                    <span className="font-semibold">Sign Out</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <Link to="/login" className="border-2 border-black text-sm font-bold px-6 py-2 rounded" onClick={() => setToggle(false)}>
+                    Log In
+                  </Link>
+                  <Link to="/whoareyou" className="border-2 border-black text-sm font-bold px-5 py-2 rounded" onClick={() => setToggle(false)}>
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Links */}
             <div className="flex flex-col gap-4">
               {filteredLinks
                 .filter((item) => !(userType === "terminal" && item.name === "Tools"))
@@ -181,7 +221,7 @@ const Navbar = () => {
                   <div key={item.name}>
                     {item.dropdown ? (
                       <>
-                        <span className="block font-bold text-gray-700 mb-1">{item.name}</span>
+                        <span className="block font-bold text-gray-700 mb-1 text-lg">{item.name}</span>
                         {item.dropdown.map((subItem) => (
                           <NavLink
                             to={`/${subItem.link}`}

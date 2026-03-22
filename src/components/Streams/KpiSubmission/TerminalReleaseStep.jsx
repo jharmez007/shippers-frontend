@@ -16,6 +16,7 @@ const options = ["Manual", "Online", "Manual and Online"];
 
 export default function TerminalReleaseStep({ data, onNext, onBack, onUpdate }) {
   const [form, setForm] = useState({});
+  const [errors, setErrors] = useState({});
 
   // Rehydrate form state from incoming data
   useEffect(() => {
@@ -29,16 +30,29 @@ export default function TerminalReleaseStep({ data, onNext, onBack, onUpdate }) 
 
   const handleRadioChange = (field, option) => {
     setForm((prev) => ({ ...prev, [field]: option }));
+    setErrors((prev) => ({ ...prev, [field]: false })); // clear error on select
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validate: all fields must have a selection
+    const newErrors = {};
+    fields.forEach((field) => {
+      if (!form[field]) newErrors[field] = true;
+    });
+
+    setErrors(newErrors);
+
+    // If any errors exist, do NOT continue
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
+    // Build payload
     const payload = Object.entries(form).reduce((acc, [label, value]) => {
       const key = fieldKeyMap[label];
-      if (key) {
-        acc[key] = value;
-      }
+      if (key) acc[key] = value;
       return acc;
     }, {});
 
@@ -49,10 +63,11 @@ export default function TerminalReleaseStep({ data, onNext, onBack, onUpdate }) 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {fields.map((field) => (
-        <div key={field} className="bg-gray-50 p-4 rounded-xl shadow-sm">
+        <div key={field} className="bg-gray-50 p-4 rounded-xl shadow-sm relative">
           <h3 className="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-            {field}
+            {field} <span className="text-red-500">*</span>
           </h3>
+
           <div className="flex gap-6 flex-wrap">
             {options.map((option) => (
               <label
@@ -82,6 +97,11 @@ export default function TerminalReleaseStep({ data, onNext, onBack, onUpdate }) 
               </label>
             ))}
           </div>
+
+          {/* Validation Message */}
+          {errors[field] && (
+            <p className="text-red-500 text-sm mt-2">This field is required.</p>
+          )}
         </div>
       ))}
 

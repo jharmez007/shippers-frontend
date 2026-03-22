@@ -4,6 +4,7 @@ export { default as Publications } from './Publications/Publications';
 export { default as Stakeholders } from './Stakeholders/Stakeholders';
 export { default as TankerFreight } from './TankerFreight/TankerFreight';
 export { default as Tools } from './Toolss/Tools';
+export { default as CheckContainer } from './CheckContainer';
 
 export { default as Login } from './Login/Login';
 export { default as Signup } from './SignUp/Signup';
