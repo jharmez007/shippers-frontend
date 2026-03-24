@@ -1,0 +1,320 @@
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+
+import { ProgressTracker } from "..";
+import {
+  getFreightDetails,
+  submitFreight,
+  rejectFreight,
+  downloadLetter,
+} from "../../services/nscDrsServices";
+
+const NscMandTHeadShipperApplicationDetailModal = ({ isOpen, onClose, applicationId, }) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("in-progress");
+
+  const [reason, setReason] = useState("");
+  const [showReasonInput, setShowReasonInput] = useState(false);
+
+  // new states
+  const [approvalCode, setApprovalCode] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchDetails = async () => {
+      if (!isOpen) return;
+
+      setLoading(true);
+      setData(null);
+
+      try {
+        const resData = await getFreightDetails({ id: applicationId });
+
+        if (isMounted) {
+          const details = resData?.data?.data;
+          setData(details);
+          setStatus("in-progress");
+          setApprovalCode(null); // reset
+        }
+      } catch (err) {
+        toast.error("Failed to fetch application details.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchDetails();
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, applicationId]);
+
+  /** Submit or reject freight form */
+  const handleDecision = async (decision) => {
+    try {
+      let res;
+      if (decision === "approve") {
+        res = await submitFreight({ id: applicationId });
+
+        // assume backend returns a validation code
+        const code = res?.data?.approval_code || generateCode();
+        setApprovalCode(code);
+
+      } else if (decision === "reject") {
+        if (!reason.trim()) {
+          toast.error("Please provide a reason for rejection.");
+          return;
+        }
+        res = await rejectFreight({ id: applicationId, reason });
+      }
+
+      if (res?.data?.message) toast.success(res.data.message);
+      
+      setStatus("completed");
+      setShowReasonInput(false);
+      setReason("");
+    } catch (err) {
+      toast.error("Action failed. Please try again.");
+    }
+  };
+
+  /** Download Letter */
+  const handleDownloadLetter = async () => {
+    try {
+      const res = await downloadLetter({ id: applicationId });
+      if (res) {
+        // create download link
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `Approval_Letter_${approvalCode}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    } catch (err) {
+      toast.error("Failed to download letter.");
+    }
+  };
+
+  /** Generate fallback code if API doesn’t return */
+  const generateCode = () => {
+    return Math.floor(100000000 + Math.random() * 900000000).toString();
+  };
+
+  /** Copy to clipboard */
+  const copyCode = () => {
+    if (approvalCode) {
+      navigator.clipboard.writeText(approvalCode);
+      toast.success("Validation code copied!");
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+
+          {/* Modal */}
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center z-[70] p-4"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+          >
+            <div className="bg-white rounded shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar border border-gray-200">
+              {/* Header */}
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Application Details
+                </h2>
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-gray-600 transition-colors text-3xl leading-none"
+                >
+                  &times;
+                </button>
+              </div>
+
+              {/* Body */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="px-6 py-6 bg-gray-50 text-sm"
+              >
+                {loading && (
+                  <p className="text-center text-gray-500">Loading details...</p>
+                )}
+
+                {!loading && data && (
+                  <>
+                    {/* Step Tracker */}
+                    <div className="w-full flex justify-center mb-8">
+                      <ProgressTracker currentStep={data.step || 2} />
+                    </div>
+
+                    {/* Section Title */}
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">
+                      Application Summary
+                    </h3>
+
+                    {/* Info Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                      <div className="space-y-4">
+                        <InfoCard label="Form NXP No" value={data?.form?.nxp_number} />
+                        <InfoCard label="Beneficiary" value={data?.form?.beneficiary} />
+                        <InfoCard label="Goods Description" value={data?.form?.cargo} />
+                        <InfoCard
+                          label="Total Freight Price"
+                          value={
+                            data?.form?.total_price
+                              ? `$${Number(data?.form?.total_price).toLocaleString()}`
+                              : "—"
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-4">
+                        <InfoCard label="Invoice No." value={data?.form?.invoice_number} />
+                        <InfoCard label="Port of Origin" value={data?.form?.voyage_from} />
+                        <InfoCard
+                          label="No. of units"
+                          value={data?.form?.number_of_units}
+                        />
+                        <InfoCard
+                          label="Reasonable Price Per Unit"
+                          value={
+                            data?.form?.rppu
+                              ? `$${Number(data?.form?.rppu).toLocaleString()}`
+                              : "—"
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-4">
+                        <InfoCard
+                          label="Bill of Lading No."
+                          value={
+                            data?.form?.bill_of_lading_number ||
+                            "Not yet provided"
+                          }
+                          valueClass={
+                            !data?.form?.bill_of_lading_number
+                              ? "text-red-500 font-medium"
+                              : ""
+                          }
+                        />
+                        <InfoCard label="Port of Discharge" value={data?.form?.voyage_to} />
+                        <InfoCard
+                          label="Price Per Unit"
+                          value={
+                            data?.form?.price_per_unit
+                              ? `$${Number(data?.form?.price_per_unit).toLocaleString()}`
+                              : "—"
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* Reject reason only when needed */}
+                    {showReasonInput && (
+                      <div className="mb-4">
+                        <textarea
+                          value={reason}
+                          onChange={(e) => setReason(e.target.value)}
+                          placeholder="Enter reason for rejection"
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 outline-none"
+                        />
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    {status === "in-progress" && (
+                      <div className="border rounded-md p-4 bg-gray-50 flex gap-4">
+                        <button
+                          onClick={() => handleDecision("approve")}
+                          className="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+                        >
+                          Approve
+                        </button>
+
+                        {!showReasonInput ? (
+                          <button
+                            onClick={() => setShowReasonInput(true)}
+                            className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+                          >
+                            Reject
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleDecision("reject")}
+                            className="w-1/2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+                          >
+                            Confirm Reject
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {status === "completed" && approvalCode && (
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border rounded-md p-4 bg-gray-50">
+                        <div className="flex items-center gap-2 border rounded-md px-4 py-2 flex-1 justify-between">
+                          <span className="text-sm font-medium text-gray-700">
+                            Approval Letter Validation Code
+                          </span>
+                          <span className="font-bold text-gray-900 flex items-center gap-2">
+                            {approvalCode}
+                            <button
+                              onClick={copyCode}
+                              className="text-gray-600 hover:text-gray-800"
+                            >
+                              📋
+                            </button>
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={handleDownloadLetter}
+                          className="bg-blue-700 text-white px-6 py-3 rounded-md hover:bg-blue-800 transition w-full sm:w-auto"
+                        >
+                          ⬇ Download Letter
+                        </button>
+                      </div>
+                    )}
+
+                    {status === "completed" && !approvalCode && (
+                      <p className="text-center text-gray-500 font-medium">
+                        This application has been completed.
+                      </p>
+                    )}
+                  </>
+                )}
+              </motion.div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+/* Reusable info card */
+const InfoCard = ({ label, value, valueClass = "font-semibold text-gray-800" }) => (
+  <div className="border border-gray-200 bg-white p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+    <p className="text-gray-500 text-xs">{label}</p>
+    <p className={`mt-1 text-sm ${valueClass}`}>{value}</p>
+  </div>
+);
+
+export default NscMandTHeadShipperApplicationDetailModal;

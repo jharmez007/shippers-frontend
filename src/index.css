@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+:root {
+  --font-base: "DM Sans", sans-serif;
+  --font-family: "Bebas Neue", sans-serif;
+  --primary-color:#185F95;
+  --secondary-color: #58A986;
+  --black-color: #030303;
+  --lightGray-color: #F5F4F4;
+  --gray-color: #6b7688;
+  --brown-color: #552529;
+  --white-color: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0; 
+  text-decoration: none;
+}
+
+.input {
+  @apply border rounded px-3 py-2 w-full bg-[#F5F4F4] focus:outline-none focus:ring-2 focus:ring-[#185F95];
+}
+
+
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; 
+  height: 100px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #575454 ;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #E3E4E6;
+  border-radius: 10px;
+}
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}

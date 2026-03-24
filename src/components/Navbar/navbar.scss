@@ -1,0 +1,115 @@
+.app__navbar-menu {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    position: relative;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+         width: 70%;
+         height: 70%;
+         color: var(--black-color);
+    }
+
+    .motion__div {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 5;
+
+        padding: 1rem;
+        width: 80%;
+        height: 100vh;
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        flex-direction: column;
+
+        background-color: white;
+
+        box-shadow: 0 0 20px rgba(168, 168, 168, 0.15);
+
+        svg {
+            width: 35px;
+            height: 35px;
+            color: var(--black-color);  
+            margin: 0.5rem 1rem;
+        }
+
+        .small__menu {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex-direction: column;
+
+        }
+
+        @media screen and (min-width: 1024px) {
+            display: none;
+        }
+    }
+
+    @media screen and (min-width: 1024px) {
+        display: none;
+    }
+}
+
+.navlink {
+    position: relative;
+    font-weight: bold;
+    font-size: 0.875rem; // text-sm
+    transition: font-size 0.3s ease;
+  
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      height: 3px;
+      width: 0%;
+      background-color: #00598C; // blue line
+      transition: width 0.3s ease;
+    }
+  
+    &:hover {
+      font-size: 1rem; // text-base
+    }
+  
+    &:hover::after {
+      width: 100%;
+    }
+  }
+  
+  .navlink.active::after {
+    width: 100%;
+  }
+  
+  @media (max-width: 1024px) {
+    .navlink::after {
+      left: -6px;
+      top: 0;
+      bottom: auto;
+      width: 3px;
+      height: 0%;
+    }
+  
+    .navlink:hover::after {
+      height: 100%;
+      width: 3px;
+    }
+  
+    .navlink.active::after {
+      height: 100%;
+      width: 3px;
+    }
+  }
+  
